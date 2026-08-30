@@ -4,7 +4,17 @@ If you want to know about the architecture and directory structure, see [ARCHITE
 
 ## Full-stack development
 
-Run the full local stack with:
+Prerequisites: Node.js 22.13 or later (the repository `.nvmrc` pins 22.13.0), pnpm 11.9 or later, Docker, and Docker Compose v2 (`docker compose`). If using nvm, run `nvm use` before starting the stack.
+
+For a first-time setup, or whenever dependencies, migrations, or generated GraphQL artifacts need refreshing, run the full local stack with:
+
+```sh
+pnpm serve
+```
+
+This installs dependencies, starts PostgreSQL, applies migrations, regenerates GraphQL artifacts, and then starts both development servers. Stop it with `Ctrl+C`; stop the database separately with `pnpm db:down`.
+
+The equivalent individual commands are:
 
 ```sh
 pnpm install
