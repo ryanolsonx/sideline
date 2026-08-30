@@ -1,0 +1,26 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateMatchInput {
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Match {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+}
+
+type Mutation {
+  createMatch(input: CreateMatchInput!): Match!
+}
+
+type Query {
+  matches: [Match!]!
+}

@@ -26,3 +26,12 @@ The API owns TypeORM migrations. Apply them against the local PostgreSQL service
 ```sh
 pnpm db:migrate
 ```
+
+## GraphQL API
+
+The NestJS API exposes its code-first GraphQL endpoint at `http://localhost:3000/graphql`.
+The committed `apps/api/schema.gql` is generated from the API TypeScript source:
+
+```sh
+pnpm schema:generate
+```
