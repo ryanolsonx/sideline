@@ -35,3 +35,11 @@ The committed `apps/api/schema.gql` is generated from the API TypeScript source:
 ```sh
 pnpm schema:generate
 ```
+
+## Web application
+
+The React/Vite application lives in `apps/web` and runs on port 5173.
+
+```sh
+pnpm dev:web
+```
