@@ -5,5 +5,5 @@ onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - esbuild
 allowBuilds:
-  '@apollo/protobufjs': set this to true or false
-  esbuild: set this to true or false
+  '@apollo/protobufjs': true
+  esbuild: true
