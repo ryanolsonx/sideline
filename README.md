@@ -43,3 +43,12 @@ The React/Vite application lives in `apps/web` and runs on port 5173.
 ```sh
 pnpm dev:web
 ```
+
+## Typed GraphQL client
+
+Frontend operations are colocated with their screens. Generate the typed artifacts from the API schema after changing an operation or API DTO:
+
+```sh
+pnpm schema:generate
+pnpm codegen
+```

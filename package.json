@@ -9,6 +9,7 @@
     "dev:api": "pnpm --filter @sideline/api dev",
     "dev:web": "pnpm --filter @sideline/web dev",
     "db:migrate": "pnpm --filter @sideline/api db:migrate",
-    "schema:generate": "pnpm --filter @sideline/api schema:generate"
+    "schema:generate": "pnpm --filter @sideline/api schema:generate",
+    "codegen": "pnpm --filter @sideline/web codegen"
   }
 }
