@@ -55,6 +55,18 @@ pnpm codegen
 
 ## Run the full vertical slice
 
+Prerequisites: Node.js 22.13 or later, pnpm 11.9 or later, Docker, and Docker Compose v2 (`docker compose`). The project CI uses Node.js 22.13.0; use `nvm use` to select that version when using nvm.
+
+For a first-time setup (or to refresh dependencies, migrations, and generated GraphQL artifacts), run:
+
+```sh
+pnpm serve
+```
+
+This installs dependencies, starts PostgreSQL, applies migrations, generates GraphQL artifacts, and starts the API and web development servers. Stop it with `Ctrl+C`; the database keeps running until `pnpm db:down`.
+
+The equivalent individual commands are:
+
 ```sh
 pnpm install
 pnpm db:up

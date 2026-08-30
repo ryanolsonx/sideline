@@ -3,8 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "pnpm --parallel --filter @sideline/api --filter @sideline/web dev",
+    "serve": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm schema:generate && pnpm codegen && pnpm dev",
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
     "dev:api": "pnpm --filter @sideline/api dev",
