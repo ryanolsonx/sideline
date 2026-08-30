@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --filter @sideline/api --filter @sideline/web dev",
-    "serve": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm schema:generate && pnpm codegen && pnpm dev",
+    "setup": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm schema:generate && pnpm codegen",
+    "serve": "pnpm dev",
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
     "dev:api": "pnpm --filter @sideline/api dev",

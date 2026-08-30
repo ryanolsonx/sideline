@@ -60,10 +60,18 @@ Prerequisites: Node.js 22.13 or later, pnpm 11.9 or later, Docker, and Docker Co
 For a first-time setup (or to refresh dependencies, migrations, and generated GraphQL artifacts), run:
 
 ```sh
+pnpm setup
+```
+
+This installs dependencies, starts PostgreSQL, applies migrations, and generates GraphQL artifacts. Run it intentionally when one of those steps is needed; it does not start the development servers.
+
+To start or restart the prepared local applications, run:
+
+```sh
 pnpm serve
 ```
 
-This installs dependencies, starts PostgreSQL, applies migrations, generates GraphQL artifacts, and starts the API and web development servers. Stop it with `Ctrl+C`; the database keeps running until `pnpm db:down`.
+This starts the API and web development servers only. Stop them with `Ctrl+C`; the database keeps running until `pnpm db:down`.
 
 The equivalent individual commands are:
 
@@ -73,7 +81,7 @@ pnpm db:up
 pnpm db:migrate
 pnpm schema:generate
 pnpm codegen
-pnpm dev
+pnpm serve
 ```
 
 Open http://localhost:5173. Clicking **Save match** calls the GraphQL mutation, persists a row in PostgreSQL, refetches `matches`, and displays the saved record.

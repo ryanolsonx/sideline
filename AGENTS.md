@@ -9,10 +9,18 @@ Prerequisites: Node.js 22.13 or later (the repository `.nvmrc` pins 22.13.0), pn
 For a first-time setup, or whenever dependencies, migrations, or generated GraphQL artifacts need refreshing, run the full local stack with:
 
 ```sh
+pnpm setup
+```
+
+This installs dependencies, starts PostgreSQL, applies migrations, and regenerates GraphQL artifacts. Run it intentionally when one of those steps is needed; it does not start the development servers.
+
+To start or restart the prepared local applications, run:
+
+```sh
 pnpm serve
 ```
 
-This installs dependencies, starts PostgreSQL, applies migrations, regenerates GraphQL artifacts, and then starts both development servers. Stop it with `Ctrl+C`; stop the database separately with `pnpm db:down`.
+This starts both development servers only. Stop them with `Ctrl+C`; stop the database separately with `pnpm db:down`.
 
 The equivalent individual commands are:
 
@@ -22,7 +30,7 @@ pnpm db:up
 pnpm db:migrate
 pnpm schema:generate
 pnpm codegen
-pnpm dev
+pnpm serve
 ```
 
 - `pnpm dev` starts both the NestJS API (`http://localhost:3000/graphql`) and React/Vite web app (`http://localhost:5173`).
