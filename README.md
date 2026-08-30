@@ -18,3 +18,11 @@ The NestJS application lives in `apps/api` and runs on port 3000.
 ```sh
 pnpm dev:api
 ```
+
+## Database migrations
+
+The API owns TypeORM migrations. Apply them against the local PostgreSQL service with:
+
+```sh
+pnpm db:migrate
+```
