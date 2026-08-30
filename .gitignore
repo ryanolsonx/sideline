@@ -4,4 +4,3 @@ dist
 coverage
 .env
 .DS_Store
-apps/web/src/gql
