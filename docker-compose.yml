@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sideline
+      POSTGRES_USER: sideline
+      POSTGRES_PASSWORD: sideline
+    ports:
+      - '5432:5432'
+    volumes:
+      - sideline_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sideline -d sideline']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sideline_postgres:
