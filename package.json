@@ -6,6 +6,7 @@
   "scripts": {
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
-    "dev:api": "pnpm --filter @sideline/api dev"
+    "dev:api": "pnpm --filter @sideline/api dev",
+    "db:migrate": "pnpm --filter @sideline/api db:migrate"
   }
 }
