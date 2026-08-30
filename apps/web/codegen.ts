@@ -9,6 +9,9 @@ const config: CodegenConfig = {
       preset: 'client',
       presetConfig: {
         gqlTagName: 'graphql',
+        fragmentMasking: {
+          unmaskFunctionName: 'getFragmentData',
+        },
       },
     },
   },
