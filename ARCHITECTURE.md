@@ -467,6 +467,65 @@ A shared GraphQL operation should move to a common location only when multiple u
 
 Colocation makes a component's data requirements visible in the same area of the codebase as the component itself.
 
+### Fragment-Colocated Screen Queries
+
+For React components that render GraphQL-backed data, use **Relay-style fragment colocation** with GraphQL Code Generator's client-preset fragment masking. This is the default frontend GraphQL pattern in this repository. GraphQL data flows down through component props; only a screen, route, or explicit data container may use Apollo query or mutation hooks.
+
+This is a pattern supported by the existing `@graphql-codegen/client-preset`, not a separate "Inline GraphQL React" package and not a requirement to adopt Relay. The preset is already configured in `apps/web/codegen.ts` and generates the helpers in `src/gql/fragment-masking.ts`.
+
+Each data-rendering component exports one or more named fragments that describe only the fields it reads. A screen or route owns the top-level operation, composes the child fragments with spreads, and passes the resulting fragment references down. A component must not reach into an ancestor's operation result for fields that are not in its own fragment.
+
+```tsx
+// components/MatchCard.tsx
+import { FragmentType, getFragmentData, graphql } from '../../../gql';
+
+export const MatchCard_MatchFragment = graphql(/* GraphQL */ `
+  fragment MatchCard_Match on Match {
+    id
+    name
+    createdAt
+  }
+`);
+
+export function MatchCard({ match }: {
+  match: FragmentType<typeof MatchCard_MatchFragment>;
+}) {
+  const data = getFragmentData(MatchCard_MatchFragment, match);
+
+  return <li>{data.name}</li>;
+}
+```
+
+```tsx
+// MatchesScreen.graphql.ts
+import { graphql } from '../../gql';
+
+export const MatchesScreen_MatchesQuery = graphql(/* GraphQL */ `
+  query MatchesScreen_Matches {
+    matches {
+      ...MatchCard_Match
+    }
+  }
+`);
+```
+
+```tsx
+// MatchesScreen.tsx
+const { data } = useQuery(MatchesScreen_MatchesQuery);
+
+return data?.matches.map((match) => (
+  <MatchCard key={match.id} match={match} />
+));
+```
+
+`FragmentType<typeof Fragment>` is deliberately an opaque fragment reference, not the fragment's field-data type. `getFragmentData(Fragment, reference)` is a generated type-level unmasking helper; it does not issue another network request, read Apollo's cache, or subscribe to anything. It prevents the component from reading fields it did not declare. It is intentionally named as a regular function rather than `useFragmentData` or `useFragment`, because it is not a hook and must not suggest that it manages data fetching.
+
+Removing a field from a fragment trims it from every operation that spreads that fragment the next time `pnpm codegen` runs. Removing a component is a deliberate paired edit: remove its JSX, fragment, and its parent fragment spread. If a spread remains after its fragment is deleted, code generation fails validation rather than guessing whether the component is reachable. Conversely, adding a field to a component's fragment adds it to every operation that intentionally spreads that fragment. This keeps query shape aligned with the rendered component tree while retaining one screen-level Apollo query.
+
+Keep generic, reusable visual primitives (for example, a `Button` or a layout-only card) GraphQL-free and pass ordinary props. Use fragment props for components whose purpose is to render a GraphQL object or a meaningful part of one. A component may define nested fragments and compose them in its own fragment; the screen should normally spread only its immediate children's fragments. Child components must not call `useQuery`, `useLazyQuery`, `useSuspenseQuery`, or Apollo's runtime `useFragment`; their data dependency is the typed prop.
+
+Fragment definitions must have stable, globally unique names based on their component and GraphQL type, such as `MatchCard_Match`. Do not define broad catch-all fragments or export generated operation-result types as component props. After adding, changing, or removing any operation or fragment, run `pnpm codegen` and commit the generated `apps/web/src/gql/` artifacts.
+
 ## GraphQL Code Generation
 
 Frontend GraphQL documents should be statically analyzed and code-generated into strongly typed TypeScript artifacts.
@@ -484,6 +543,8 @@ inline frontend GraphQL documents
         ↓
 generated TypeScript operation types
 ```
+
+The client preset also generates typed document nodes and fragment-masking helpers. It statically analyzes fragments as well as operations, so fragment colocation remains type-safe without hand-written data interfaces.
 
 The React application should depend on the GraphQL contract, not on backend domain or entity types.
 
@@ -529,7 +590,7 @@ Avoid introducing global state management unless the state is genuinely global.
 
 ## Presentational Components
 
-Complex UI components should remain independent of GraphQL when practical.
+Purely presentational and generic UI components should remain independent of GraphQL when practical. Components that represent a GraphQL object and declare their own fields instead receive a masked fragment reference, as described in [Fragment-Colocated Screen Queries](#fragment-colocated-screen-queries).
 
 For example:
 
@@ -540,7 +601,7 @@ For example:
 />
 ```
 
-The parent GraphQL-connected component loads data and performs mutations.
+The screen-level GraphQL-connected component owns the top-level operation and mutations. It can pass either ordinary props to generic components or masked fragment references to data-rendering components.
 
 The presentational component receives ordinary props.
 
