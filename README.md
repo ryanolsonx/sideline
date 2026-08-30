@@ -52,3 +52,16 @@ Frontend operations are colocated with their screens. Generate the typed artifac
 pnpm schema:generate
 pnpm codegen
 ```
+
+## Run the full vertical slice
+
+```sh
+pnpm install
+pnpm db:up
+pnpm db:migrate
+pnpm schema:generate
+pnpm codegen
+pnpm dev
+```
+
+Open http://localhost:5173. Clicking **Save match** calls the GraphQL mutation, persists a row in PostgreSQL, refetches `matches`, and displays the saved record.
