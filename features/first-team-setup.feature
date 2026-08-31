@@ -29,3 +29,10 @@ Feature: Set up a first team
     Given I am adding players to "Salt Lake Strikers"
     And the roster is empty
     Then I cannot finish setup
+
+  Scenario: Start setting up another team
+    Given I already manage "Salt Lake Strikers"
+    When I open the home page
+    And I choose to add another team
+    Then I can name a new team
+    And "Salt Lake Strikers" remains one of my teams

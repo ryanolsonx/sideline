@@ -1,20 +1,22 @@
 import { FormEvent, useRef, useState } from 'react';
 
-interface CreatedTeam {
+export interface CreatedTeam {
   name: string;
   players: { name: string }[];
 }
 
 interface FirstTeamScreenProps {
+  initialTeams?: CreatedTeam[];
   onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
 }
 
-export function FirstTeamScreen({ onCreateTeam }: FirstTeamScreenProps) {
+export function FirstTeamScreen({ initialTeams = [], onCreateTeam }: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
   const [players, setPlayers] = useState<string[]>([]);
-  const [completedTeam, setCompletedTeam] = useState<CreatedTeam>();
+  const [teams, setTeams] = useState<CreatedTeam[]>(initialTeams);
+  const [isAddingTeam, setIsAddingTeam] = useState(initialTeams.length === 0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const playerNameInput = useRef<HTMLInputElement>(null);
@@ -45,12 +47,23 @@ export function FirstTeamScreen({ onCreateTeam }: FirstTeamScreenProps) {
     setIsSaving(true);
     setSaveError(undefined);
     try {
-      setCompletedTeam(await onCreateTeam(teamName, players));
+      const createdTeam = await onCreateTeam(teamName, players);
+      setTeams((currentTeams) => [...currentTeams, createdTeam]);
+      setIsAddingTeam(false);
     } catch {
       setSaveError('We could not finish setup. Try again.');
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function startAnotherTeam() {
+    setDraftName('');
+    setTeamName(undefined);
+    setPlayerName('');
+    setPlayers([]);
+    setSaveError(undefined);
+    setIsAddingTeam(true);
   }
 
   return (
@@ -60,19 +73,26 @@ export function FirstTeamScreen({ onCreateTeam }: FirstTeamScreenProps) {
         <span className="brand-name">Sideline</span>
       </header>
 
-      {completedTeam ? (
+      {!isAddingTeam && teams.length > 0 ? (
         <section className="onboarding-content completed-home" aria-labelledby="completed-heading">
           <h1 id="completed-heading">You're ready, Coach.</h1>
-          <p className="onboarding-intro">Your first team and roster are set up.</p>
+          <p className="onboarding-intro">Your teams and rosters are ready.</p>
           <section className="teams-section" aria-labelledby="teams-heading">
-            <h2 id="teams-heading">Your teams</h2>
-            <article className="team-card">
-              <div>
-                <h3>{completedTeam.name}</h3>
-                <p>{completedTeam.players.length} {completedTeam.players.length === 1 ? 'player' : 'players'}</p>
-              </div>
-              <span aria-hidden="true">›</span>
-            </article>
+            <div className="teams-heading-row">
+              <h2 id="teams-heading">Your teams</h2>
+              <button type="button" onClick={startAnotherTeam} aria-label="Add team">+ Add team</button>
+            </div>
+            <div className="team-list">
+              {teams.map((team) => (
+                <article className="team-card" key={team.name}>
+                  <div>
+                    <h3>{team.name}</h3>
+                    <p>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</p>
+                  </div>
+                  <span aria-hidden="true">›</span>
+                </article>
+              ))}
+            </div>
           </section>
         </section>
       ) : !teamName ? (
@@ -85,6 +105,7 @@ export function FirstTeamScreen({ onCreateTeam }: FirstTeamScreenProps) {
           <p className="onboarding-intro">
             Start with the team you coach today. You can add and switch between more teams anytime.
           </p>
+          {teams.length > 0 && <p className="existing-team-summary">Already managing: {teams.map((team) => team.name).join(', ')}</p>}
           <form className="onboarding-form" onSubmit={handleTeamSubmit}>
             <label htmlFor="team-name">Team name</label>
             <input

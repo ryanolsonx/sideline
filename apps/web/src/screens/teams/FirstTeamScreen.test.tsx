@@ -92,4 +92,18 @@ describe('FirstTeamScreen', () => {
     expect(screen.getByRole('heading', { name: 'Salt Lake Strikers' })).toBeInTheDocument();
     expect(screen.getByText('1 player')).toBeInTheDocument();
   });
+
+  it('starts another setup without losing an existing team', () => {
+    render(
+      <FirstTeamScreen
+        initialTeams={[{ name: 'Salt Lake Strikers', players: [{ name: 'Avery Kim' }] }]}
+        onCreateTeam={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add team' }));
+
+    expect(screen.getByLabelText('Team name')).toBeInTheDocument();
+    expect(screen.getByText('Already managing: Salt Lake Strikers')).toBeInTheDocument();
+  });
 });

@@ -14,6 +14,12 @@ body {
   background: #101824;
 }
 
+.app-status {
+  width: min(100% - 2.5rem, 34rem);
+  margin: 4rem auto;
+  color: #aebdc5;
+}
+
 button,
 input { font: inherit; }
 
@@ -123,6 +129,12 @@ h1 {
   margin: 0 0 .75rem;
   color: #67e8f9;
   font-weight: 700;
+}
+
+.existing-team-summary {
+  margin: -1rem 0 1.5rem;
+  color: #9eb0b8;
+  font-size: .9rem;
 }
 
 .player-form {
@@ -242,9 +254,32 @@ h1 {
 
 .completed-home h1 { margin-bottom: 1rem; }
 
-.teams-section h2 {
+.teams-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin: 2rem 0 .8rem;
+}
+
+.teams-heading-row h2 {
+  margin: 0;
   font-size: 1rem;
+}
+
+.teams-heading-row button {
+  min-height: 2.75rem;
+  padding: .5rem 0 .5rem .75rem;
+  color: #8ceaf5;
+  background: transparent;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.team-list {
+  display: grid;
+  gap: .65rem;
 }
 
 .team-card {
