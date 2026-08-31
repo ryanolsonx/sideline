@@ -46,7 +46,7 @@ When('I add these players:', async function (this: SidelineWorld, table: DataTab
 });
 
 Then('each player appears in the order added', async function (this: SidelineWorld) {
-  await expect(this.page.getByRole('listitem')).toHaveText([
+  await expect(this.page.getByRole('listitem').locator('.player-name')).toHaveText([
     'Avery Kim',
     'Jordan Lee',
     'Sam Rivera',
@@ -58,4 +58,18 @@ Then('each player appears in the order added', async function (this: SidelineWor
 
 Then('the roster count is {int} players', async function (this: SidelineWorld, expectedCount: number) {
   await expect(this.page.getByText(`${expectedCount} players`)).toBeVisible();
+});
+
+Given('I am adding players to {string}', async function (this: SidelineWorld, teamName: string) {
+  await this.page.goto('http://127.0.0.1:4173');
+  await this.page.getByLabel('Team name').fill(teamName);
+  await this.page.getByRole('button', { name: 'Add players' }).click();
+});
+
+Given('the roster is empty', async function (this: SidelineWorld) {
+  await expect(this.page.getByText('0 players')).toBeVisible();
+});
+
+Then('I cannot finish setup', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('button', { name: 'Finish setup' })).toBeDisabled();
 });
