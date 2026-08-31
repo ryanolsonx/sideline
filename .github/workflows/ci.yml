@@ -11,6 +11,20 @@ jobs:
   verify:
     name: Verify code
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: sideline
+          POSTGRES_PASSWORD: sideline
+          POSTGRES_USER: sideline
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Check out repository
@@ -30,8 +44,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install the BDD browser
-        run: pnpm test:bdd:install
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
 
       - name: Verify generated GraphQL artifacts
         run: |
@@ -44,3 +61,6 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Run behavior tests
+        run: pnpm test:bdd

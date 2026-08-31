@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'node:path';
 import { databaseOptions } from './database/typeorm.config';
 import { MatchesModule } from './matches/matches.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MatchesModule } from './matches/matches.module';
       sortSchema: true,
     }),
     MatchesModule,
+    TeamsModule,
   ],
 })
 export class AppModule {}
