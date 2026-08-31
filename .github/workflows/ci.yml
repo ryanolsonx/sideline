@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install the BDD browser
-        run: pnpm test:bdd:install
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Verify generated GraphQL artifacts
         run: |
@@ -44,3 +44,6 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Run behavior tests
+        run: pnpm test:bdd

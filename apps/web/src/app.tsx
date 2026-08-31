@@ -1,5 +1,5 @@
-import { MatchesScreen } from './screens/matches/MatchesScreen';
+import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 
 export function App() {
-  return <MatchesScreen />;
+  return <FirstTeamScreen />;
 }
