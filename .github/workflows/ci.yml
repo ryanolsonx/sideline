@@ -44,3 +44,6 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Run behavior tests
+        run: pnpm test:bdd

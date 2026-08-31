@@ -2,6 +2,45 @@
 
 If you want to know about the architecture and directory structure, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Feature discovery and Gherkin
+
+When exploring a new feature, treat the conversation as a discovery and iteration phase unless the user explicitly asks to implement or save it.
+
+- Work from small to large: clarify the smallest useful behavior first, then add edge cases and broader workflows.
+- Show proposed Gherkin in the conversation before creating or changing any `.feature` file.
+- Iterate on the wording, scenarios, and scope with the user until they explicitly approve writing it to the repository.
+- Do not add step definitions, test dependencies, application code, or other implementation during feature discovery unless the user separately authorizes that work.
+
+### Incremental BDD delivery
+
+After the user approves implementation, treat the approved Gherkin as a destination rather than a feature file that must be added all at once.
+
+- Build a growing executable specification. Start with the smallest independently useful behavior and add later steps or scenarios only when the corresponding behavior will ship in that PR.
+- Never commit a complete feature containing pending, skipped, tagged-out, undefined, or intentionally failing future scenarios.
+- Keep every PR head green, deployable, and reviewable. Observe the red test locally during the TDD cycle; a failing commit does not need to be preserved in Git.
+- Prefer one observable behavior per vertical-slice PR. Keep the production change, its Gherkin, required step definitions, and focused lower-level tests in the same PR.
+- It is acceptable to add a small supporting technical PR, such as a tested persistence capability, without expanding the Gherkin when it creates no new user-visible promise. Existing BDD scenarios must remain green.
+- Do not add generalized step libraries speculatively. Add only the Cucumber steps required by scenarios that currently exist, and express them in product language rather than implementation language.
+- Run browser scenarios against deterministic state and real application boundaries when the scenario claims persistence. Reset or isolate test data between scenarios.
+- Use a representative mobile viewport for mobile-first workflows. Assert observable behavior and accessibility semantics rather than pixel-perfect layout in Cucumber.
+
+Use the test layers for different purposes:
+
+- Cucumber and Playwright cover a small number of user-visible journeys through the application.
+- React Testing Library covers component behavior such as form state, focus, validation, lists, and screen transitions.
+- API and domain Vitest tests cover business rules, GraphQL behavior, persistence, transactions, and failure cases.
+- Avoid duplicating every edge case at every layer. Put each behavior at the lowest layer that proves it confidently, while retaining Cucumber coverage for the product promise.
+
+For each BDD slice:
+
+1. Add only the next Gherkin step or scenario whose behavior will ship in the PR.
+2. Add only the step definitions required by that Gherkin.
+3. Run the new test and observe the expected failure locally.
+4. Add focused lower-level tests to drive the implementation where useful.
+5. Implement the smallest behavior that makes the new and existing tests pass.
+6. Refactor while the suite remains green.
+7. Verify there are no pending or intentionally disabled scenarios, then run the relevant tests, build, and type checks before publishing the PR.
+
 ## Full-stack development
 
 Prerequisites: Node.js 22.13 or later (the repository `.nvmrc` pins 22.13.0), pnpm 11.9 or later, Docker, and Docker Compose v2 (`docker compose`). If using nvm, run `nvm use` before starting the stack.

@@ -18,6 +18,14 @@ export class SidelineWorld extends World {
 
     return this.page;
   }
+
+  get context(): BrowserContext {
+    if (!this.browserContext) {
+      throw new Error('The browser context has not been initialized for this scenario.');
+    }
+
+    return this.browserContext;
+  }
 }
 
 setWorldConstructor(SidelineWorld);
