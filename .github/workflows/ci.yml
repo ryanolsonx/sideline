@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install the BDD browser
+        run: pnpm test:bdd:install
+
       - name: Verify generated GraphQL artifacts
         run: |
           pnpm schema:generate
