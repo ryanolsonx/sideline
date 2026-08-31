@@ -74,6 +74,7 @@ pnpm serve
 
 - `pnpm dev` starts both the NestJS API (`http://localhost:3000/graphql`) and React/Vite web app (`http://localhost:5173`).
 - Run commands through `pnpm`; do not invoke Vite or Nest binaries directly.
+- After adding a migration that creates or changes a table, run `pnpm db:migrate` against the local development database before manual browser testing. `pnpm serve` starts the applications only and does not apply migrations.
 - Keep generated GraphQL artifacts committed. After API DTO/resolver changes, run `pnpm schema:generate`; after frontend operation changes, run `pnpm codegen`.
 - Apollo Server v5 relies on `@as-integrations/express5`; keep that adapter installed with the API dependencies.
 - `pnpm-workspace.yaml` deliberately permits build scripts for `esbuild` and `@apollo/protobufjs`.
