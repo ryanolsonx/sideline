@@ -36,4 +36,26 @@ describe('FirstTeamScreen', () => {
     expect(playerField).toHaveValue('');
     expect(playerField).toHaveFocus();
   });
+
+  it('builds an ordered roster and shows its count', () => {
+    render(<FirstTeamScreen />);
+    fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
+
+    const playerField = screen.getByLabelText('Player name');
+    for (const player of ['Avery Kim', 'Jordan Lee', 'Sam Rivera', 'Taylor Brooks', 'Casey Morgan', 'Riley Chen']) {
+      fireEvent.change(playerField, { target: { value: player } });
+      fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+    }
+
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'Avery Kim',
+      'Jordan Lee',
+      'Sam Rivera',
+      'Taylor Brooks',
+      'Casey Morgan',
+      'Riley Chen',
+    ]);
+    expect(screen.getByText('6 players')).toBeInTheDocument();
+  });
 });

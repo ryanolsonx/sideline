@@ -170,6 +170,24 @@ h1 {
   list-style: none;
 }
 
+.roster-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.roster-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.roster-heading span {
+  color: #9eb0b8;
+  font-size: .85rem;
+}
+
 .roster-list li {
   min-height: 3.25rem;
   padding: .9rem 1rem;

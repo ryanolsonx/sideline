@@ -77,8 +77,12 @@ export function FirstTeamScreen() {
               <button type="submit">Add</button>
             </div>
           </form>
+          <div className="roster-heading">
+            <h2>Roster</h2>
+            <span aria-live="polite">{players.length} {players.length === 1 ? 'player' : 'players'}</span>
+          </div>
           <ul className="roster-list" aria-label="Roster">
-            {players.map((player) => <li key={player}>{player}</li>)}
+            {players.map((player, index) => <li key={`${player}-${index}`}>{player}</li>)}
           </ul>
         </section>
       )}

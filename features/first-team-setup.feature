@@ -12,3 +12,12 @@ Feature: Set up a first team
     Then I am asked to add the team's players
     When I add "Avery Kim" to the roster
     Then "Avery Kim" appears in the roster
+    When I add these players:
+      | player name   |
+      | Jordan Lee    |
+      | Sam Rivera    |
+      | Taylor Brooks |
+      | Casey Morgan  |
+      | Riley Chen    |
+    Then each player appears in the order added
+    And the roster count is 6 players

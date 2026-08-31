@@ -1,4 +1,4 @@
-import { Given, Then, When } from '@cucumber/cucumber';
+import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { SidelineWorld } from '../support/world';
 
@@ -36,4 +36,26 @@ When('I add {string} to the roster', async function (this: SidelineWorld, player
 
 Then('{string} appears in the roster', async function (this: SidelineWorld, playerName: string) {
   await expect(this.page.getByRole('listitem').getByText(playerName)).toBeVisible();
+});
+
+When('I add these players:', async function (this: SidelineWorld, table: DataTable) {
+  for (const row of table.hashes()) {
+    await this.page.getByLabel('Player name').fill(row['player name']);
+    await this.page.getByRole('button', { name: 'Add' }).click();
+  }
+});
+
+Then('each player appears in the order added', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('listitem')).toHaveText([
+    'Avery Kim',
+    'Jordan Lee',
+    'Sam Rivera',
+    'Taylor Brooks',
+    'Casey Morgan',
+    'Riley Chen',
+  ]);
+});
+
+Then('the roster count is {int} players', async function (this: SidelineWorld, expectedCount: number) {
+  await expect(this.page.getByText(`${expectedCount} players`)).toBeVisible();
 });
