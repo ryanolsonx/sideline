@@ -10,7 +10,7 @@
     "dev": "pnpm --parallel --filter @sideline/api --filter @sideline/web dev",
     "setup": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm schema:generate && pnpm codegen",
     "serve": "pnpm dev",
-    "db:up": "docker compose up -d db",
+    "db:up": "docker compose up -d --wait db",
     "db:down": "docker compose down",
     "dev:api": "pnpm --filter @sideline/api dev",
     "dev:web": "pnpm --filter @sideline/web dev",

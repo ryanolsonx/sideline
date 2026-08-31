@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install the BDD browser
+      - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Apply database migrations

@@ -96,6 +96,7 @@ Use BDD as the acceptance-test layer and TDD as the implementation rhythm for pr
 
 - `pnpm test:bdd` starts the Nest API on port 3000 and Vite on port 4173, launches Chromium at a mobile viewport, and stops the application processes afterward.
 - The behavior harness expects a reachable, migrated PostgreSQL database. It uses the normal `DATABASE_*` environment variables and truncates the `team` and `player` tables before every scenario for deterministic state.
+- The repository's localhost PostgreSQL database is test-only, so browser scenarios may reset its `team` and `player` tables. Use an isolated database when pointing `DATABASE_*` at any environment whose data must be retained.
 - Keep `cucumber.mjs` on `requireModule: ['tsx/cjs']` with TypeScript files listed under `require`. Loading current `tsx` through Cucumber's `loader` option fails on Node 22 because `tsx` requires Node's `--import` mechanism.
 - CI provides PostgreSQL, applies migrations, and installs Chromium before running the behavior suite. Keep those CI steps when changing the harness.
 - The harness treats any non-5xx response from the GraphQL URL as proof that the API is ready because an HTTP GET to the POST-oriented GraphQL endpoint need not return 2xx.
