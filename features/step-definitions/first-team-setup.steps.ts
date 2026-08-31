@@ -28,3 +28,12 @@ Then("I am asked to add the team's players", async function (this: SidelineWorld
   await expect(this.page.getByRole('heading', { name: 'Add your players.' })).toBeVisible();
   await expect(this.page.getByText('Salt Lake Strikers')).toBeVisible();
 });
+
+When('I add {string} to the roster', async function (this: SidelineWorld, playerName: string) {
+  await this.page.getByLabel('Player name').fill(playerName);
+  await this.page.getByRole('button', { name: 'Add' }).click();
+});
+
+Then('{string} appears in the roster', async function (this: SidelineWorld, playerName: string) {
+  await expect(this.page.getByRole('listitem').getByText(playerName)).toBeVisible();
+});

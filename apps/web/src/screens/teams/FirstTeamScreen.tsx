@@ -1,13 +1,26 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 
 export function FirstTeamScreen() {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
+  const [playerName, setPlayerName] = useState('');
+  const [players, setPlayers] = useState<string[]>([]);
+  const playerNameInput = useRef<HTMLInputElement>(null);
 
   function handleTeamSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = draftName.trim();
     if (name) setTeamName(name);
+  }
+
+  function handlePlayerSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const name = playerName.trim();
+    if (!name) return;
+
+    setPlayers((currentPlayers) => [...currentPlayers, name]);
+    setPlayerName('');
+    playerNameInput.current?.focus();
   }
 
   return (
@@ -50,6 +63,23 @@ export function FirstTeamScreen() {
           <p className="team-context">{teamName}</p>
           <h1 id="roster-heading">Add your players.</h1>
           <p className="onboarding-intro">Your roster is required. Add each player, one at a time.</p>
+          <form className="player-form" onSubmit={handlePlayerSubmit}>
+            <label htmlFor="player-name">Player name</label>
+            <div className="player-entry-row">
+              <input
+                ref={playerNameInput}
+                id="player-name"
+                value={playerName}
+                onChange={(event) => setPlayerName(event.target.value)}
+                placeholder="First and last name"
+                maxLength={80}
+              />
+              <button type="submit">Add</button>
+            </div>
+          </form>
+          <ul className="roster-list" aria-label="Roster">
+            {players.map((player) => <li key={player}>{player}</li>)}
+          </ul>
         </section>
       )}
     </main>

@@ -22,4 +22,18 @@ describe('FirstTeamScreen', () => {
     expect(screen.getByRole('heading', { name: 'Add your players.' })).toBeInTheDocument();
     expect(screen.getByText('Salt Lake Strikers')).toBeInTheDocument();
   });
+
+  it('adds a player and readies the field for the next one', () => {
+    render(<FirstTeamScreen />);
+    fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
+
+    const playerField = screen.getByLabelText('Player name');
+    fireEvent.change(playerField, { target: { value: 'Avery Kim' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+    expect(screen.getByRole('listitem')).toHaveTextContent('Avery Kim');
+    expect(playerField).toHaveValue('');
+    expect(playerField).toHaveFocus();
+  });
 });
