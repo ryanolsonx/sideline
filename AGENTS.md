@@ -90,7 +90,7 @@ Use BDD as the acceptance-test layer and TDD as the implementation rhythm for pr
 - Keep step definitions reusable and intention-revealing. Prefer accessible Playwright locators such as roles and labels over CSS selectors, and keep assertions in outcome-oriented `Then` steps.
 - Keep lower-level unit or integration tests for domain rules and focused seams where they provide faster feedback. BDD scenarios cover representative product behavior rather than every permutation.
 - Treat committed feature files as living documentation of what is built. Update them in the same change when behavior changes, and never make an existing scenario pass by weakening its stated outcome.
-- Run `pnpm test:bdd` for the acceptance suite and `pnpm test` for the complete suite. Install the Chromium runtime once with `pnpm test:bdd:install`; use `pnpm test:bdd:headed` when visual debugging is useful.
+- Run `pnpm test:bdd` for the acceptance suite and `pnpm test` for the unit suite. Install the Chromium runtime once with `pnpm exec playwright install chromium`; use `BDD_HEADED=true pnpm test:bdd` when visual debugging is useful.
 
 ### Full-stack BDD harness
 
@@ -99,6 +99,7 @@ Use BDD as the acceptance-test layer and TDD as the implementation rhythm for pr
 - Keep `cucumber.mjs` on `requireModule: ['tsx/cjs']` with TypeScript files listed under `require`. Loading current `tsx` through Cucumber's `loader` option fails on Node 22 because `tsx` requires Node's `--import` mechanism.
 - CI provides PostgreSQL, applies migrations, and installs Chromium before running the behavior suite. Keep those CI steps when changing the harness.
 - The harness treats any non-5xx response from the GraphQL URL as proof that the API is ready because an HTTP GET to the POST-oriented GraphQL endpoint need not return 2xx.
+- If port 3000 is already in use, set `BDD_API_PORT` to an unused port; the harness passes it to Nest and configures Vite and seed requests to use the matching GraphQL URL.
 
 If Docker Compose is unavailable locally but the Homebrew PostgreSQL tools are installed, use an isolated temporary cluster rather than modifying a developer database. Pick an unused port if 5432 is reserved:
 

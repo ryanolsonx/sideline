@@ -4,6 +4,8 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { Pool } from 'pg';
 
 const baseUrl = process.env.BDD_BASE_URL ?? 'http://127.0.0.1:4173';
+const apiPort = process.env.BDD_API_PORT ?? '3000';
+const graphqlUrl = `http://127.0.0.1:${apiPort}/graphql`;
 let browser: Browser;
 let webProcess: ChildProcess | undefined;
 let apiProcess: ChildProcess | undefined;
@@ -50,19 +52,9 @@ function stopProcess(process: ChildProcess | undefined): void {
 }
 
 export class SidelineWorld extends World {
-  readonly baseUrl = baseUrl;
+  readonly graphqlUrl = graphqlUrl;
   context!: BrowserContext;
-  browserContext?: BrowserContext;
-  page?: Page;
-  matchingMatchesBeforeSave = 0;
-
-  get currentPage(): Page {
-    if (!this.page) {
-      throw new Error('The browser page has not been initialized for this scenario.');
-    }
-
-    return this.page;
-  }
+  page!: Page;
 }
 
 setWorldConstructor(SidelineWorld);
@@ -72,7 +64,7 @@ BeforeAll(async () => {
   apiProcess = spawn('pnpm', ['--filter', '@sideline/api', 'dev'], {
     cwd: process.cwd(),
     detached: true,
-    env: { ...process.env, WEB_ORIGIN: baseUrl },
+    env: { ...process.env, PORT: apiPort, WEB_ORIGIN: baseUrl },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   captureOutput(apiProcess);
@@ -83,14 +75,14 @@ BeforeAll(async () => {
     {
       cwd: process.cwd(),
       detached: true,
-      env: { ...process.env, VITE_GRAPHQL_URL: 'http://127.0.0.1:3000/graphql' },
+      env: { ...process.env, VITE_GRAPHQL_URL: graphqlUrl },
       stdio: ['ignore', 'pipe', 'pipe'],
     },
   );
   captureOutput(webProcess);
 
   await Promise.all([
-    waitForServer('http://127.0.0.1:3000/graphql', apiProcess),
+    waitForServer(graphqlUrl, apiProcess),
     waitForServer(baseUrl, webProcess),
   ]);
   database = new Pool({
@@ -106,7 +98,6 @@ BeforeAll(async () => {
 Before(async function (this: SidelineWorld) {
   await database.query('TRUNCATE TABLE "player", "team" RESTART IDENTITY CASCADE');
   this.context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  this.browserContext = this.context;
   this.page = await this.context.newPage();
 });
 
