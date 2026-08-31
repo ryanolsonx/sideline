@@ -23,6 +23,10 @@ export function FirstTeamScreen() {
     playerNameInput.current?.focus();
   }
 
+  function removePlayer(indexToRemove: number) {
+    setPlayers((currentPlayers) => currentPlayers.filter((_, index) => index !== indexToRemove));
+  }
+
   return (
     <main className="onboarding-shell">
       <header className="app-header">
@@ -82,8 +86,15 @@ export function FirstTeamScreen() {
             <span aria-live="polite">{players.length} {players.length === 1 ? 'player' : 'players'}</span>
           </div>
           <ul className="roster-list" aria-label="Roster">
-            {players.map((player, index) => <li key={`${player}-${index}`}>{player}</li>)}
+            {players.map((player, index) => (
+              <li key={`${player}-${index}`}>
+                <span className="player-name">{player}</span>
+                <button type="button" onClick={() => removePlayer(index)} aria-label={`Remove ${player}`}>×</button>
+              </li>
+            ))}
           </ul>
+          <p className="roster-guidance">Most teams have 6–9 players. You can update the roster later.</p>
+          <button className="finish-button" type="button" disabled={players.length === 0}>Finish setup</button>
         </section>
       )}
     </main>

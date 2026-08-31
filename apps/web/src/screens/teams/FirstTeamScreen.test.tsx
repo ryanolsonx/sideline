@@ -48,7 +48,7 @@ describe('FirstTeamScreen', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     }
 
-    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+    expect(screen.getAllByRole('listitem').map((item) => item.querySelector('.player-name')?.textContent)).toEqual([
       'Avery Kim',
       'Jordan Lee',
       'Sam Rivera',
@@ -57,5 +57,21 @@ describe('FirstTeamScreen', () => {
       'Riley Chen',
     ]);
     expect(screen.getByText('6 players')).toBeInTheDocument();
+  });
+
+  it('requires at least one player before setup can finish', () => {
+    render(<FirstTeamScreen />);
+    fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
+
+    const finishButton = screen.getByRole('button', { name: 'Finish setup' });
+    expect(finishButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Player name'), { target: { value: 'Avery Kim' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+    expect(finishButton).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Avery Kim' }));
+    expect(finishButton).toBeDisabled();
   });
 });
