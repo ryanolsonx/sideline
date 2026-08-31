@@ -39,6 +39,19 @@ pnpm serve
 - Apollo Server v5 relies on `@as-integrations/express5`; keep that adapter installed with the API dependencies.
 - `pnpm-workspace.yaml` deliberately permits build scripts for `esbuild` and `@apollo/protobufjs`.
 
+## Behavior-driven, test-driven development
+
+Use BDD as the acceptance-test layer and TDD as the implementation rhythm for product changes.
+
+- Before implementing a new or changed feature, discuss its behavior with the user and collaboratively write or update the Gherkin feature file in `features/`. Do not begin implementation until the scenarios and the public seams they exercise are agreed.
+- Describe observable user behavior and business outcomes in feature files. Avoid UI mechanics, selectors, database details, GraphQL operations, and implementation terminology in Gherkin.
+- Work in thin vertical slices using red → green cycles: add one failing scenario or example, run it to confirm the expected failure, implement only enough behavior to pass, then repeat. Do not write a batch of speculative scenarios followed by a batch of implementation.
+- Drive browser acceptance scenarios through Cucumber step definitions and Playwright. Test through the public browser interface; do not use direct database queries or internal application calls to prove an outcome that a user should observe.
+- Keep step definitions reusable and intention-revealing. Prefer accessible Playwright locators such as roles and labels over CSS selectors, and keep assertions in outcome-oriented `Then` steps.
+- Keep lower-level unit or integration tests for domain rules and focused seams where they provide faster feedback. BDD scenarios cover representative product behavior rather than every permutation.
+- Treat committed feature files as living documentation of what is built. Update them in the same change when behavior changes, and never make an existing scenario pass by weakening its stated outcome.
+- Run `pnpm test:bdd` for the acceptance suite and `pnpm test` for the complete suite. Install the Chromium runtime once with `pnpm test:bdd:install`; use `pnpm test:bdd:headed` when visual debugging is useful.
+
 ## Stacked pull requests
 
 - Keep PRs small and focused on one technology or vertical-slice concern.
