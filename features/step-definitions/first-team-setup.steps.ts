@@ -86,3 +86,27 @@ Then('{string} appears under {string}', async function (this: SidelineWorld, tea
 Then('the team has {int} players', async function (this: SidelineWorld, playerCount: number) {
   await expect(this.page.getByText(`${playerCount} players`)).toBeVisible();
 });
+
+Given('I already manage {string}', async function (this: SidelineWorld, teamName: string) {
+  const response = await fetch('http://127.0.0.1:3000/graphql', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
+      variables: { input: { name: teamName, players: ['Avery Kim'] } },
+    }),
+  });
+  if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
+});
+
+When('I choose to add another team', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Add team' }).click();
+});
+
+Then('I can name a new team', async function (this: SidelineWorld) {
+  await expect(this.page.getByLabel('Team name')).toBeVisible();
+});
+
+Then('{string} remains one of my teams', async function (this: SidelineWorld, teamName: string) {
+  await expect(this.page.getByText(`Already managing: ${teamName}`)).toBeVisible();
+});

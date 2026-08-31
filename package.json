@@ -30,6 +30,8 @@
     "@cucumber/cucumber": "^13.2.1",
     "@playwright/test": "^1.62.1",
     "@types/node": "^24.13.3",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0",
     "start-server-and-test": "^3.0.12",
     "tsx": "^4.23.13",
     "typescript": "^5.9.3",
