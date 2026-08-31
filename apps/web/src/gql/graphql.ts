@@ -22,6 +22,11 @@ export type CreateMatchInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateTeamInput = {
+  name: Scalars['String']['input'];
+  players: Array<Scalars['String']['input']>;
+};
+
 export type Match = {
   __typename?: 'Match';
   createdAt: Scalars['DateTime']['output'];
@@ -32,6 +37,7 @@ export type Match = {
 export type Mutation = {
   __typename?: 'Mutation';
   createMatch: Match;
+  createTeam: Team;
 };
 
 
@@ -39,9 +45,29 @@ export type MutationCreateMatchArgs = {
   input: CreateMatchInput;
 };
 
+
+export type MutationCreateTeamArgs = {
+  input: CreateTeamInput;
+};
+
+export type Player = {
+  __typename?: 'Player';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   matches: Array<Match>;
+  teams: Array<Team>;
+};
+
+export type Team = {
+  __typename?: 'Team';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  players: Array<Player>;
 };
 
 export type MatchesScreen_MatchesQueryVariables = Exact<{ [key: string]: never; }>;
