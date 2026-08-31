@@ -10,7 +10,7 @@
     "dev": "pnpm --parallel --filter @sideline/api --filter @sideline/web dev",
     "setup": "pnpm install && pnpm db:up && pnpm db:migrate && pnpm schema:generate && pnpm codegen",
     "serve": "pnpm dev",
-    "db:up": "docker compose up -d db",
+    "db:up": "docker compose up -d --wait db",
     "db:down": "docker compose down",
     "dev:api": "pnpm --filter @sideline/api dev",
     "dev:web": "pnpm --filter @sideline/web dev",
@@ -18,6 +18,21 @@
     "schema:generate": "pnpm --filter @sideline/api schema:generate",
     "codegen": "pnpm --filter @sideline/web codegen",
     "build": "pnpm -r build",
-    "test": "pnpm -r test"
+    "test": "pnpm test:unit && pnpm test:bdd",
+    "test:unit": "pnpm -r test",
+    "test:bdd:install": "playwright install chromium",
+    "test:bdd:types": "tsc --noEmit -p tsconfig.bdd.json",
+    "test:bdd:run": "pnpm test:bdd:types && wait-on tcp:localhost:3000 && cucumber-js",
+    "test:bdd": "pnpm db:up && pnpm db:migrate && start-server-and-test \"pnpm dev\" http://localhost:5173 \"pnpm test:bdd:run\"",
+    "test:bdd:headed": "BDD_HEADED=true pnpm test:bdd"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^13.2.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^24.13.3",
+    "start-server-and-test": "^3.0.12",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "wait-on": "^9.1.0"
   }
 }
