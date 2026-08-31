@@ -235,6 +235,45 @@ h1 {
   opacity: .45;
 }
 
+.save-error {
+  margin: 1rem 0 0;
+  color: #fda29b;
+}
+
+.completed-home h1 { margin-bottom: 1rem; }
+
+.teams-section h2 {
+  margin: 2rem 0 .8rem;
+  font-size: 1rem;
+}
+
+.team-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #182632;
+  border: 1px solid #374957;
+  border-radius: .85rem;
+}
+
+.team-card h3 {
+  margin: 0 0 .25rem;
+  font-size: 1rem;
+}
+
+.team-card p {
+  margin: 0;
+  color: #9fb1b9;
+  font-size: .85rem;
+}
+
+.team-card > span {
+  color: #9fb1b9;
+  font-size: 1.5rem;
+}
+
 @media (min-width: 700px) {
   .onboarding-content { padding-top: 6rem; }
 }

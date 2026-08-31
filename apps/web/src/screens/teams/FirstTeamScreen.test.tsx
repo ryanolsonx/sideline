@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { FirstTeamScreen } from './FirstTeamScreen';
 
 describe('FirstTeamScreen', () => {
@@ -60,7 +60,7 @@ describe('FirstTeamScreen', () => {
   });
 
   it('requires at least one player before setup can finish', () => {
-    render(<FirstTeamScreen />);
+    render(<FirstTeamScreen onCreateTeam={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
 
@@ -73,5 +73,23 @@ describe('FirstTeamScreen', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove Avery Kim' }));
     expect(finishButton).toBeDisabled();
+  });
+
+  it('shows the completed team after setup is saved', async () => {
+    const createTeam = vi.fn().mockResolvedValue({
+      name: 'Salt Lake Strikers',
+      players: [{ name: 'Avery Kim' }],
+    });
+    render(<FirstTeamScreen onCreateTeam={createTeam} />);
+    fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
+    fireEvent.change(screen.getByLabelText('Player name'), { target: { value: 'Avery Kim' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Finish setup' }));
+
+    await waitFor(() => expect(createTeam).toHaveBeenCalledWith('Salt Lake Strikers', ['Avery Kim']));
+    expect(screen.getByRole('heading', { name: 'Salt Lake Strikers' })).toBeInTheDocument();
+    expect(screen.getByText('1 player')).toBeInTheDocument();
   });
 });

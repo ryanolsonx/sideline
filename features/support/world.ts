@@ -5,19 +5,20 @@ import { spawn, type ChildProcess } from 'node:child_process';
 const baseUrl = process.env.BDD_BASE_URL ?? 'http://127.0.0.1:4173';
 let browser: Browser;
 let webProcess: ChildProcess | undefined;
-let webOutput = '';
+let apiProcess: ChildProcess | undefined;
+let processOutput = '';
 
-async function waitForWebServer(): Promise<void> {
+async function waitForServer(url: string, process: ChildProcess | undefined): Promise<void> {
   const deadline = Date.now() + 30_000;
 
   while (Date.now() < deadline) {
-    if (webProcess?.exitCode !== null) {
-      throw new Error(`The web server exited before becoming ready.\n${webOutput}`);
+    if (process?.exitCode !== null) {
+      throw new Error(`A test server exited before becoming ready.\n${processOutput}`);
     }
 
     try {
-      const response = await fetch(baseUrl);
-      if (response.ok) return;
+      const response = await fetch(url);
+      if (response.status < 500) return;
     } catch {
       // The server is still starting.
     }
@@ -25,7 +26,25 @@ async function waitForWebServer(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
-  throw new Error(`Timed out waiting for ${baseUrl}.\n${webOutput}`);
+  throw new Error(`Timed out waiting for ${url}.\n${processOutput}`);
+}
+
+function captureOutput(process: ChildProcess): void {
+  process.stdout?.on('data', (chunk) => {
+    processOutput += chunk.toString();
+  });
+  process.stderr?.on('data', (chunk) => {
+    processOutput += chunk.toString();
+  });
+}
+
+function stopProcess(process: ChildProcess | undefined): void {
+  if (!process?.pid) return;
+  try {
+    globalThis.process.kill(-process.pid, 'SIGTERM');
+  } catch {
+    process.kill('SIGTERM');
+  }
 }
 
 export class SidelineWorld extends World {
@@ -34,22 +53,33 @@ export class SidelineWorld extends World {
 }
 
 setWorldConstructor(SidelineWorld);
-setDefaultTimeout(15_000);
+setDefaultTimeout(60_000);
 
 BeforeAll(async () => {
+  apiProcess = spawn('pnpm', ['--filter', '@sideline/api', 'dev'], {
+    cwd: process.cwd(),
+    detached: true,
+    env: { ...process.env, WEB_ORIGIN: baseUrl },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  captureOutput(apiProcess);
+
   webProcess = spawn(
     'pnpm',
     ['--filter', '@sideline/web', 'dev', '--host', '127.0.0.1', '--port', '4173', '--strictPort'],
-    { cwd: process.cwd(), detached: true, env: process.env, stdio: ['ignore', 'pipe', 'pipe'] },
+    {
+      cwd: process.cwd(),
+      detached: true,
+      env: { ...process.env, VITE_GRAPHQL_URL: 'http://127.0.0.1:3000/graphql' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    },
   );
-  webProcess.stdout?.on('data', (chunk) => {
-    webOutput += chunk.toString();
-  });
-  webProcess.stderr?.on('data', (chunk) => {
-    webOutput += chunk.toString();
-  });
+  captureOutput(webProcess);
 
-  await waitForWebServer();
+  await Promise.all([
+    waitForServer('http://127.0.0.1:3000/graphql', apiProcess),
+    waitForServer(baseUrl, webProcess),
+  ]);
   browser = await chromium.launch({ headless: true });
 });
 
@@ -64,12 +94,6 @@ After(async function (this: SidelineWorld) {
 
 AfterAll(async () => {
   await browser?.close();
-
-  if (webProcess?.pid) {
-    try {
-      process.kill(-webProcess.pid, 'SIGTERM');
-    } catch {
-      webProcess.kill('SIGTERM');
-    }
-  }
+  stopProcess(webProcess);
+  stopProcess(apiProcess);
 });

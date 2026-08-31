@@ -73,3 +73,16 @@ Given('the roster is empty', async function (this: SidelineWorld) {
 Then('I cannot finish setup', async function (this: SidelineWorld) {
   await expect(this.page.getByRole('button', { name: 'Finish setup' })).toBeDisabled();
 });
+
+When('I finish setup', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Finish setup' }).click();
+});
+
+Then('{string} appears under {string}', async function (this: SidelineWorld, teamName: string, heading: string) {
+  const section = this.page.getByRole('region', { name: heading });
+  await expect(section.getByRole('heading', { name: teamName })).toBeVisible();
+});
+
+Then('the team has {int} players', async function (this: SidelineWorld, playerCount: number) {
+  await expect(this.page.getByText(`${playerCount} players`)).toBeVisible();
+});
