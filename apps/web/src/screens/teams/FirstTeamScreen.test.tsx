@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FirstTeamScreen } from './FirstTeamScreen';
 
@@ -11,5 +11,15 @@ describe('FirstTeamScreen', () => {
       screen.getByRole('heading', { name: "Welcome to Sideline. Let's add your team." }),
     ).toBeInTheDocument();
     expect(screen.getByText(/add and switch between more teams/i)).toBeInTheDocument();
+  });
+
+  it('continues to the roster with the team name', () => {
+    render(<FirstTeamScreen />);
+
+    fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
+
+    expect(screen.getByRole('heading', { name: 'Add your players.' })).toBeInTheDocument();
+    expect(screen.getByText('Salt Lake Strikers')).toBeInTheDocument();
   });
 });
