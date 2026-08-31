@@ -16,10 +16,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_MatchesDocument,
     "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_CreateMatchDocument,
+    "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateTeamDocument,
 };
 const documents: Documents = {
     "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_MatchesDocument,
     "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_CreateMatchDocument,
+    "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": types.CreateTeamDocument,
 };
 
 /**
@@ -44,6 +46,10 @@ export function graphql(source: "\n  query MatchesScreen_Matches {\n    matches 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

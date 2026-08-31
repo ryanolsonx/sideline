@@ -21,6 +21,9 @@ Feature: Set up a first team
       | Riley Chen    |
     Then each player appears in the order added
     And the roster count is 6 players
+    When I finish setup
+    Then "Salt Lake Strikers" appears under "Your teams"
+    And the team has 6 players
 
   Scenario: A coach cannot finish without a player
     Given I am adding players to "Salt Lake Strikers"

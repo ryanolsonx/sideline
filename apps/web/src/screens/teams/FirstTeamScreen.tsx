@@ -1,10 +1,22 @@
 import { FormEvent, useRef, useState } from 'react';
 
-export function FirstTeamScreen() {
+interface CreatedTeam {
+  name: string;
+  players: { name: string }[];
+}
+
+interface FirstTeamScreenProps {
+  onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
+}
+
+export function FirstTeamScreen({ onCreateTeam }: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
   const [players, setPlayers] = useState<string[]>([]);
+  const [completedTeam, setCompletedTeam] = useState<CreatedTeam>();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string>();
   const playerNameInput = useRef<HTMLInputElement>(null);
 
   function handleTeamSubmit(event: FormEvent<HTMLFormElement>) {
@@ -27,6 +39,20 @@ export function FirstTeamScreen() {
     setPlayers((currentPlayers) => currentPlayers.filter((_, index) => index !== indexToRemove));
   }
 
+  async function finishSetup() {
+    if (!teamName || players.length === 0 || !onCreateTeam) return;
+
+    setIsSaving(true);
+    setSaveError(undefined);
+    try {
+      setCompletedTeam(await onCreateTeam(teamName, players));
+    } catch {
+      setSaveError('We could not finish setup. Try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return (
     <main className="onboarding-shell">
       <header className="app-header">
@@ -34,7 +60,22 @@ export function FirstTeamScreen() {
         <span className="brand-name">Sideline</span>
       </header>
 
-      {!teamName ? (
+      {completedTeam ? (
+        <section className="onboarding-content completed-home" aria-labelledby="completed-heading">
+          <h1 id="completed-heading">You're ready, Coach.</h1>
+          <p className="onboarding-intro">Your first team and roster are set up.</p>
+          <section className="teams-section" aria-labelledby="teams-heading">
+            <h2 id="teams-heading">Your teams</h2>
+            <article className="team-card">
+              <div>
+                <h3>{completedTeam.name}</h3>
+                <p>{completedTeam.players.length} {completedTeam.players.length === 1 ? 'player' : 'players'}</p>
+              </div>
+              <span aria-hidden="true">›</span>
+            </article>
+          </section>
+        </section>
+      ) : !teamName ? (
         <section className="onboarding-content" aria-labelledby="first-team-heading">
           <div className="onboarding-progress">
             <span>Set up your team</span>
@@ -94,7 +135,15 @@ export function FirstTeamScreen() {
             ))}
           </ul>
           <p className="roster-guidance">Most teams have 6–9 players. You can update the roster later.</p>
-          <button className="finish-button" type="button" disabled={players.length === 0}>Finish setup</button>
+          {saveError && <p className="save-error" role="alert">{saveError}</p>}
+          <button
+            className="finish-button"
+            type="button"
+            disabled={players.length === 0 || isSaving || !onCreateTeam}
+            onClick={finishSetup}
+          >
+            {isSaving ? 'Saving…' : 'Finish setup'}
+          </button>
         </section>
       )}
     </main>
