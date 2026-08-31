@@ -88,7 +88,7 @@ Then('the team has {int} players', async function (this: SidelineWorld, playerCo
 });
 
 Given('I already manage {string}', async function (this: SidelineWorld, teamName: string) {
-  const response = await fetch('http://127.0.0.1:3000/graphql', {
+  const response = await fetch(this.graphqlUrl, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({

@@ -43,7 +43,7 @@ For each BDD slice:
 
 ## Full-stack development
 
-Prerequisites: Node.js 22.13 or later (the repository `.nvmrc` pins 22.13.0), pnpm 11.9 or later, Docker, and Docker Compose v2 (`docker compose`). If using nvm, run `nvm use` before starting the stack.
+Prerequisites: Node.js 22.13 (the repository `.nvmrc` pins 22.13.0), pnpm 11.9 or later, Docker, and Docker Compose v2 (`docker compose`). If using nvm, run `nvm use` before starting the stack. Use the pinned Node version rather than an arbitrary newer release: the current Cucumber version rejects Node 25.
 
 For a first-time setup, or whenever dependencies, migrations, or generated GraphQL artifacts need refreshing, run the full local stack with:
 
@@ -89,12 +89,39 @@ Use BDD as the acceptance-test layer and TDD as the implementation rhythm for pr
 - Keep step definitions reusable and intention-revealing. Prefer accessible Playwright locators such as roles and labels over CSS selectors, and keep assertions in outcome-oriented `Then` steps.
 - Keep lower-level unit or integration tests for domain rules and focused seams where they provide faster feedback. BDD scenarios cover representative product behavior rather than every permutation.
 - Treat committed feature files as living documentation of what is built. Update them in the same change when behavior changes, and never make an existing scenario pass by weakening its stated outcome.
-- Run `pnpm test:bdd` for the acceptance suite and `pnpm test` for the complete suite. Install the Chromium runtime once with `pnpm test:bdd:install`; use `pnpm test:bdd:headed` when visual debugging is useful.
+- Run `pnpm test:bdd` for the acceptance suite and `pnpm test` for the unit suite. Install the Chromium runtime once with `pnpm exec playwright install chromium`; use `BDD_HEADED=true pnpm test:bdd` when visual debugging is useful.
+
+### Full-stack BDD harness
+
+- `pnpm test:bdd` starts the Nest API on port 3000 and Vite on port 4173, launches Chromium at a mobile viewport, and stops the application processes afterward.
+- The behavior harness expects a reachable, migrated PostgreSQL database. It uses the normal `DATABASE_*` environment variables and truncates the `team` and `player` tables before every scenario for deterministic state.
+- The repository's localhost PostgreSQL database is test-only, so browser scenarios may reset its `team` and `player` tables. Use an isolated database when pointing `DATABASE_*` at any environment whose data must be retained.
+- Keep `cucumber.mjs` on `requireModule: ['tsx/cjs']` with TypeScript files listed under `require`. Loading current `tsx` through Cucumber's `loader` option fails on Node 22 because `tsx` requires Node's `--import` mechanism.
+- CI provides PostgreSQL, applies migrations, and installs Chromium before running the behavior suite. Keep those CI steps when changing the harness.
+- The harness treats any non-5xx response from the GraphQL URL as proof that the API is ready because an HTTP GET to the POST-oriented GraphQL endpoint need not return 2xx.
+- If port 3000 is already in use, set `BDD_API_PORT` to an unused port; the harness passes it to Nest and configures Vite and seed requests to use the matching GraphQL URL.
+
+If Docker Compose is unavailable locally but the Homebrew PostgreSQL tools are installed, use an isolated temporary cluster rather than modifying a developer database. Pick an unused port if 5432 is reserved:
+
+```sh
+bdd_pg_dir=$(mktemp -d /private/tmp/sideline-bdd-postgres.XXXXXX)
+initdb -D "$bdd_pg_dir" -U sideline -A trust
+pg_ctl -D "$bdd_pg_dir" -l "$bdd_pg_dir/postgres.log" -o "-p 55432 -h 127.0.0.1" start
+createdb -h 127.0.0.1 -p 55432 -U sideline sideline
+DATABASE_PORT=55432 pnpm db:migrate
+DATABASE_PORT=55432 pnpm test:bdd
+pg_ctl -D "$bdd_pg_dir" stop
+```
+
+Remove the temporary directory after the server has stopped and verification is complete.
 
 ## Stacked pull requests
 
 - Keep PRs small and focused on one technology or vertical-slice concern.
 - Create branches with `gh stack add <branch>` and publish/update the stack with `gh stack submit`.
+- When `master` belongs to multiple historical local stacks, `gh stack add` prompts for the parent stack; select the stack containing the current trunk lineage before creating the branch.
+- For non-interactive publication, use `gh stack submit --auto --open` so newly created PRs are ready for review.
+- If submission creates the PR chain but GitHub stack grouping fails because the local stack still references an old merged PR, preserve the correctly chained PR bases and run `gh stack link --open <bottom-pr> ... <top-pr>` to create the GitHub stack explicitly.
 - PRs should be ready for review, not drafts, unless the user explicitly asks otherwise.
 - Set and verify PR metadata after publishing:
   - Use plain-English titles without conventional-commit prefixes.
