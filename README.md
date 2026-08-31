@@ -85,3 +85,21 @@ pnpm serve
 ```
 
 Open http://localhost:5173. Clicking **Save match** calls the GraphQL mutation, persists a row in PostgreSQL, refetches `matches`, and displays the saved record.
+
+## Behavior-driven end-to-end tests
+
+Executable product specifications live in `features/*.feature`. Cucumber maps their Gherkin steps to TypeScript step definitions, and Playwright exercises the application through its browser-visible interface. The current feature covers the existing create-and-display match journey.
+
+Install Chromium once after installing dependencies:
+
+```sh
+pnpm test:bdd:install
+```
+
+Run the full unit and BDD suite with `pnpm test`, or run only the BDD suite with:
+
+```sh
+pnpm test:bdd
+```
+
+The BDD command starts PostgreSQL, applies migrations, starts the API and web development servers, runs Cucumber in headless Chromium, and stops the development servers afterward. PostgreSQL remains running until `pnpm db:down`. Use `pnpm test:bdd:headed` to watch the browser locally.
