@@ -7,3 +7,6 @@ Feature: Set up a first team
     Given I am a coach with no teams
     When I open the home page
     Then I am invited to add my first team
+    When I name the team "Salt Lake Strikers"
+    And I continue to the roster
+    Then I am asked to add the team's players

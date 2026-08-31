@@ -55,13 +55,13 @@ input { font: inherit; }
   padding: 4rem 1.25rem;
 }
 
-.step-label {
-  margin: 0 0 1.5rem;
-  color: #67e8f9;
-  font-size: .82rem;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
+.onboarding-progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+  color: #9eb0b8;
+  font-size: .85rem;
 }
 
 h1 {
@@ -73,10 +73,56 @@ h1 {
 }
 
 .onboarding-intro {
-  margin: 0;
+  margin: 0 0 2rem;
   color: #aebdc5;
   font-size: 1.05rem;
   line-height: 1.6;
+}
+
+.onboarding-form {
+  display: grid;
+  gap: .65rem;
+}
+
+.onboarding-form label {
+  color: #dce9ed;
+  font-weight: 700;
+}
+
+.onboarding-form input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: .75rem .9rem;
+  color: #f2f9fb;
+  background: #111e29;
+  border: 1px solid #435463;
+  border-radius: .7rem;
+  font-size: 1rem;
+}
+
+.field-hint {
+  margin: 0;
+  color: #96a9b2;
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
+.onboarding-form button {
+  min-height: 3rem;
+  margin-top: .75rem;
+  padding: .7rem 1rem;
+  color: #082a34;
+  background: #67e8f9;
+  border: 0;
+  border-radius: .7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.team-context {
+  margin: 0 0 .75rem;
+  color: #67e8f9;
+  font-weight: 700;
 }
 
 @media (min-width: 700px) {
