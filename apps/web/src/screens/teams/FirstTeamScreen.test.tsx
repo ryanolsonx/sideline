@@ -77,8 +77,9 @@ describe('FirstTeamScreen', () => {
 
   it('shows the completed team after setup is saved', async () => {
     const createTeam = vi.fn().mockResolvedValue({
+      id: 'team-1',
       name: 'Salt Lake Strikers',
-      players: [{ name: 'Avery Kim' }],
+      players: [{ id: 'player-1', name: 'Avery Kim' }],
     });
     render(<FirstTeamScreen onCreateTeam={createTeam} />);
     fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
@@ -96,7 +97,7 @@ describe('FirstTeamScreen', () => {
   it('starts another setup without losing an existing team', () => {
     render(
       <FirstTeamScreen
-        initialTeams={[{ name: 'Salt Lake Strikers', players: [{ name: 'Avery Kim' }] }]}
+        initialTeams={[{ id: 'team-1', name: 'Salt Lake Strikers', players: [{ id: 'player-1', name: 'Avery Kim' }] }]}
         onCreateTeam={vi.fn()}
       />,
     );

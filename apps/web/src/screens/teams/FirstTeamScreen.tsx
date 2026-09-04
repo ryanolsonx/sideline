@@ -1,16 +1,18 @@
 import { FormEvent, useRef, useState } from 'react';
 
 export interface CreatedTeam {
+  id: string;
   name: string;
-  players: { name: string }[];
+  players: { id: string; name: string }[];
 }
 
 interface FirstTeamScreenProps {
   initialTeams?: CreatedTeam[];
   onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
+  onStartGame?: (team: CreatedTeam) => void;
 }
 
-export function FirstTeamScreen({ initialTeams = [], onCreateTeam }: FirstTeamScreenProps) {
+export function FirstTeamScreen({ initialTeams = [], onCreateTeam, onStartGame }: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
@@ -84,12 +86,12 @@ export function FirstTeamScreen({ initialTeams = [], onCreateTeam }: FirstTeamSc
             </div>
             <div className="team-list">
               {teams.map((team) => (
-                <article className="team-card" key={team.name}>
+              <article className="team-card" key={team.id}>
                   <div>
                     <h3>{team.name}</h3>
                     <p>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</p>
                   </div>
-                  <span aria-hidden="true">›</span>
+                  <button type="button" onClick={() => onStartGame?.(team)}>Start game</button>
                 </article>
               ))}
             </div>
