@@ -340,6 +340,7 @@ h1 {
 .out-list li { color: #9fb1b9; }
 .primary-action { width: 100%; min-height: 3.25rem; margin-top: 2rem; color: #082a34; background: #67e8f9; border: 0; border-radius: .7rem; font-weight: 700; cursor: pointer; }
 .primary-action:disabled { cursor: wait; opacity: .55; }
+.completion-message { margin-top: 2rem; padding: 1rem; color: #b8f7cf; background: #143226; border: 1px solid #2c7250; border-radius: .7rem; font-weight: 700; }
 
 @media (min-width: 700px) {
   .onboarding-content { padding-top: 6rem; }

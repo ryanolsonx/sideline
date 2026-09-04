@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { getFragmentData } from '../../gql';
-import { GameFragment, StartGameMutation } from './GameFlow.graphql';
+import { AdvanceGameMutation, GameFragment, StartGameMutation } from './GameFlow.graphql';
 
 export interface GameTeam { id: string; name: string; players: { id: string; name: string }[]; }
 type Assignment = { id: string; status: 'PLAYING' | 'OUT'; position: string | null; player: { id: string; name: string } };
@@ -10,13 +10,19 @@ export interface Game { id: string; fieldSize: number; status: 'ACTIVE' | 'COMPL
 export function GameFlow({ team, onBack }: { team: GameTeam; onBack: () => void }) {
   const [startedGame, setStartedGame] = useState<Game | null>(null);
   const [startGame, { loading: isStarting }] = useMutation(StartGameMutation);
+  const [advanceGame, { loading: isAdvancing }] = useMutation(AdvanceGameMutation);
 
   async function start(fieldSize: 5 | 6, presentPlayerIds: string[]) {
     const result = await startGame({ variables: { input: { teamId: team.id, fieldSize, presentPlayerIds } } });
     if (result.data) setStartedGame(getFragmentData(GameFragment, result.data.startGame) as Game);
   }
+  async function advance() {
+    if (!startedGame) return;
+    const result = await advanceGame({ variables: { gameId: startedGame.id } });
+    if (result.data) setStartedGame(getFragmentData(GameFragment, result.data.advanceGame) as Game);
+  }
   return startedGame
-    ? <GameRoundScreen game={startedGame} teamName={team.name} onBack={onBack} />
+    ? <GameRoundScreen game={startedGame} teamName={team.name} onAdvance={advance} isAdvancing={isAdvancing} onBack={onBack} />
     : <StartGameScreen team={team} onStart={start} isStarting={isStarting} onBack={onBack} />;
 }
 
@@ -39,13 +45,15 @@ export function StartGameScreen({ team, onStart, isStarting, onBack }: {
   </section></main>;
 }
 
-export function GameRoundScreen({ game, teamName, onBack }: { game: Game; teamName: string; onBack: () => void; }) {
+export function GameRoundScreen({ game, teamName, onAdvance, isAdvancing, onBack }: { game: Game; teamName: string; onAdvance: () => Promise<void>; isAdvancing: boolean; onBack: () => void; }) {
   const round = game.rounds.find((entry) => entry.number === game.currentRound);
   const playing = round?.assignments.filter((assignment) => assignment.status === 'PLAYING') ?? [];
   const out = round?.assignments.filter((assignment) => assignment.status === 'OUT') ?? [];
+  const complete = game.status === 'COMPLETE';
   return <main className="game-shell"><header className="game-header"><button type="button" onClick={onBack}>Back</button><p>{teamName}</p></header><section className="game-content" aria-labelledby="round-heading">
     <p className="eyebrow">{game.fieldSize} on {game.fieldSize}</p><h1 id="round-heading">Round {game.currentRound} of 8</h1>
     <section aria-label="Playing" aria-labelledby="playing-heading"><h2 id="playing-heading">Playing</h2><ul className="lineup-list">{playing.map((assignment) => <li key={assignment.id}><span>{assignment.player.name}</span><strong>{assignment.position?.toLowerCase()}</strong></li>)}</ul></section>
     <section aria-label="Out this round" aria-labelledby="out-heading"><h2 id="out-heading">Out this round</h2>{out.length ? <ul className="out-list">{out.map((assignment) => <li key={assignment.id}>{assignment.player.name}</li>)}</ul> : <p>Everyone is playing this round.</p>}</section>
+    {complete ? <p className="completion-message" role="status">Game complete — 8 rounds played.</p> : <button className="primary-action" type="button" disabled={isAdvancing} onClick={onAdvance}>{isAdvancing ? 'Assigning…' : 'Subs →'}</button>}
   </section></main>;
 }
