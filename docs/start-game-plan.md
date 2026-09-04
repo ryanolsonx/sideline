@@ -26,6 +26,10 @@ The first release excludes manual swaps, late arrivals, roster editing during a 
 
 All eight rounds are generated and persisted in the same transaction that starts the game. Advancing a round changes only the game’s current round and completion state.
 
+## Frontend boundary
+
+The frontend is deliberately dumb: it submits the selected format and present-player IDs, then renders persisted game data returned by GraphQL. It does not choose a lineup, assign positions, calculate rotation fairness, or construct a future round. Those decisions live in the backend domain planner and are saved before the game is shown.
+
 ## Clean PR stack
 
 Each PR must be independently green and have a single review focus.
