@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum AssignmentStatus {
+  OUT
+  PLAYING
+}
+
 input CreateMatchInput {
   name: String!
 }
@@ -16,6 +21,34 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Game {
+  currentRound: Int!
+  fieldSize: Int!
+  id: ID!
+  rounds: [GameRound!]!
+  startedAt: DateTime!
+  status: GameStatus!
+  team: Team!
+}
+
+type GameRound {
+  assignments: [GameRoundAssignment!]!
+  id: ID!
+  number: Int!
+}
+
+type GameRoundAssignment {
+  id: ID!
+  player: Player!
+  position: Position
+  status: AssignmentStatus!
+}
+
+enum GameStatus {
+  ACTIVE
+  COMPLETE
+}
+
 type Match {
   createdAt: DateTime!
   id: ID!
@@ -23,8 +56,10 @@ type Match {
 }
 
 type Mutation {
+  advanceGame(gameId: String!): Game!
   createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
+  startGame(input: StartGameInput!): Game!
 }
 
 type Player {
@@ -32,9 +67,22 @@ type Player {
   name: String!
 }
 
+enum Position {
+  DEFENDER
+  FORWARD
+  GOALIE
+}
+
 type Query {
+  activeGame(teamId: String!): Game
   matches: [Match!]!
   teams: [Team!]!
+}
+
+input StartGameInput {
+  fieldSize: Int!
+  presentPlayerIds: [ID!]!
+  teamId: ID!
 }
 
 type Team {

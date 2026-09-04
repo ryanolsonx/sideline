@@ -17,6 +17,10 @@ export class TeamRepository {
     return this.teamRepository.find({ relations: { players: true }, order: { createdAt: 'ASC' } });
   }
 
+  findById(id: string): Promise<TeamEntity | null> {
+    return this.teamRepository.findOne({ where: { id }, relations: { players: true } });
+  }
+
   createWithPlayers(name: string, playerNames: string[]): Promise<TeamEntity> {
     return this.dataSource.transaction(async (manager) => {
       const teams = manager.getRepository(TeamEntity);

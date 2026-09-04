@@ -5,6 +5,7 @@ import { Test } from '@nestjs/testing';
 import { lexicographicSortSchema, printSchema } from 'graphql';
 import { MatchResolver } from './matches/api/match.resolver';
 import { MatchService } from './matches/service/match.service';
+import { GameService } from './matches/service/game.service';
 import { TeamResolver } from './teams/api/team.resolver';
 import { TeamService } from './teams/service/team.service';
 
@@ -16,6 +17,10 @@ async function generateSchema() {
       TeamResolver,
       {
         provide: MatchService,
+        useValue: {},
+      },
+      {
+        provide: GameService,
         useValue: {},
       },
       {
