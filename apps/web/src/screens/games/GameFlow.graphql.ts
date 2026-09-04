@@ -12,3 +12,9 @@ export const StartGameMutation = graphql(/* GraphQL */ `
     startGame(input: $input) { ...GameFlow_Game }
   }
 `);
+
+export const AdvanceGameMutation = graphql(/* GraphQL */ `
+  mutation GameFlow_AdvanceGame($gameId: String!) {
+    advanceGame(gameId: $gameId) { ...GameFlow_Game }
+  }
+`);

@@ -27,17 +27,17 @@ describe('StartGameScreen', () => {
 });
 
 describe('GameRoundScreen', () => {
-  it('shows the opening lineup and players who are out', () => {
+  it('shows the final round as complete', () => {
     render(<GameRoundScreen game={{
-      id: 'game-1', fieldSize: 6, status: 'ACTIVE', currentRound: 1,
-      rounds: [{ id: 'round-1', number: 1, assignments: [
+      id: 'game-1', fieldSize: 6, status: 'COMPLETE', currentRound: 8,
+      rounds: [{ id: 'round-8', number: 8, assignments: [
         { id: 'assignment-1', status: 'PLAYING', position: 'GOALIE', player: team.players[0] },
         { id: 'assignment-2', status: 'OUT', position: null, player: team.players[1] },
       ] }],
-    }} teamName={team.name} onBack={vi.fn()} />);
+    }} teamName={team.name} onAdvance={vi.fn()} isAdvancing={false} onBack={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: 'Round 1 of 8' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Playing')).toHaveTextContent('Avery Kim');
-    expect(screen.getByLabelText('Out this round')).toHaveTextContent('Jordan Lee');
+    expect(screen.getByRole('heading', { name: 'Round 8 of 8' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Game complete');
+    expect(screen.queryByRole('button', { name: 'Subs →' })).not.toBeInTheDocument();
   });
 });
