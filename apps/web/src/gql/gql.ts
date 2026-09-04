@@ -14,14 +14,14 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_MatchesDocument,
-    "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_CreateMatchDocument,
+    "\n  fragment GameFlow_Game on Game {\n    id fieldSize status currentRound\n    rounds { id number assignments { id status position player { id name } } }\n  }\n": typeof types.GameFlow_GameFragmentDoc,
+    "\n  mutation GameFlow_StartGame($input: StartGameInput!) {\n    startGame(input: $input) { ...GameFlow_Game }\n  }\n": typeof types.GameFlow_StartGameDocument,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": typeof types.TeamsDocument,
 };
 const documents: Documents = {
-    "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_MatchesDocument,
-    "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_CreateMatchDocument,
+    "\n  fragment GameFlow_Game on Game {\n    id fieldSize status currentRound\n    rounds { id number assignments { id status position player { id name } } }\n  }\n": types.GameFlow_GameFragmentDoc,
+    "\n  mutation GameFlow_StartGame($input: StartGameInput!) {\n    startGame(input: $input) { ...GameFlow_Game }\n  }\n": types.GameFlow_StartGameDocument,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n    }\n  }\n": types.TeamsDocument,
 };
@@ -43,11 +43,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n"];
+export function graphql(source: "\n  fragment GameFlow_Game on Game {\n    id fieldSize status currentRound\n    rounds { id number assignments { id status position player { id name } } }\n  }\n"): (typeof documents)["\n  fragment GameFlow_Game on Game {\n    id fieldSize status currentRound\n    rounds { id number assignments { id status position player { id name } } }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"];
+export function graphql(source: "\n  mutation GameFlow_StartGame($input: StartGameInput!) {\n    startGame(input: $input) { ...GameFlow_Game }\n  }\n"): (typeof documents)["\n  mutation GameFlow_StartGame($input: StartGameInput!) {\n    startGame(input: $input) { ...GameFlow_Game }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

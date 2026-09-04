@@ -18,6 +18,11 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export enum AssignmentStatus {
+  Out = 'OUT',
+  Playing = 'PLAYING'
+}
+
 export type CreateMatchInput = {
   name: Scalars['String']['input'];
 };
@@ -26,6 +31,37 @@ export type CreateTeamInput = {
   name: Scalars['String']['input'];
   players: Array<Scalars['String']['input']>;
 };
+
+export type Game = {
+  __typename?: 'Game';
+  currentRound: Scalars['Int']['output'];
+  fieldSize: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  rounds: Array<GameRound>;
+  startedAt: Scalars['DateTime']['output'];
+  status: GameStatus;
+  team: Team;
+};
+
+export type GameRound = {
+  __typename?: 'GameRound';
+  assignments: Array<GameRoundAssignment>;
+  id: Scalars['ID']['output'];
+  number: Scalars['Int']['output'];
+};
+
+export type GameRoundAssignment = {
+  __typename?: 'GameRoundAssignment';
+  id: Scalars['ID']['output'];
+  player: Player;
+  position?: Maybe<Position>;
+  status: AssignmentStatus;
+};
+
+export enum GameStatus {
+  Active = 'ACTIVE',
+  Complete = 'COMPLETE'
+}
 
 export type Match = {
   __typename?: 'Match';
@@ -36,8 +72,15 @@ export type Match = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  advanceGame: Game;
   createMatch: Match;
   createTeam: Team;
+  startGame: Game;
+};
+
+
+export type MutationAdvanceGameArgs = {
+  gameId: Scalars['String']['input'];
 };
 
 
@@ -50,16 +93,39 @@ export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
 };
 
+
+export type MutationStartGameArgs = {
+  input: StartGameInput;
+};
+
 export type Player = {
   __typename?: 'Player';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
 
+export enum Position {
+  Defender = 'DEFENDER',
+  Forward = 'FORWARD',
+  Goalie = 'GOALIE'
+}
+
 export type Query = {
   __typename?: 'Query';
+  activeGame?: Maybe<Game>;
   matches: Array<Match>;
   teams: Array<Team>;
+};
+
+
+export type QueryActiveGameArgs = {
+  teamId: Scalars['String']['input'];
+};
+
+export type StartGameInput = {
+  fieldSize: Scalars['Int']['input'];
+  presentPlayerIds: Array<Scalars['ID']['input']>;
+  teamId: Scalars['ID']['input'];
 };
 
 export type Team = {
@@ -70,17 +136,17 @@ export type Team = {
   players: Array<Player>;
 };
 
-export type MatchesScreen_MatchesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GameFlow_GameFragment = { __typename?: 'Game', id: string, fieldSize: number, status: GameStatus, currentRound: number, rounds: Array<{ __typename?: 'GameRound', id: string, number: number, assignments: Array<{ __typename?: 'GameRoundAssignment', id: string, status: AssignmentStatus, position?: Position | null, player: { __typename?: 'Player', id: string, name: string } }> }> } & { ' $fragmentName'?: 'GameFlow_GameFragment' };
 
-
-export type MatchesScreen_MatchesQuery = { __typename?: 'Query', matches: Array<{ __typename?: 'Match', id: string, name: string, createdAt: any }> };
-
-export type MatchesScreen_CreateMatchMutationVariables = Exact<{
-  input: CreateMatchInput;
+export type GameFlow_StartGameMutationVariables = Exact<{
+  input: StartGameInput;
 }>;
 
 
-export type MatchesScreen_CreateMatchMutation = { __typename?: 'Mutation', createMatch: { __typename?: 'Match', id: string, name: string, createdAt: any } };
+export type GameFlow_StartGameMutation = { __typename?: 'Mutation', startGame: (
+    { __typename?: 'Game' }
+    & { ' $fragmentRefs'?: { 'GameFlow_GameFragment': GameFlow_GameFragment } }
+  ) };
 
 export type CreateTeamMutationVariables = Exact<{
   input: CreateTeamInput;
@@ -94,8 +160,7 @@ export type TeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: string, name: string, players: Array<{ __typename?: 'Player', id: string, name: string }> }> };
 
-
-export const MatchesScreen_MatchesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MatchesScreen_Matches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"matches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<MatchesScreen_MatchesQuery, MatchesScreen_MatchesQueryVariables>;
-export const MatchesScreen_CreateMatchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MatchesScreen_CreateMatch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMatchInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMatch"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<MatchesScreen_CreateMatchMutation, MatchesScreen_CreateMatchMutationVariables>;
+export const GameFlow_GameFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"GameFlow_Game"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Game"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fieldSize"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"currentRound"}},{"kind":"Field","name":{"kind":"Name","value":"rounds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"assignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"player"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GameFlow_GameFragment, unknown>;
+export const GameFlow_StartGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"GameFlow_StartGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StartGameInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"GameFlow_Game"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"GameFlow_Game"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Game"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fieldSize"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"currentRound"}},{"kind":"Field","name":{"kind":"Name","value":"rounds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"assignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"player"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GameFlow_StartGameMutation, GameFlow_StartGameMutationVariables>;
 export const CreateTeamDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTeam"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTeamInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTeam"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"players"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateTeamMutation, CreateTeamMutationVariables>;
 export const TeamsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teams"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"players"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<TeamsQuery, TeamsQueryVariables>;
