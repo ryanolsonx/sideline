@@ -22,17 +22,21 @@ A child on a team's roster. First names only.
 ### Shape of play
 
 **Format**:
-How many players a side fields: 5v5 or 6v6. Chosen when a team is created.
+How many players a side fields: 5v5 or 6v6. A consequence of the formation rather than a
+separate choice, though the coach picks it first when setting a team up.
 
 **Formation**:
-How a team's on-field places divide across positions, such as one goalie, two
-defenders and three forwards. Belongs to the team, and is copied onto a game when the
-game starts.
+How many players a team fields at each outfield position, such as two defenders and three
+forwards. The goalie is not part of the count: there is always exactly one. Belongs to the
+team, is editable there, and is copied onto a game when the game starts, so a game keeps
+the shape it began with.
 _Avoid_: Lineup, which is the specific players in a round rather than the shape
+_Avoid_: Preset, which is how the screen offers the named formations rather than what one is
 
 **Position**:
 Goalie, defender, or forward. Goalie is a distinct kind rather than merely a position
-with a tighter rule.
+with a tighter rule. Two players at the same position are at the same position: there is
+no left defender as distinct from a right one.
 _Avoid_: Role
 
 **Goalie**:

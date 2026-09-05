@@ -79,6 +79,15 @@ fairness, goalie selection, or short-handed formations.
   deliberate, recorded as
   [ADR 0001](../../docs/adr/0001-identity-is-a-username-and-nothing-else.md).
 
+- [Team format and formation](issues/02-team-format-and-formation.md): a formation is a
+  count per outfield position stored as JSON, with the goalie structural rather than
+  counted and format derived as the sum plus one; two players at a position are
+  interchangeable, so no numbered slots and no presets in the model, only on the screen;
+  team setup grows a third step after the roster; roster and formation are both edited
+  from the team screen; the game snapshots the same JSON at Start, which is why editing a
+  team's formation needs no guard while a game is live. Recorded as
+  [ADR 0002](../../docs/adr/0002-a-formation-is-outfield-counts.md).
+
 ## Not yet specified
 
 - What the "smart logic" actually does with partial-round data, once
@@ -87,6 +96,12 @@ fairness, goalie selection, or short-handed formations.
 - Whether a player's refusal to play goalie is a remembered preference on the roster
   or a one-off override in the moment.
 - Whether fairness ever carries across games, or resets every whistle.
+- The team screen: picking a team, Start Game, the list of previous games, and the way
+  into editing the roster and the formation. Settled that it carries those; not settled
+  what it is. Likely graduates alongside
+  [Game identity and lifecycle](issues/03-game-identity-and-lifecycle.md).
+- Changing the formation of a game already underway. Wanted eventually, deliberately
+  absent now.
 
 ## Out of scope
 
