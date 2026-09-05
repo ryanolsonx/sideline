@@ -88,6 +88,20 @@ fairness, goalie selection, or short-handed formations.
   team's formation needs no guard while a game is live. Recorded as
   [ADR 0002](../../docs/adr/0002-a-formation-is-outfield-counts.md).
 
+- [Game identity and lifecycle](issues/03-game-identity-and-lifecycle.md): a game is us
+  and who did what, carrying a uuid, a team and a start time, with no opponent and no
+  name; eight rounds is a constant rather than a column, so ending at seven and
+  finishing eight leave identical records; four states, Setup / Live / Ended /
+  Abandoned, where Ended means it counts and Abandoned means it did not happen and
+  nothing is ever deleted, recorded as
+  [ADR 0003](../../docs/adr/0003-nothing-is-ever-deleted.md); End Game is hidden until round 7 and replaces the forward
+  action at round 8; unfinished games are unrestricted and nothing auto-resumes, the
+  team screen's list being the way back; the URL is `/teams/:teamId/games/:gameId`,
+  which introduces the router `apps/web` does not yet have; ownership is enforced in the
+  API and its three failures are deliberately distinguishable to the coach; and
+  `matches/` stays untouched as the full-stack architecture example until `games/`
+  replaces it.
+
 ## Not yet specified
 
 - What the "smart logic" actually does with partial-round data, once
@@ -96,10 +110,6 @@ fairness, goalie selection, or short-handed formations.
 - Whether a player's refusal to play goalie is a remembered preference on the roster
   or a one-off override in the moment.
 - Whether fairness ever carries across games, or resets every whistle.
-- The team screen: picking a team, Start Game, the list of previous games, and the way
-  into editing the roster and the formation. Settled that it carries those; not settled
-  what it is. Likely graduates alongside
-  [Game identity and lifecycle](issues/03-game-identity-and-lifecycle.md).
 - Changing the formation of a game already underway. Wanted eventually, deliberately
   absent now.
 

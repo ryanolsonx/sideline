@@ -46,14 +46,32 @@ _Avoid_: Keeper, goalkeeper, GK
 ### A game
 
 **Game**:
-One match against another team, played as a sequence of rounds. The unit a coach
-starts, works through, and later looks back at.
+One outing by one team, played as a sequence of rounds. It records us and who did what:
+there is no opponent, no score, and no name. The unit a coach starts, works through, and
+later looks back at.
 _Avoid_: Match, fixture
 
 **Round**:
-A stretch of play with one lineup, advanced by the coach rather than by a clock. A
-game is usually eight rounds, but the referee may end it sooner.
+A stretch of play with one lineup, advanced by the coach rather than by a clock. Every
+game is eight rounds, though the referee may end it after the seventh.
 _Avoid_: Period, shift, quarter
+
+**Setup**:
+A game that has been started but not begun: the coach is marking who turned up. No
+rounds exist yet.
+
+**Live**:
+A game being played, somewhere in its rounds.
+
+**Ended**:
+A game that is over and counts. Reached by the coach, never by the app, and never
+undone.
+
+**Abandoned**:
+A game that did not happen: called off by the referee, or started by mistake. It keeps
+whatever rounds it reached and stays in the team's list, quieter than an ended game.
+Nothing in Sideline is ever deleted, so this is what deleting a game means.
+_Avoid_: Cancelled, deleted, discarded
 
 **Lineup**:
 Which player occupies which position for a round.

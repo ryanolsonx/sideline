@@ -144,6 +144,16 @@ When the user explicitly gives the go-ahead after a completed stack:
   - Its body should summarize the complete change, key implementation areas, and review/testing guidance.
 - Use the repository's REST API metadata workflow (`gh api ...`) and verify the final title, body, base branch, and ready-for-review status.
 
+## The `matches` module is an example
+
+`matches/` in both apps is not a feature. It is the worked example of the layering
+`ARCHITECTURE.md` describes, carried end to end: entity, repository, service, domain
+model, DTO, input, resolver, and a screen with a component test. Nothing renders it and
+nothing depends on it. Copy its shape when building a real feature; never build on it.
+
+It is deleted outright once a real feature touches the full stack in the same way, at
+which point that feature is the example.
+
 ## Agent skills
 
 ### Issue tracker
