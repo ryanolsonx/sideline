@@ -2,6 +2,12 @@
 
 If you want to know about the architecture and directory structure, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Grilling
+
+When a round of grilling questions comes back with some questions unanswered, the silence is
+agreement: treat every unanswered question as accepted at the recommendation given, and record it
+that way. Do not re-ask it in a later round, and do not treat it as still open.
+
 ## Feature discovery and Gherkin
 
 When exploring a new feature, treat the conversation as a discovery and iteration phase unless the user explicitly asks to implement or save it.
