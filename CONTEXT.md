@@ -53,15 +53,27 @@ _Avoid_: Match, fixture
 
 **Round**:
 A stretch of play with one lineup, advanced by the coach rather than by a clock. Every
-game is eight rounds, though the referee may end it after the seventh.
+game is eight rounds, though the referee may end it after the seventh. A round is first
+planned while play is stopped, then played. It keeps the lineup it began with and every
+change made to it after that.
 _Avoid_: Period, shift, quarter
+
+**Planned**, **Live**, **Played**:
+Where a round sits relative to the round the game is on: ahead of it, on it, or behind it.
+Not something a round carries. A round the coach walked back past is planned again, with
+everything it recorded still on it.
+
+**Break**:
+The stop in play between two rounds, when the coach settles the next round's lineup. The
+round ahead is being planned; the round behind is still on the field.
 
 **Setup**:
 A game that has been started but not begun: the coach is marking who turned up. No
 rounds exist yet.
 
 **Live**:
-A game being played, somewhere in its rounds.
+A game being played, somewhere in its rounds. Also the round the game is on: the one
+actually on the field. The two senses never collide in a sentence anyone says.
 
 **Ended**:
 A game that is over and counts. Reached by the coach, never by the app, and never
@@ -73,8 +85,23 @@ whatever rounds it reached and stays in the team's list, quieter than an ended g
 Nothing in Sideline is ever deleted, so this is what deleting a game means.
 _Avoid_: Cancelled, deleted, discarded
 
-**Lineup**:
-Which player occupies which position for a round.
+**Starting lineup**:
+Which player occupied which position when a round went onto the field. Settled during the
+break, and never rewritten by a substitution.
+_Avoid_: Lineup on its own, which no longer says which of the two is meant
+
+**On-field lineup**:
+Who is at each position right now: the starting lineup with the round's changes applied.
+Worked out when asked rather than kept, so it can never disagree with the record.
+
+**Change**:
+One position, the player leaving it, and the player taking it, recorded once a round is on
+the field. Either side may be empty: a player can come off with nobody replacing them. A
+player moving between two on-field positions is two changes.
+
+**Substitution**:
+The ordinary change, where a player who was out comes on for a player who was in. The word
+a coach says; **Change** is the word for what gets recorded, which is broader.
 
 ### Who is playing
 

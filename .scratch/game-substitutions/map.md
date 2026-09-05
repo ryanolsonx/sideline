@@ -102,11 +102,29 @@ fairness, goalie selection, or short-handed formations.
   `matches/` stays untouched as the full-stack architecture example until `games/`
   replaces it.
 
+- [What a round is: plan versus play](issues/04-round-plan-versus-play.md): a round has two
+  screens and one alternating forward action, where the planning screen for a round *is* the
+  substitution break; the screen the coach is standing on decides whether a move rewrites what
+  the round begins as or records a change, which is why navigation is free and destroys
+  nothing; a round holds its starting lineup plus an ordered list of changes and the on-field
+  lineup is only ever the fold of the two, so a substitution can never overwrite what the round
+  began as; a change has an order and no moment; no round state is stored, only the round and
+  screen the game is on, so a round cannot be in the wrong state; back stops at round 1's
+  planning screen; nothing is refused for being incomplete; and modifying a past round discards
+  every round after it, decided by the coach against the cost of re-entering real history from
+  memory. Recorded as
+  [ADR 0004](../../docs/adr/0004-a-round-keeps-what-it-began-as.md).
+
 ## Not yet specified
 
-- What the "smart logic" actually does with partial-round data, once
-  [What a round is: plan versus play](issues/04-round-plan-versus-play.md) and
-  [What counts as playing time](issues/06-what-counts-as-playing-time.md) land.
+- What the "smart logic" actually does with a round a player only partly played, once
+  [What counts as playing time](issues/06-what-counts-as-playing-time.md) lands. There is no
+  partial time to measure, so this is a crediting rule rather than an arithmetic one.
+- How far a coach can be walked back through the game after modifying a past round, and what
+  the app owes them before discarding the rounds after it. The rule is settled; the humane
+  handling of it is a screen question that
+  [The live-game screen on a phone](issues/11-live-game-screen-on-a-phone.md) may or may not
+  absorb.
 - Whether a player's refusal to play goalie is a remembered preference on the roster
   or a one-off override in the moment.
 - Whether fairness ever carries across games, or resets every whistle.
