@@ -23,6 +23,12 @@ Prototype tickets call `prototype`; research tickets call `research`.
 `matches` module is disposable example scaffolding, to be renamed or absorbed into
 Game. Vocabulary settled so far lives in `CONTEXT.md`.
 
+**Prior art:** the coach's existing client-side tool at `https://ryanolson.dev/subs/`,
+read and executed in
+[docs/research/existing-subs-tool.md](../../docs/research/existing-subs-tool.md). It
+already solves much of this well. Consult it before deciding anything about rotation,
+fairness, goalie selection, or short-handed formations.
+
 **Settled before charting:**
 
 - The word is **Game**, never Match.
