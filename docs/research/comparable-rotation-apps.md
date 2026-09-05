@@ -132,7 +132,7 @@ because no surveyed product has this constraint.
 - **Season-long ledgers.** Pitch Time "tracks cumulative minutes across the season and automatically
   compensates players who got fewer minutes in past matches"
   (https://apps.apple.com/us/app/pitch-time-fair-lineups/id6758683417). CalledUp tracks total innings logged
-  this season "so nobody quietly falls behind" (https://calledup.app/fair-playing-tracker-fairness). The
+  this season "so nobody quietly falls behind" (https://calledup.app/fair-playing-time-tracker). The
   Playing Time Calculator lets a coach mark a game Official to feed season averages
   (https://www.playingtimecalculator.com/).
 

@@ -2,6 +2,14 @@
 
 Sideline is a TypeScript monorepo. Its planned application architecture is documented in [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Planning
+
+For the developer, run:
+
+```
+/wayfinder .scratch/game-substitutions/map.md
+```
+
 ## Local database
 
 Docker Compose provides PostgreSQL 16 at `localhost:5432` using the credentials in `.env.example`.
