@@ -5,3 +5,8 @@ coverage
 test-results
 .env
 .DS_Store
+
+# Tracked here despite the global ignore
+!docs/agents/
+!.scratch/
+!CONTEXT.md

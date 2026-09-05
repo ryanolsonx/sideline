@@ -143,3 +143,17 @@ When the user explicitly gives the go-ahead after a completed stack:
   - Use a conventional product-facing title.
   - Its body should summarize the complete change, key implementation areas, and review/testing guidance.
 - Use the repository's REST API metadata workflow (`gh api ...`) and verify the final title, body, base branch, and ready-for-review status.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as markdown files under `.scratch/<feature-slug>/` in this repo. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles, used verbatim as status strings. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` and `docs/adr/` at the repo root, created lazily. See `docs/agents/domain.md`.
