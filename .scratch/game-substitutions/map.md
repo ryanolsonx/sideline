@@ -39,7 +39,20 @@ Game. Vocabulary settled so far lives in `CONTEXT.md`.
 
 <!-- one line per resolved ticket: gist plus link -->
 
-_None yet._
+- [How comparable rotation apps model this](issues/14-research-comparable-rotation-apps.md):
+  every surveyed planner computes the whole game up front and recalculates on any
+  disruption, so a future round is a suggestion rather than a promise; a clock is what
+  makes a substitution first-class everywhere it is, leaving Sideline's clockless
+  premise wanting an arithmetic nothing surveyed has; and no vendor anywhere publishes
+  a partial-time crediting rule.
+- [Fair rotation as a scheduling problem](issues/15-research-fair-rotation-algorithms.md):
+  this is personnel rostering, not sports scheduling, and at our size greedy reaches
+  optimal playing-time spread but pays for it in repeated positions that exhaustive
+  search avoids at the same spread; determinism must come from a canonical tie-break in
+  the model rather than from a solver; a manual override is the minimal perturbation
+  problem, whose standard answer is a full re-solve pinning the override; and per-round
+  fairness can make whole-game fairness unreachable, so optimize the game and present
+  the round.
 
 ## Not yet specified
 
