@@ -14,7 +14,8 @@ renamed: typing a different username is being a different coach.
 _Avoid_: User, manager, account
 
 **Team**:
-A named roster of players belonging to one coach, with a format and a formation.
+A named roster of players belonging to one coach, with a format and a formation. At most nine
+players.
 
 **Player**:
 A child on a team's roster. First names only.
@@ -40,8 +41,17 @@ no left defender as distinct from a right one.
 _Avoid_: Role
 
 **Goalie**:
-The keeper. Generally played once per game by any given player.
+The keeper. A rationed position, so a player keeps once per game until everyone has, and never
+two rounds running.
 _Avoid_: Keeper, goalkeeper, GK
+
+**Rationed position**:
+A position nobody wants a second turn at: goalie and defender. It goes to whoever has held it
+fewest times so far, and never to the same player two rounds running, so it is spread across
+the roster rather than offered. Forward is not rationed — it is what is left once the rationed
+positions are filled, and playing it repeatedly is tough luck. Which positions are rationed is
+a fact about each position, not a consequence of how many of it a formation fields.
+_Avoid_: Scarce position, which suggests the count rather than the burden
 
 ### A game
 
@@ -135,7 +145,9 @@ Rounds played, as close to level across the roster as the game allows. Levelness
 compared between players directly rather than against a share of what each was there for,
 so a player who covered while someone was away stands higher and is rested sooner, and a
 player who arrives late is fresh rather than owed. A player who arrives late enough cannot
-reach the others, and nothing makes that up to them.
+reach the others, and nothing makes that up to them. Fairness is a benefit being levelled,
+which is the opposite of a rationed position, a burden being spread; the two are counted alike
+and mean opposite things.
 
 **History**:
 What a player's game looks like round by round: for each round, played, out, or absent.
