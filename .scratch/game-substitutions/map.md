@@ -115,11 +115,20 @@ fairness, goalie selection, or short-handed formations.
   memory. Recorded as
   [ADR 0004](../../docs/adr/0004-a-round-keeps-what-it-began-as.md).
 
+- [What counts as playing time](issues/06-what-counts-as-playing-time.md): the unit is the
+  whole round, credited to anyone on the field at any point in it however little, so both sides
+  of a mid-round swap are credited and a round may credit more players than it has slots; counts
+  are compared raw within one game, never as a share of rounds present, because the players who
+  covered while someone was away banked that time and should be rested before the fresh
+  arrival, which overturned the recommendation on the coach's call; a late arrival playing next
+  is therefore a result of the count rather than a rule, and a child arriving late enough simply
+  cannot catch up; goalie counts at full credit and is rationed on its own axis; the live round
+  counts the moment it goes onto the field; and the coach reads a per-round history of three
+  marks, absent being neither played nor sat. Fairness never crosses games. Recorded as
+  [ADR 0005](../../docs/adr/0005-a-round-played-is-a-round-played.md).
+
 ## Not yet specified
 
-- What the "smart logic" actually does with a round a player only partly played, once
-  [What counts as playing time](issues/06-what-counts-as-playing-time.md) lands. There is no
-  partial time to measure, so this is a crediting rule rather than an arithmetic one.
 - How far a coach can be walked back through the game after modifying a past round, and what
   the app owes them before discarding the rounds after it. The rule is settled; the humane
   handling of it is a screen question that
@@ -127,7 +136,6 @@ fairness, goalie selection, or short-handed formations.
   absorb.
 - Whether a player's refusal to play goalie is a remembered preference on the roster
   or a one-off override in the moment.
-- Whether fairness ever carries across games, or resets every whistle.
 - Changing the formation of a game already underway. Wanted eventually, deliberately
   absent now.
 

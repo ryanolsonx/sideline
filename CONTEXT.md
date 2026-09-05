@@ -116,6 +116,28 @@ is not a turn to rest and is not owed back.
 Participating and on the field this round.
 
 **Out**:
-Participating but sitting this round. Being out is a turn taken, and the rotation owes
-that player time back.
+Participating but sitting this round. Being out is a turn taken, but it is not itself
+counted: what the rotation owes a player is read from their rounds played, not from a
+tally of the rounds they sat.
 _Avoid_: Benched, resting, sitting
+
+### Fairness
+
+**Rounds played**:
+How many rounds a player was on the field for, and the only quantity fairness compares. A
+player is credited with a round if they were on the field at any point in it, however
+little of it, so both sides of a substitution made during a round are credited with it. A
+round in goal counts like any other. Counted from the moment a round goes onto the field,
+never fractionally, and never across more than one game.
+
+**Fair**:
+Rounds played, as close to level across the roster as the game allows. Levelness is
+compared between players directly rather than against a share of what each was there for,
+so a player who covered while someone was away stands higher and is rested sooner, and a
+player who arrives late is fresh rather than owed. A player who arrives late enough cannot
+reach the others, and nothing makes that up to them.
+
+**History**:
+What a player's game looks like round by round: for each round, played, out, or absent.
+Three states, never two, because absence is not being out. What the coach reads; rounds
+played is what the rotation compares.
