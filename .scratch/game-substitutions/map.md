@@ -69,6 +69,16 @@ fairness, goalie selection, or short-handed formations.
   fairness can make whole-game fairness unreachable, so optimize the game and present
   the round.
 
+- [Coach identity and team ownership](issues/01-coach-identity-and-team-ownership.md):
+  Coach is never persisted as a row, only a normalized (trimmed, collapsed, lowercased)
+  username column on Team; the username cannot be renamed, travels in a readable
+  non-`httpOnly` cookie that doubles as what remembers the coach between visits, is
+  written by the browser with no `signIn` mutation, and is rejected by the API when
+  absent while the front end routes to the username screen before it can be; the avatar
+  and its Sign out sit top-right everywhere except the in-game flow. The openness is
+  deliberate, recorded as
+  [ADR 0001](../../docs/adr/0001-identity-is-a-username-and-nothing-else.md).
+
 ## Not yet specified
 
 - What the "smart logic" actually does with partial-round data, once

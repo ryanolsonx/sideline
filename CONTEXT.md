@@ -8,7 +8,9 @@ the side of the field, keeping playing time fair across a roster.
 ### People and teams
 
 **Coach**:
-The person using the app. Identified by a username, with no password.
+The person using the app. Identified by a username, with no password. Two usernames
+name the same coach when they differ only in case or spacing. A coach cannot be
+renamed: typing a different username is being a different coach.
 _Avoid_: User, manager, account
 
 **Team**:
