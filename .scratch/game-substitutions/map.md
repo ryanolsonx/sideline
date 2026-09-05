@@ -142,6 +142,20 @@ fairness, goalie selection, or short-handed formations.
   internally, discards it, and runs in the API. Recorded as
   [ADR 0006](../../docs/adr/0006-goalie-and-defender-are-rationed.md).
 
+- [What a manual override does to the future](issues/08-what-a-manual-override-does.md): the word is
+  **coach adjustment**, a description of a lineup differing from the engine's suggestion rather than a
+  record — no entity, no flag, nothing marking a round as adjusted; an adjustment is a **swap** of
+  exactly two players, tap-to-activate then tap-to-trade, identical on both screens and rejecting the
+  research's pinned re-solve because it would reshuffle children the coach never touched; the engine
+  runs **once per round**, on first arrival at its plan screen, so revisiting never recomputes and
+  ADR 0004's promise that navigation destroys nothing survives; **Reset** on the plan screen re-runs
+  the engine rather than restoring a snapshot, and the live screen has no reset because unsaying a
+  swap means swapping again; nothing is remembered as preference and nothing needs to be, since the
+  engine plans from what actually happened; and the goalie pool now **advances** through the canonical
+  ordering rather than re-offering its head, so a child who refuses is not asked again every round.
+  Recorded as [ADR 0007](../../docs/adr/0007-a-coach-adjustment-is-a-swap.md), which amends ADR 0006's
+  tie-break. Vocabulary: **Swap**, **Substitutions**/**Subs** (retiring **Break**), **Use Lineup**.
+
 ## Not yet specified
 
 - How far a coach can be walked back through the game after modifying a past round, and what
@@ -149,12 +163,6 @@ fairness, goalie selection, or short-handed formations.
   handling of it is a screen question that
   [The live-game screen on a phone](issues/11-live-game-screen-on-a-phone.md) may or may not
   absorb.
-- Whether a player's refusal to play goalie is a remembered preference on the roster
-  or a one-off override in the moment. Sharpened by
-  [Rotation rules and constraints](issues/07-rotation-rules-and-constraints.md): goalie is now a
-  hard ration rather than a weight, so a refusal collides with a rule instead of outbidding one.
-  [What a manual override does to the future](issues/08-what-a-manual-override-does.md) already
-  asks whether an override teaches the engine anything, and may absorb this whole.
 - Changing the formation of a game already underway. Wanted eventually, deliberately
   absent now.
 

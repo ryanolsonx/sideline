@@ -95,6 +95,10 @@ Determinism lives in the model rather than in the search, which is what the rese
 for and what the existing tool intends: `rng.js` threads a seed all the way down to the
 planner, and the planner never calls it.
 
+The goalie suggestion advances through that ordering rather than always taking its head, so a
+child moved out of goal is not immediately re-offered it. Amended by
+[ADR 0007](0007-a-coach-adjustment-is-a-swap.md).
+
 ## The rules bind the engine, never the coach
 
 Every rule here constrains what the app **proposes**. None of them constrains what the coach

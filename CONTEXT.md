@@ -48,7 +48,8 @@ _Avoid_: Keeper, goalkeeper, GK
 **Rationed position**:
 A position nobody wants a second turn at: goalie and defender. It goes to whoever has held it
 fewest times so far, and never to the same player two rounds running, so it is spread across
-the roster rather than offered. Forward is not rationed — it is what is left once the rationed
+the roster rather than offered. It moves on through the roster each round rather than returning
+to the same name, so the pool empties before anyone is asked a second time. Forward is not rationed — it is what is left once the rationed
 positions are filled, and playing it repeatedly is tough luck. Which positions are rationed is
 a fact about each position, not a consequence of how many of it a formation fields.
 _Avoid_: Scarce position, which suggests the count rather than the burden
@@ -73,9 +74,11 @@ Where a round sits relative to the round the game is on: ahead of it, on it, or 
 Not something a round carries. A round the coach walked back past is planned again, with
 everything it recorded still on it.
 
-**Break**:
-The stop in play between two rounds, when the coach settles the next round's lineup. The
-round ahead is being planned; the round behind is still on the field.
+**Substitutions**, **Subs**:
+The stop between two rounds, when the coach settles the next round's lineup, and the name of
+the action that begins it: the coach taps Subs to say the live round is over and a new lineup
+is needed. The round ahead is being planned; the round behind is still on the field.
+_Avoid_: Break
 
 **Setup**:
 A game that has been started but not begun: the coach is marking who turned up. No
@@ -96,8 +99,8 @@ Nothing in Sideline is ever deleted, so this is what deleting a game means.
 _Avoid_: Cancelled, deleted, discarded
 
 **Starting lineup**:
-Which player occupied which position when a round went onto the field. Settled during the
-break, and never rewritten by a substitution.
+Which player occupied which position when a round went onto the field. Settled at
+substitutions, and never rewritten once the round is on the field.
 _Avoid_: Lineup on its own, which no longer says which of the two is meant
 
 **On-field lineup**:
@@ -109,9 +112,21 @@ One position, the player leaving it, and the player taking it, recorded once a r
 the field. Either side may be empty: a player can come off with nobody replacing them. A
 player moving between two on-field positions is two changes.
 
-**Substitution**:
-The ordinary change, where a player who was out comes on for a player who was in. The word
-a coach says; **Change** is the word for what gets recorded, which is broader.
+**Swap**:
+Two players trading places: two on the field exchanging positions, or one on the field
+exchanging with one who was out. The coach's gesture, and the only way a lineup is adjusted by
+hand: tap a name to make it active, then tap a second name to trade the two. Identical on both
+screens, though where it lands differs. **Change** is what gets recorded, and one swap may
+record two of them.
+_Avoid_: Substitution for this, which now names the stop between rounds
+
+**Coach adjustment**:
+A lineup the coach settled that differs from what the engine suggested. A description of a
+situation, never a record: nothing stores or shows whether a lineup came from the engine or
+from the coach. An adjustment may break every rule the engine plans by, which is the coach's
+prerogative, and it is remembered as no preference — later rounds are planned from what
+actually happened, which absorbs it.
+_Avoid_: Override
 
 ### Who is playing
 
@@ -136,7 +151,7 @@ _Avoid_: Benched, resting, sitting
 **Rounds played**:
 How many rounds a player was on the field for, and the only quantity fairness compares. A
 player is credited with a round if they were on the field at any point in it, however
-little of it, so both sides of a substitution made during a round are credited with it. A
+little of it, so both sides of a swap made during a round are credited with it. A
 round in goal counts like any other. Counted from the moment a round goes onto the field,
 never fractionally, and never across more than one game.
 
