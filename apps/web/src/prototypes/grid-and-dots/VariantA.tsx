@@ -7,8 +7,17 @@ import { LETTER, TOTAL_ROUNDS, cells, owedOrder } from './state';
 
 export const NAME = 'Grid only, no dots';
 
+/** Owed-order ranks the players who can actually go on, so anyone not here falls to the bottom. */
+const gridOrder = (game: Parameters<typeof cells>[0]) => {
+  const order = owedOrder(game);
+  return [
+    ...order.filter((p) => !game.absent.includes(p)),
+    ...order.filter((p) => game.absent.includes(p)),
+  ];
+};
+
 function Grid() {
-  const { game, played } = useScreen();
+  const { game } = useScreen();
   return (
     <section className="gd-grid-wrap">
       <h2>The game so far</h2>
@@ -21,12 +30,11 @@ function Grid() {
                 {i + 1}
               </th>
             ))}
-            <th className="gd-tot">▲</th>
           </tr>
         </thead>
         <tbody>
-          {owedOrder(game).map((player) => (
-            <tr key={player}>
+          {gridOrder(game).map((player) => (
+            <tr key={player} className={game.absent.includes(player) ? 'gd-not-here' : ''}>
               <th scope="row">{player}</th>
               {cells(game, player).map((cell, i) => (
                 <td key={i} className={`gd-cell gd-${cell.mark} ${i + 1 === game.round ? 'now' : ''}`}>
@@ -43,7 +51,6 @@ function Grid() {
                   )}
                 </td>
               ))}
-              <td className="gd-tot">{played[player]}</td>
             </tr>
           ))}
         </tbody>

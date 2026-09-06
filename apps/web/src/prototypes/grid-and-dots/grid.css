@@ -24,7 +24,6 @@
 .gd-played { color: #d7f7e4; background: rgba(74, 222, 128, .14); }
 .gd-out { color: #6d7f8b; }
 .gd-absent { color: #33454f; }
-.gd-tot { color: #67e8f9; font-weight: 700; width: 1.6rem; }
 
 .gd-on, .gd-off { font-style: normal; font-size: .58rem; vertical-align: super; }
 .gd-on { color: #fbbf24; }
@@ -80,3 +79,5 @@
 
 /* The footer floats over the page, so the last thing on it needs room to be read. */
 .list-screen { padding-bottom: 3rem; }
+
+.gd-not-here { opacity: .45; }
