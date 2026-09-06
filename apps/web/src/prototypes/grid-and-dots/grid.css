@@ -1,0 +1,82 @@
+/* PROTOTYPE — throwaway styling for the grid-and-dots variants. */
+
+/* A row's trailing end varies per variant, so the row's columns do too. */
+.gd-row { grid-template-columns: 1.6rem 1fr auto auto auto; }
+.gd-row.is-absent { opacity: .5; }
+
+/* ---------- Variant A and C: a grid below the roster ---------- */
+
+.gd-grid-wrap { margin-top: 1rem; }
+.gd-grid-wrap h2 {
+  margin: 0 0 .3rem;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #7f95a2;
+}
+.gd-grid { width: 100%; border-collapse: collapse; font-size: .72rem; table-layout: fixed; }
+.gd-grid th:first-child { width: 3.4rem; text-align: left; font-weight: 500; color: #aebdc5; }
+.gd-grid th, .gd-grid td { padding: .3rem 0; text-align: center; }
+.gd-grid thead th { font-size: .62rem; color: #566b78; font-weight: 500; }
+.gd-grid thead th.now { color: #082b37; background: #67e8f9; border-radius: .25rem; }
+.gd-grid tbody tr { border-top: 1px solid #1a2833; }
+.gd-cell.now { box-shadow: inset 1px 0 #2c5566, inset -1px 0 #2c5566; }
+.gd-played { color: #d7f7e4; background: rgba(74, 222, 128, .14); }
+.gd-out { color: #6d7f8b; }
+.gd-absent { color: #33454f; }
+.gd-tot { color: #67e8f9; font-weight: 700; width: 1.6rem; }
+
+.gd-on, .gd-off { font-style: normal; font-size: .58rem; vertical-align: super; }
+.gd-on { color: #fbbf24; }
+.gd-off { color: #f87171; }
+
+.gd-quiet .gd-played { background: none; color: #9fd8bd; }
+.gd-owed { width: 2.2rem; font-size: .68rem; color: #6d7f8b; }
+.gd-owed.owed { color: #fbbf24; font-weight: 700; }
+
+.gd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .1rem .8rem;
+  margin: .4rem 0 0;
+  font-size: .64rem;
+  color: #6d7f8b;
+}
+
+/* ---------- Variant B: the row is the grid row ---------- */
+
+.gd-strip { display: inline-flex; gap: 1px; }
+.gd-tick {
+  width: 1.05rem;
+  height: 1.15rem;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: .58rem;
+  font-weight: 600;
+  border-radius: .15rem;
+  color: #d7f7e4;
+  background: rgba(74, 222, 128, .16);
+}
+.gd-tick.gd-out { color: #6d7f8b; background: #1c2b36; }
+.gd-tick.gd-absent { background: #16222c; }
+.gd-tick.now { outline: 1px solid #67e8f9; }
+.gd-tick.part { text-transform: lowercase; color: #fbbf24; }
+
+/* ---------- Variant C: a balance instead of a count ---------- */
+
+.gd-balance {
+  min-width: 2.4rem;
+  padding: .15rem .35rem;
+  border-radius: .3rem;
+  font-size: .74rem;
+  font-weight: 700;
+  text-align: center;
+  color: #8fa3ae;
+  background: #1c2b36;
+}
+.gd-balance.owed { color: #0f1a12; background: #4ade80; }
+.gd-balance.ahead { color: #8fa3ae; background: #1c2b36; }
+
+/* The footer floats over the page, so the last thing on it needs room to be read. */
+.list-screen { padding-bottom: 3rem; }

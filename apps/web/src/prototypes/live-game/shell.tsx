@@ -44,9 +44,11 @@ export type ScreenProps = {
 const PrototypeContext = createContext<ScreenProps | null>(null);
 export const useScreen = () => useContext(PrototypeContext)!;
 
-export function usePrototypeGame(): ScreenProps & { overlay: Overlay; closeOverlay: () => void } {
+export function usePrototypeGame(
+  seed: () => Game = newGame,
+): ScreenProps & { overlay: Overlay; closeOverlay: () => void } {
   const [past, setPast] = useState<Game[]>([]);
-  const [game, setGame] = useState<Game>(newGame);
+  const [game, setGame] = useState<Game>(seed);
   const [future, setFuture] = useState<Game[]>([]);
   const [active, setActive] = useState<string | null>(null);
   const [overlay, setOverlay] = useState<Overlay>('none');
