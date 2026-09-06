@@ -18,3 +18,9 @@ conversation:
 - Is a swap one tap, two taps, or a drag?
 - What is above the fold on a phone, and what is not?
 - How does an in-round substitution look different from a planned lineup change?
+
+## Added by [Presence changes mid-game](09-presence-changes-mid-game.md)
+
+The screen must also carry an **Adjust players** control opening the roster as checkboxes, the
+same affordance Setup uses for who turned up. Where it sits, and how it reads on a phone
+mid-game, is this ticket's to settle; what a mark does is already decided.

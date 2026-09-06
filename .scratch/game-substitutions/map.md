@@ -156,6 +156,22 @@ fairness, goalie selection, or short-handed formations.
   Recorded as [ADR 0007](../../docs/adr/0007-a-coach-adjustment-is-a-swap.md), which amends ADR 0006's
   tie-break. Vocabulary: **Swap**, **Substitutions**/**Subs** (retiring **Break**), **Use Lineup**.
 
+- [Presence changes mid-game](issues/09-presence-changes-mid-game.md): a game carries an
+  **attendance** log of marks, each a player, a round, and arrived or left, from which
+  participation and the three history states are folded; Setup's who-turned-up list is the same
+  log stamped ahead of round 1, there is no `Injured` state, and one **Adjust players** button
+  showing the roster as checkboxes serves both. When a mark bites follows the screen, extending
+  ADR 0004: on the plan screen it counts for the round being planned and re-runs the engine for
+  it, discarding swaps already made, because a changed roster is new input rather than a revisit;
+  on the live screen it counts from the next round in both directions, so a child who has gone
+  home stays in the record until the coach taps Subs and a departure never leaves a mid-round
+  hole. The one exception is an arrival while the side is short, put on the field immediately.
+  Attendance survives a walk-back, since ADR 0004 discards rounds and attendance is not one. A
+  short side is the formation underfilled — goalie, defenders, then forwards, leftover forward
+  slots empty and said plainly — and where that makes ADR 0006 impossible,
+  never-two-rounds-running yields while fewest-held stays hard. Recorded as
+  [ADR 0008](../../docs/adr/0008-attendance-is-marked-from-where-you-stand.md).
+
 ## Not yet specified
 
 - How far a coach can be walked back through the game after modifying a past round, and what

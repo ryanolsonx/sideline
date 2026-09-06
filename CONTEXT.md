@@ -51,7 +51,9 @@ fewest times so far, and never to the same player two rounds running, so it is s
 the roster rather than offered. It moves on through the roster each round rather than returning
 to the same name, so the pool empties before anyone is asked a second time. Forward is not rationed — it is what is left once the rationed
 positions are filled, and playing it repeatedly is tough luck. Which positions are rationed is
-a fact about each position, not a consequence of how many of it a formation fields.
+a fact about each position, not a consequence of how many of it a formation fields. A small
+enough side can make the two halves of the rule contradict each other, and then the one about
+consecutive rounds gives way: spreading the burden evenly outranks giving anyone a round off.
 _Avoid_: Scarce position, which suggests the count rather than the burden
 
 ### A game
@@ -134,8 +136,27 @@ _Avoid_: Override
 A player who is at the field and part of this game. The opposite is absent.
 
 **Absent**:
-A player on the roster who did not show up, or who left before the game ended. Absence
-is not a turn to rest and is not owed back.
+A player on the roster who did not show up, who has not arrived yet, or who left before the
+game ended. Absence is not a turn to rest and is not owed back. Why a player is absent is never
+recorded: an injury, a dentist appointment and a child who never came are the same fact.
+_Avoid_: Injured, which the model does not know
+
+**Attendance**:
+Who was at the field, round by round. Kept as an ordered list of marks — a player, the round
+the mark takes effect from, and whether they arrived or left — from which participation and
+history are worked out. A player may arrive, leave and arrive again. Marking who turned up
+before a game begins is the same list, so every player starts absent and turning up is an
+arrival.
+_Avoid_: Presence change, which collides with Change
+
+**Arrived**, **Left**:
+The two marks attendance is made of. The coach makes both with one gesture, tapping a name in
+the roster; which one it is follows from whether the player was there already.
+
+**Short-handed**:
+Fewer players participating than the formation fields. The formation does not change: the
+positions fill goalie first, then defenders, then forwards, and the slots left over stand
+empty. A short-handed game is played, never refused.
 
 **In**:
 Participating and on the field this round.
