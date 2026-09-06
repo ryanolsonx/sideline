@@ -201,6 +201,19 @@ fairness, goalie selection, or short-handed formations.
   alongside a permanent grid is left to
   [The player×round grid and the playing-time dots](issues/12-grid-and-playing-time-dots.md).
 
+- [The player×round grid and the playing-time dots](issues/12-grid-and-playing-time-dots.md):
+  the **dots do not survive** — a roster row keeps its tag, name and rounds-played count and
+  nothing else, because the dots redrew the grid's own row three inches away; the **count lives
+  on the row alone**, the grid's total column deleted, since the number the coach weighs belongs
+  under the thumb that taps the name; a cell carries the position plus `↑` came on mid-round and
+  `↓` came off, both marks kept because a swap is one event across two rows; a **balance** was
+  built and rejected, going quiet when the spread is small and reading −5 for a child who never
+  turned up, which confirms ADR 0005's raw count from the screen's side; the grid stays sorted by
+  who is owed while the roster stays grouped by position, deliberately disagreeing because they
+  answer different questions, with anyone not here dimmed at the bottom rather than first on
+  zero; eight columns always, the planned round blank until Use Lineup; and the grid starting
+  608px down is accepted rather than fought, a deliberate look being able to afford a scroll.
+
 ## Not yet specified
 
 - Changing the formation of a game already underway. Wanted eventually, deliberately
