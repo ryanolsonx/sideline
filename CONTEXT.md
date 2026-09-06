@@ -130,6 +130,36 @@ prerogative, and it is remembered as no preference — later rounds are planned 
 actually happened, which absorbs it.
 _Avoid_: Override
 
+### The record of a game
+
+**Action**:
+One thing the coach did in a game: beginning it, marking a player arrived or left, a swap,
+taking the lineup the app suggested, tapping Subs, ending the game. The unit the game is made
+of and the unit **Undo** unsays. A **Change** is what an action records, so one swap is one
+action and may be two changes.
+_Avoid_: Event, which says how it is stored rather than what it is
+
+**Log**:
+Every action of one game, in the order the coach took them, only ever added to. Everything else
+about a game — its rounds, its lineups, who played how much, which round the coach is on — is
+worked out from the log rather than kept, so the log is the game and nothing can disagree with
+it.
+_Avoid_: History, which is what a player's game looks like round by round
+
+**In effect**:
+An action currently making up the game. The opposite is an action that has been branched away
+from: still kept, never shown, and counted by nothing.
+
+**Undo**, **Redo**:
+Stepping back one action, and stepping forward again. Available for the whole of a live game,
+back as far as the moment it began. Ending a game cannot be undone.
+
+**Branch**:
+What acting after an undo does: the undone actions stop being in effect and there is nothing
+left to redo. Walking back to an earlier round and changing it is the same thing — everything
+the game did after that round branches away, and undo brings it all back. Nothing is destroyed
+either way.
+
 ### Who is playing
 
 **Participating**:

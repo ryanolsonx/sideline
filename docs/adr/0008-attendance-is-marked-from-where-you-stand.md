@@ -77,3 +77,12 @@ rules cannot both hold, *never two rounds running* yields and *drawn from those 
 it fewest* stays hard. The burden still spreads as evenly as three children allow; it just
 cannot buy anyone a clean round off. The engine must always field a legal side, which is the
 one thing it may never refuse.
+
+## Amended by ADR 0009
+
+[ADR 0009](0009-a-game-is-an-append-only-log-of-coach-actions.md) makes a game an append-only
+log, under which a branch would take attendance with it. It does not: marks in effect past the
+branch point are emitted again onto the live chain, keeping the round they take effect from, so
+"attendance survives a walk-back" holds as written. That is the single stated exception to the
+log being one list, and ADR 0009 takes it on the grounds argued here — who was at the field is a
+fact about the afternoon, and the coach should not have to say it twice.

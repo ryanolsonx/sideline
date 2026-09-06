@@ -172,13 +172,24 @@ fairness, goalie selection, or short-handed formations.
   never-two-rounds-running yields while fewest-held stays hard. Recorded as
   [ADR 0008](../../docs/adr/0008-attendance-is-marked-from-where-you-stand.md).
 
+- [Editing a round that already happened](issues/10-editing-a-round-that-already-happened.md): a
+  game is an **append-only log of coach actions** and editing the past is not a rule of its own but
+  what acting in the past does to that log; any round back to round one is reachable and anything on
+  it can change, the first swap bites with no confirmation, and the rounds after it **branch away**
+  rather than being discarded — retained, counted by nothing, and brought back by **undo**, which
+  with redo walks the log one action at a time from Begin to End Game via a small permanent
+  affordance bottom-left. Getting back is one round at a time with each replanned fresh, since a
+  fast-forward would invent history. Nothing is editable after End Game. Attendance rides across a
+  branch, the single stated exception to the log being one list, taken so the architecture does not
+  dictate what the coach experiences. The permanent schema cost of an immutable log was put to the
+  coach and accepted; the case for it was that four prior ADRs had independently reached the same
+  shape. Recorded as
+  [ADR 0009](../../docs/adr/0009-a-game-is-an-append-only-log-of-coach-actions.md), amending ADRs
+  0003, 0004, 0007 and 0008. Vocabulary: **Action**, **Log**, **In effect**, **Undo**/**Redo**,
+  **Branch**.
+
 ## Not yet specified
 
-- How far a coach can be walked back through the game after modifying a past round, and what
-  the app owes them before discarding the rounds after it. The rule is settled; the humane
-  handling of it is a screen question that
-  [The live-game screen on a phone](issues/11-live-game-screen-on-a-phone.md) may or may not
-  absorb.
 - Changing the formation of a game already underway. Wanted eventually, deliberately
   absent now.
 

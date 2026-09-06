@@ -37,3 +37,11 @@ the referee or the weather usually chose.
   decision, not a flag added to this one.
 - Nothing needs cascading deletes, so rounds, lineups, and substitutions can hold plain
   references to their game.
+
+## Amended by ADR 0009
+
+[ADR 0009](0009-a-game-is-an-append-only-log-of-coach-actions.md) makes a game an append-only
+log, which extends this rule inside a game rather than straining it. Undoing an action and then
+acting again leaves the undone actions branched off: retained, unreachable, and excluded by not
+being in effect rather than by a delete flag. Discarding the rounds after an edited one destroys
+nothing.

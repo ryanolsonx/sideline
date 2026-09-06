@@ -24,3 +24,10 @@ conversation:
 The screen must also carry an **Adjust players** control opening the roster as checkboxes, the
 same affordance Setup uses for who turned up. Where it sits, and how it reads on a phone
 mid-game, is this ticket's to settle; what a mark does is already decided.
+
+## Added by ADR 0009
+
+The live-game screen now carries **undo** and **redo**, small and permanent in the bottom-left
+corner, live for the whole game. The prototype should show what they look like next to the lineup
+and what the coach sees immediately after a branch, when several rounds have just disappeared with
+no confirmation.

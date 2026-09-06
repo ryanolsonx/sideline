@@ -46,3 +46,13 @@ gone.
   accumulates in storage, so correcting a round corrects every total for free.
 - Navigation deletes nothing. Modifying a past round discards every round after it, and that is
   the only destructive act in a game.
+
+## Amended by ADR 0009
+
+[ADR 0009](0009-a-game-is-an-append-only-log-of-coach-actions.md) generalises this: the whole
+game, not only a round, is an append-only log folded on read, and the round entity is itself
+derived. Every guarantee above survives unchanged — a round still cannot overwrite what it began
+as, because there is still nowhere to write.
+
+The last consequence is superseded. Modifying a past round is no longer a destructive act: it
+branches the log, the rounds after it are retained, and undo brings them back.

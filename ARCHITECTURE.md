@@ -246,6 +246,69 @@ export class MatchResolver {
 
 Resolvers should not contain substantial business logic or database queries.
 
+## Event-Sourced Modules and Projections
+
+Most modules store current state in ordinary tables. One module does not.
+
+A game is stored as an append-only log of the actions its coach took, and everything the app knows about that game is computed from those actions rather than stored alongside them. The reasoning, the alternatives, and the costs are in [ADR 0009](docs/adr/0009-a-game-is-an-append-only-log-of-coach-actions.md). This section describes only how that shape sits in the layers above.
+
+Do not copy this pattern into another module without an ADR saying why. It exists because the coach can undo, redo, and rewrite the past, and because a game is genuinely a sequence of things that happened. A module without those properties should use normal tables.
+
+### A projection is a pure function from actions to state
+
+A **projection** takes the ordered actions of one game and returns a read model. It is a plain function with no database, no framework, and no I/O, so it belongs in the domain layer:
+
+```ts
+export function projectGame(actions: readonly GameAction[]): GameState {
+    return actions.reduce(applyAction, initialGameState);
+}
+```
+
+Projections must be:
+
+* **Pure.** The same actions always produce the same state. Nothing reads the clock, a random source, or the database.
+* **Total.** Every action kind is handled, including ones written by an older version of the code.
+* **Never persisted.** A stored projection can disagree with the log it came from, which is the failure this design exists to avoid. Compute it on read.
+
+### One projection, many views
+
+Prefer one canonical projection per aggregate with selectors reading from its result:
+
+```ts
+const state = projectGame(actions);
+
+const lineup = onFieldLineup(state, roundNumber);
+const played = roundsPlayed(state);
+```
+
+over several independent folds over the same actions. Independent folds drift apart, and playing time, position counts, and what is on the screen must agree by construction.
+
+### How the layers divide
+
+* **db** stores actions as rows and nothing derived. A game's row holds its identity and lifecycle state; its actions are their own table, ordered.
+* **repository** loads a game's actions in order and appends new ones. It applies no business rules and computes no state.
+* **domain** holds the action types, the projection, and the rules that read projected state.
+* **service** loads the actions, projects them, decides whether the requested action is allowed, and appends it. Appending is the only write.
+* **api** exposes the projected read model. Mutations name a coach action rather than a state change, so the resolver for a swap appends a swap rather than writing a lineup.
+
+### Appending is the transaction boundary
+
+One coach action is one append and one transaction. There is no multi-row state to keep consistent, so the transaction is small by construction.
+
+Where an action must be rejected, the service projects first and checks the rule against the projected state before appending. The check and the append belong in the same transaction so that two requests cannot both pass a check that only one may.
+
+### Action shapes are permanent
+
+Ended games stay readable forever, so every action shape written to the database is permanent. Treat the action types as a published contract:
+
+* Add new action kinds rather than changing existing ones.
+* Add optional fields rather than repurposing existing ones.
+* Keep the projection able to read every shape ever written.
+
+Actions should record what the coach did, not what the code decided, because gestures are stable and internal state transitions are not.
+
+The action catalogue itself is not settled. Until it is, do not add action kinds ahead of the behavior that needs them.
+
 ## Code-First GraphQL
 
 The backend uses NestJS GraphQL in code-first mode.
@@ -360,7 +423,9 @@ Do not introduce event sourcing or an event log simply to model ordinary applica
 
 PostgreSQL remains the source of truth for current application state.
 
-Normal relational tables, transactions, and migrations are sufficient unless a future feature creates a concrete reason for something more complex.
+Normal relational tables, transactions, and migrations are sufficient unless a feature creates a concrete reason for something more complex.
+
+One feature has. See [Event-Sourced Modules and Projections](#event-sourced-modules-and-projections).
 
 ## Migrations
 
@@ -615,6 +680,10 @@ Tests should align with architectural boundaries.
 
 Use fast unit tests for pure business rules.
 
+### Projection
+
+Test projections as domain tests. They are pure functions from a list of actions to state, so a test is a literal list of actions and an expected result, with no database and no mocks.
+
 ### Repository
 
 Use integration tests against PostgreSQL for important persistence behavior.
@@ -680,7 +749,7 @@ That boundary should remain explicit.
 
 Unless requirements change, this architecture intentionally avoids:
 
-* event sourcing
+* event sourcing, except in `games/`, which has an ADR for it
 * CQRS infrastructure
 * Temporal
 * distributed workflows

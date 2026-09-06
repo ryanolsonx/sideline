@@ -75,3 +75,10 @@ one from the coach simply preferring somebody else that round, and treats both a
 alternative — recording the refusal on the player for the game — is exact, and was rejected
 because it turns a coach adjustment into a record, which is the one thing this ADR says it is
 not.
+
+## Amended by ADR 0009
+
+[ADR 0009](0009-a-game-is-an-append-only-log-of-coach-actions.md) makes the engine's suggestion
+an action in the game's log. "Once per round" is unchanged, and now holds across undo and redo
+too: stepping back over a suggestion and forward again restores the same lineup rather than
+re-running the engine. Only a genuine first arrival at a plan screen runs it.
