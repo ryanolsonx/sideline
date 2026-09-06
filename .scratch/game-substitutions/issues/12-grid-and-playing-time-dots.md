@@ -18,3 +18,14 @@ rounds out, so the coach can see at a glance who is owed time.
 - How does a partially-played round render in a cell?
 - Are the dots a count, a ratio, or a running balance?
 - Do the two views want to be one view?
+
+## Reshaped by [The live-game screen on a phone](11-live-game-screen-on-a-phone.md)
+
+The grid is no longer a separate view reached from the live screen: it lives permanently in the
+space the roster leaves, ordered by who is owed time. Two questions arrive with it.
+
+- Each roster row's dots now repeat that player's grid row exactly, three inches apart. The count
+  in cyan still earns its place next to the name being tapped. Do the dots survive?
+- A cell shows one position, so a round where a player came on mid-round is indistinguishable
+  from one they started. Both are credited, per ADR 0005. Does the grid owe the coach a mark for
+  that, or is the record the only place it shows?

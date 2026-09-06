@@ -188,6 +188,19 @@ fairness, goalie selection, or short-handed formations.
   0003, 0004, 0007 and 0008. Vocabulary: **Action**, **Log**, **In effect**, **Undo**/**Redo**,
   **Branch**.
 
+- [The live-game screen on a phone](issues/11-live-game-screen-on-a-phone.md): the screen is a
+  **list, not a pitch** — one 44px row per player carrying position tag, name, dots and count,
+  with positions as group headings and **out first**, above goalie, because who is coming on next
+  is what the coach reaches for; the player×round grid is **not behind a tap** but fills the space
+  nine players cannot, ordered by who is owed time, so the escape hatch the ticket asked for does
+  not exist; plan versus live is carried by a banner and a strip of round pips rather than by the
+  surface, which is what a list gives up against the pitch layout; an in-round change reads as an
+  amber row labelled `on`, the player who came off having left the list; and 44px is the floor,
+  which caught Adjust players as an 18px link and made it a row at the foot of the out group. The
+  two-column variant was rejected as too much for a phone. Whether the per-row dots survive
+  alongside a permanent grid is left to
+  [The player×round grid and the playing-time dots](issues/12-grid-and-playing-time-dots.md).
+
 ## Not yet specified
 
 - Changing the formation of a game already underway. Wanted eventually, deliberately
