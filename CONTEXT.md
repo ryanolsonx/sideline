@@ -134,31 +134,26 @@ _Avoid_: Override
 
 **Action**:
 One thing the coach did in a game: beginning it, marking a player arrived or left, a swap,
-taking the lineup the app suggested, tapping Subs, ending the game. The unit the game is made
-of and the unit **Undo** unsays. A **Change** is what an action records, so one swap is one
-action and may be two changes.
+taking the lineup the app suggested, tapping Subs, ending the game, or undoing the immediately
+previous action. The unit the game is made of. A **Change** is what an action records, so one
+swap is one action and may be two changes.
 _Avoid_: Event, which says how it is stored rather than what it is
 
 **Log**:
 Every action of one game, in the order the coach took them, only ever added to. Everything else
 about a game — its rounds, its lineups, who played how much, which round the coach is on — is
-worked out from the log rather than kept, so the log is the game and nothing can disagree with
-it.
+worked out from the log rather than kept. A correction to a past round makes the projection omit
+later gameplay data that no longer follows from it, without removing its original record.
 _Avoid_: History, which is what a player's game looks like round by round
 
 **In effect**:
-An action currently making up the game. The opposite is an action that has been branched away
-from: still kept, never shown, and counted by nothing.
+An action currently making up the game. The opposite is an action retained in the log but
+omitted by the projection because it was undone or no longer follows a correction to a past
+round; it is never shown or counted.
 
-**Undo**, **Redo**:
-Stepping back one action, and stepping forward again. Available for the whole of a live game,
-back as far as the moment it began. Ending a game cannot be undone.
-
-**Branch**:
-What acting after an undo does: the undone actions stop being in effect and there is nothing
-left to redo. Walking back to an earlier round and changing it is the same thing — everything
-the game did after that round branches away, and undo brings it all back. Nothing is destroyed
-either way.
+**Undo**:
+One recovery tap that neutralizes the immediately preceding coach action. It is available only
+once for that action, never after End Game; there is no Redo and no walk-back history.
 
 ### Who is playing
 

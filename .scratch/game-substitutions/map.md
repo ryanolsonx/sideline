@@ -55,6 +55,14 @@ fairness, goalie selection, or short-handed formations.
   while Today-first makes the unfinished Game and `Open sideline` unmistakable when
   there is one; the team switcher is not the default surface.
 
+- [The action catalogue and the fold](issues/17-action-catalogue-and-the-fold.md): the
+  Game is an ordered, append-only log of coarse coach actions, projected into the sole
+  `GameState`; a correction to a past round makes the fold omit later gameplay data it
+  invalidates, while raw rows remain; Undo neutralizes only the immediately preceding
+  action, with no Redo or history tree. Recorded as
+  [ADR 0010](../../docs/adr/0010-an-ordered-game-log-has-one-step-undo.md), amending
+  ADR 0009.
+
 - [Plan the whole game, or one round at a time?](issues/05-plan-ahead-or-round-at-a-time.md):
   one round at a time, computed from the standings so far, with no whole-game plan
   stored or shown; decided by the coach against the weight of all three research

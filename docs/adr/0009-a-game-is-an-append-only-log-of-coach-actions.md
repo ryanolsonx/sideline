@@ -1,5 +1,9 @@
 # A game is an append-only log of coach actions
 
+> **Amended by [ADR 0010](0010-an-ordered-game-log-has-one-step-undo.md).** Its
+> action-tree, branch, and Redo mechanics are superseded by an ordered log with one-step
+> Undo. The record-of-actions and canonical-projection decisions remain in force.
+
 A game stores one ordered, append-only **log** of **actions**: Begin, an attendance mark, a
 swap on the plan screen, a swap on the live screen, the engine's suggested lineup for a round,
 Subs, End Game. Nothing else about a game is stored. Rounds, starting lineups, changes,
