@@ -1,5 +1,9 @@
 # Attendance is marked from where the coach is standing
 
+> **Amended by [ADR 0011](0011-a-game-starts-with-a-roster-snapshot-and-batch-attendance.md).**
+> Attendance is now persisted as confirmed complete present-player lists rather than one mark per
+> player. Its screen-dependent effective-round behavior remains in force.
+
 The roster at Begin is not the roster at the whistle: children arrive late, leave at halftime,
 and go off injured. This records how that reaches the game, and why a child who has already
 gone home can still be shown on the field.

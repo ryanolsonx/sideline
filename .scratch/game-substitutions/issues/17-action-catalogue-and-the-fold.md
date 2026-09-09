@@ -28,13 +28,13 @@ readable forever.
 
 ## Answer
 
-The durable catalogue is **Begin** (formation snapshot and per-game rotation seed),
-**Mark attendance** (player, arrived or left, and effective round), **Use lineup**
-(round and complete engine-suggested starting lineup), **Swap** (target round, plan or
-live screen, and the two tapped players), **Subs**, **End Game**, **Abandon Game**, and
-**Undo**. Subs, End Game, Abandon Game, and Undo carry no payload. A plan-screen Swap and
-a live-screen Swap are one kind; the screen in its target tells the fold whether it
-adjusts a starting lineup or changes a live one.
+The durable catalogue is **Mark attendance** (a complete present-player list and effective
+round), **Use lineup** (round and complete engine-suggested starting lineup), **Swap**
+(target round, plan or live screen, and the two tapped players), **Subs**, **End Game**,
+**Abandon Game**, and **Undo**. Subs, End Game, Abandon Game, and Undo carry no payload.
+A plan-screen Swap and a live-screen Swap are one kind; the screen in its target tells the
+fold whether it adjusts a starting lineup or changes a live one. Game creation itself holds
+the formation, roster, and rotation-seed snapshots; it is not an action.
 
 Actions are one append-only **ordered log**, with no parent pointer or action tree. A
 past-round action gives the projection enough target context to replay the corrected

@@ -61,7 +61,8 @@ _Avoid_: Scarce position, which suggests the count rather than the burden
 **Game**:
 One outing by one team, played as a sequence of rounds. It records us and who did what:
 there is no opponent, no score, and no name. The unit a coach starts, works through, and
-later looks back at.
+later looks back at. At creation it snapshots the team roster and formation, so later Team
+edits cannot rewrite it.
 _Avoid_: Match, fixture
 
 **Round**:
@@ -133,10 +134,10 @@ _Avoid_: Override
 ### The record of a game
 
 **Action**:
-One thing the coach did in a game: beginning it, marking a player arrived or left, a swap,
-taking the lineup the app suggested, tapping Subs, ending the game, or undoing the immediately
-previous action. The unit the game is made of. A **Change** is what an action records, so one
-swap is one action and may be two changes.
+One thing the coach did in a game: confirming attendance, a swap, taking the lineup the app
+suggested, tapping Subs, ending the game, or undoing the immediately previous action. The unit
+the game is made of. A **Change** is what an action records, so one swap is one action and may
+be two changes.
 _Avoid_: Event, which says how it is stored rather than what it is
 
 **Log**:
@@ -167,16 +168,11 @@ recorded: an injury, a dentist appointment and a child who never came are the sa
 _Avoid_: Injured, which the model does not know
 
 **Attendance**:
-Who was at the field, round by round. Kept as an ordered list of marks — a player, the round
-the mark takes effect from, and whether they arrived or left — from which participation and
-history are worked out. A player may arrive, leave and arrive again. Marking who turned up
-before a game begins is the same list, so every player starts absent and turning up is an
-arrival.
+Who was at the field, round by round. Kept as an ordered list of complete present-player lists,
+each stamped with the round where it takes effect, from which participation and history are
+worked out. The coach selects checkboxes freely, but one **Mark attendance** action is written
+only when they confirm the list.
 _Avoid_: Presence change, which collides with Change
-
-**Arrived**, **Left**:
-The two marks attendance is made of. The coach makes both with one gesture, tapping a name in
-the roster; which one it is follows from whether the player was there already.
 
 **Short-handed**:
 Fewer players participating than the formation fields. The formation does not change: the

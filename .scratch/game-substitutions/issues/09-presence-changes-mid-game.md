@@ -23,6 +23,10 @@ app to work.
 
 ## Answer
 
+> **Amended by [ADR 0011](../../../docs/adr/0011-a-game-starts-with-a-roster-snapshot-and-batch-attendance.md):**
+> the durable record is now a complete present-player list confirmed by the coach, rather than
+> individual arrived/left marks. The screen-dependent effective-round rules below remain.
+
 A game carries an **attendance** log: an ordered list of marks, each a player, the round it
 takes effect from, and whether they **arrived** or **left**. Participation at any round is the
 fold of the log, and `History`'s three states are read from it. The word **change** was already

@@ -59,9 +59,18 @@ fairness, goalie selection, or short-handed formations.
   Game is an ordered, append-only log of coarse coach actions, projected into the sole
   `GameState`; a correction to a past round makes the fold omit later gameplay data it
   invalidates, while raw rows remain; Undo neutralizes only the immediately preceding
-  action, with no Redo or history tree. Recorded as
+  action, with no Redo or history tree. Game creation supplies its static snapshots and
+  attendance actions carry confirmed present-player lists. Recorded as
   [ADR 0010](../../docs/adr/0010-an-ordered-game-log-has-one-step-undo.md), amending
   ADR 0009.
+
+- [Game persistence and resumability](issues/13-game-persistence-and-resumability.md):
+  Start game creates a Game with its roster, formation, and rotation-seed snapshots;
+  confirming the setup checklist then writes one complete attendance list, and every
+  later coach gesture is one ordered GameAction. The Team page offers Resume game when
+  an unfinished Game exists and Start game otherwise, with no automatic redirect;
+  resuming folds actions into the exact state left. Recorded as
+  [ADR 0011](../../docs/adr/0011-a-game-starts-with-a-roster-snapshot-and-batch-attendance.md).
 
 - [Plan the whole game, or one round at a time?](issues/05-plan-ahead-or-round-at-a-time.md):
   one round at a time, computed from the standings so far, with no whole-game plan
@@ -229,13 +238,11 @@ fairness, goalie selection, or short-handed formations.
 
 ## Not yet specified
 
-- Changing the formation of a game already underway. Wanted eventually, deliberately
-  absent now.
-
 ## Out of scope
 
 - Simplified formations derived from player count when short-handed. Deferred by the
   coach during charting; the map settles only the minimum short-handed behavior.
+- Changing the formation of a Game already underway. Deliberately absent from this effort.
 - Midfielders, and formations beyond the three named in
   [Team format and formation](issues/02-team-format-and-formation.md).
 - Passwords, real authentication, and anything private. The roster carries first names.
