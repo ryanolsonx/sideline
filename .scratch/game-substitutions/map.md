@@ -50,6 +50,11 @@ fairness, goalie selection, or short-handed formations.
 
 <!-- one line per resolved ticket: gist plus link -->
 
+- [The team screen](issues/16-team-screen.md): the team screen changes by whether a
+  Game is already underway — Game-first makes `Start a game` loudest when none is,
+  while Today-first makes the unfinished Game and `Open sideline` unmistakable when
+  there is one; the team switcher is not the default surface.
+
 - [Plan the whole game, or one round at a time?](issues/05-plan-ahead-or-round-at-a-time.md):
   one round at a time, computed from the standings so far, with no whole-game plan
   stored or shown; decided by the coach against the weight of all three research

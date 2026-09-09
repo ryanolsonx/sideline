@@ -1,7 +1,7 @@
 # The team screen
 
 Type: prototype
-Status: open
+Status: resolved
 
 ## Question
 
@@ -27,3 +27,22 @@ conversation:
   row beyond a date and a state?
 - Where do roster and formation editing live so they are reachable but never in the way
   of the one tap that matters?
+
+## Answer
+
+The team screen has two deliberate states, chosen by whether a Game is already in
+progress:
+
+- **No unfinished Game:** use the **Game-first** layout (prototype A). `Start a game`
+  is the loudest action; team setup is present but subordinate; completed and
+  abandoned Games form a short history underneath.
+- **An unfinished Game exists:** use the **Today-first** layout (prototype C). The
+  in-progress Game is the unmistakable primary card and `Open sideline` is its one
+  primary action. Starting another Game becomes secondary, with team setup reachable
+  but quiet.
+
+The separate team-switcher layout (prototype B) does not win the default surface.
+It may inform a future multi-team picker, but must not dilute the coach's next action
+on the team screen.
+
+The three captured variants are preserved on branch `codex/prototype-team-screen`.
