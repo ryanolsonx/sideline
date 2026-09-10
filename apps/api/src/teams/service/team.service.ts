@@ -22,13 +22,6 @@ export class TeamService {
     return this.teamRepository.findAllByCoachUsername(normalizeCoachUsername(coachUsername));
   }
 
-  create(name: string, playerNames: string[]): Promise<Team> {
-    return this.teamRepository.createLegacyWithPlayers(
-      normalizeTeamName(name),
-      normalizePlayerNames(playerNames),
-    );
-  }
-
   async findForCoach(coachUsername: string, id: string): Promise<Team> {
     const team = await this.teamRepository.findByIdAndCoachUsername(
       id,
@@ -38,6 +31,21 @@ export class TeamService {
     return team;
   }
 
+  async updateRosterForCoach(coachUsername: string, id: string, playerNames: string[]): Promise<Team> {
+    const team = await this.teamRepository.findByIdAndCoachUsername(
+      id,
+      normalizeCoachUsername(coachUsername),
+    );
+    if (!team) throw new NotFoundException('Team not found.');
+    return this.teamRepository.replacePlayers(team, normalizePlayerNames(playerNames));
+  }
+
+  create(name: string, playerNames: string[]): Promise<Team> {
+    return this.teamRepository.createLegacyWithPlayers(
+      normalizeTeamName(name),
+      normalizePlayerNames(playerNames),
+    );
+  }
   createForCoach(
     coachUsername: string,
     name: string,
