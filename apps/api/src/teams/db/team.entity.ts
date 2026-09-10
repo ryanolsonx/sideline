@@ -9,6 +9,9 @@ export class TeamEntity {
   @Column({ type: 'varchar', length: 80 })
   name!: string;
 
+  @Column({ type: 'varchar', length: 80 })
+  coachUsername!: string;
+
   @CreateDateColumn()
   createdAt!: Date;
 
