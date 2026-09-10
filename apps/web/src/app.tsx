@@ -1,8 +1,25 @@
+import { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
+import { readCoachUsername, rememberCoachUsername } from './coach-identity';
+import { CoachUsernameScreen } from './screens/coach/CoachUsernameScreen';
 import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { CreateTeamMutation, TeamsQuery } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
+  const [coachUsername, setCoachUsername] = useState(readCoachUsername);
+
+  if (!coachUsername) {
+    return (
+      <CoachUsernameScreen
+        onContinue={(username) => setCoachUsername(rememberCoachUsername(username))}
+      />
+    );
+  }
+
+  return <CoachTeams />;
+}
+
+function CoachTeams() {
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
 
