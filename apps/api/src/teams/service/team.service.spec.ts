@@ -34,4 +34,14 @@ describe('TeamService', () => {
       { defender: 1, forward: 3 },
     );
   });
+
+  it('does not let a coach load another coach’s team', async () => {
+    const repository = {
+      findByIdAndCoachUsername: vi.fn().mockResolvedValue(null),
+    } as unknown as TeamRepository;
+    const service = new TeamService(repository);
+
+    await expect(service.findForCoach('River Coach', 'team-1')).rejects.toThrow('Team not found.');
+    expect(repository.findByIdAndCoachUsername).toHaveBeenCalledWith('team-1', 'river coach');
+  });
 });

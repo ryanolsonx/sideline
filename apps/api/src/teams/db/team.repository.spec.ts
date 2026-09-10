@@ -20,6 +20,18 @@ describe('TeamRepository', () => {
     });
   });
 
+  it('loads a team only when it belongs to the coach', async () => {
+    const teams = { findOne: vi.fn().mockResolvedValue(null) } as unknown as Repository<TeamEntity>;
+    const repository = new TeamRepository(teams, {} as DataSource);
+
+    await repository.findByIdAndCoachUsername('team-1', 'river coach');
+
+    expect(teams.findOne).toHaveBeenCalledWith({
+      where: { id: 'team-1', coachUsername: 'river coach' },
+      relations: { players: true },
+    });
+  });
+
   it('creates a team and its players in one transaction', async () => {
     const savedTeam = {
       id: 'team-1',

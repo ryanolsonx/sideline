@@ -26,6 +26,13 @@ export class TeamRepository {
     });
   }
 
+  findByIdAndCoachUsername(id: string, coachUsername: string): Promise<TeamEntity | null> {
+    return this.teamRepository.findOne({
+      where: { id, coachUsername },
+      relations: { players: true },
+    });
+  }
+
   createWithPlayers(
     coachUsername: string,
     name: string,

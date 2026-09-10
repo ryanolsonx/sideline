@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TeamRepository } from '../db/team.repository';
 import {
   Team,
@@ -22,6 +22,16 @@ export class TeamService {
   }
 
   create(name: string, playerNames: string[]): Promise<Team> {
+
+  async findForCoach(coachUsername: string, id: string): Promise<Team> {
+    const team = await this.teamRepository.findByIdAndCoachUsername(
+      id,
+      normalizeCoachUsername(coachUsername),
+    );
+    if (!team) throw new NotFoundException('Team not found.');
+    return team;
+  }
+
     return this.teamRepository.createLegacyWithPlayers(
       normalizeTeamName(name),
       normalizePlayerNames(playerNames),
