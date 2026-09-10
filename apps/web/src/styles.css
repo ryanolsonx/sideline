@@ -387,6 +387,9 @@ h1 {
 .team-editor { padding-top: 2rem; }
 .back-link { padding: 0; color: #8ceaf5; background: transparent; border: 0; font-weight: 700; cursor: pointer; }
 .editor-eyebrow { margin: 2rem 0 .5rem; color: #67e8f9; font-size: .85rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.editor-team-name { margin: 1.5rem 0 2rem; }
+.editor-team-name label { display: block; margin-bottom: .45rem; color: #dce9ed; font-weight: 700; }
+.editor-team-name input { width: 100%; min-height: 3.25rem; padding: .75rem .9rem; color: #f3fbfc; background: #152430; border: 1px solid #435463; border-radius: .7rem; font: inherit; font-weight: 700; }
 .editor-section { margin: 2rem 0; padding: 1rem; background: #152430; border: 1px solid #314858; border-radius: 1rem; }
 .editor-section-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
 .editor-section-heading h2 { margin: 0; font-size: 1.2rem; }

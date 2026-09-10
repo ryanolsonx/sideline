@@ -49,11 +49,12 @@ export class TeamRepository {
     return this.teamRepository.save(team);
   }
 
-  async updateTeam(team: TeamEntity, playerNames: string[], formation: Formation): Promise<TeamEntity> {
+  async updateTeam(team: TeamEntity, name: string, playerNames: string[], formation: Formation): Promise<TeamEntity> {
     return this.dataSource.transaction(async (manager) => {
       const teams = manager.getRepository(TeamEntity);
       const players = manager.getRepository(PlayerEntity);
       await players.delete({ teamId: team.id });
+      team.name = name;
       team.formation = formation;
       team.players = await players.save(playerNames.map((name) => players.create({ name, teamId: team.id })));
       return teams.save(team);

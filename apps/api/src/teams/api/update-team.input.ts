@@ -6,6 +6,7 @@ import { FormationInput } from './formation.input';
 @InputType()
 export class UpdateTeamInput {
   @Field(() => ID) @IsUUID() id!: string;
+  @Field() @IsString() @IsNotEmpty() @MaxLength(80) name!: string;
   @Field(() => [String]) @IsArray() @ArrayMinSize(1) @IsString({ each: true }) @IsNotEmpty({ each: true }) @MaxLength(80, { each: true }) players!: string[];
   @Field(() => FormationInput) @ValidateNested() @Type(() => FormationInput) formation!: FormationInput;
 }

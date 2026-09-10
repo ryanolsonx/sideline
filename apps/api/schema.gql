@@ -68,6 +68,7 @@ input UpdateTeamFormationInput {
 input UpdateTeamInput {
   formation: FormationInput!
   id: ID!
+  name: String!
   players: [String!]!
 }
 

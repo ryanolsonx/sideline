@@ -8,3 +8,11 @@ Feature: Manage a team
     And I open "Salt Lake Strikers"
     Then "Morgan Park" appears in the roster
     And "Avery" does not appear
+
+  Scenario: Rename a team
+    Given I already manage "Salt Lake Strikers"
+    When I open the home page
+    And I open "Salt Lake Strikers"
+    And I change its name to "Salt Lake Comets"
+    And I save changes
+    Then "Salt Lake Comets" appears under "Your teams"
