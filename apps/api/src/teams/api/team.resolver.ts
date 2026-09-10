@@ -4,6 +4,7 @@ import { coachUsernameFromCookieHeader } from './coach-username';
 import { CreateTeamInput } from './create-team.input';
 import { TeamDto } from './team.dto';
 import { UpdateTeamRosterInput } from './update-team-roster.input';
+import { UpdateTeamFormationInput } from './update-team-formation.input';
 
 @Resolver(() => TeamDto)
 export class TeamResolver {
@@ -49,6 +50,18 @@ export class TeamResolver {
       coachUsernameFromCookieHeader(request.headers.cookie),
       input.id,
       input.players,
+    );
+  }
+
+  @Mutation(() => TeamDto)
+  updateTeamFormation(
+    @Context('req') request: { headers: { cookie?: string } },
+    @Args('input') input: UpdateTeamFormationInput,
+  ): Promise<TeamDto> {
+    return this.teamService.updateFormationForCoach(
+      coachUsernameFromCookieHeader(request.headers.cookie),
+      input.id,
+      input.formation,
     );
   }
 }

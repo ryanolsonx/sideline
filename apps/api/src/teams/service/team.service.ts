@@ -40,6 +40,19 @@ export class TeamService {
     return this.teamRepository.replacePlayers(team, normalizePlayerNames(playerNames));
   }
 
+  async updateFormationForCoach(
+    coachUsername: string,
+    id: string,
+    formation: Formation,
+  ): Promise<Team> {
+    const team = await this.teamRepository.findByIdAndCoachUsername(
+      id,
+      normalizeCoachUsername(coachUsername),
+    );
+    if (!team) throw new NotFoundException('Team not found.');
+    return this.teamRepository.updateFormation(team, normalizeFormation(formation));
+  }
+
   create(name: string, playerNames: string[]): Promise<Team> {
     return this.teamRepository.createLegacyWithPlayers(
       normalizeTeamName(name),

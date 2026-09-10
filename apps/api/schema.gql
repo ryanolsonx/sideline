@@ -36,6 +36,7 @@ type Match {
 type Mutation {
   createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
+  updateTeamFormation(input: UpdateTeamFormationInput!): Team!
   updateTeamRoster(input: UpdateTeamRosterInput!): Team!
 }
 
@@ -56,6 +57,11 @@ type Team {
   id: ID!
   name: String!
   players: [Player!]!
+}
+
+input UpdateTeamFormationInput {
+  formation: FormationInput!
+  id: ID!
 }
 
 input UpdateTeamRosterInput {

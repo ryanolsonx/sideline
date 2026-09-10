@@ -57,4 +57,17 @@ describe('TeamService', () => {
 
     expect(repository.replacePlayers).toHaveBeenCalledWith(team, ['Avery Kim']);
   });
+
+  it('validates a formation after establishing ownership', async () => {
+    const team = { id: 'team-1' };
+    const repository = {
+      findByIdAndCoachUsername: vi.fn().mockResolvedValue(team),
+      updateFormation: vi.fn().mockResolvedValue(team),
+    } as unknown as TeamRepository;
+    const service = new TeamService(repository);
+
+    await service.updateFormationForCoach('River Coach', 'team-1', { defender: 2, forward: 3 });
+
+    expect(repository.updateFormation).toHaveBeenCalledWith(team, { defender: 2, forward: 3 });
+  });
 });
