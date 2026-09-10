@@ -6,6 +6,7 @@ export interface Player {
 export interface Team {
   id: string;
   name: string;
+  coachUsername: string;
   players: Player[];
   createdAt: Date;
 }
@@ -18,6 +19,10 @@ function normalizeName(value: string, label: string): string {
 
 export function normalizeTeamName(name: string): string {
   return normalizeName(name, 'A team name');
+}
+
+export function normalizeCoachUsername(username: string): string {
+  return normalizeName(username, 'A coach username').toLowerCase();
 }
 
 export function normalizePlayerNames(playerNames: string[]): string[] {
