@@ -1,4 +1,13 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+
+@ObjectType('Formation')
+export class FormationDto {
+  @Field(() => Int)
+  defender!: number;
+
+  @Field(() => Int)
+  forward!: number;
+}
 
 @ObjectType('Player')
 export class PlayerDto {
@@ -19,6 +28,9 @@ export class TeamDto {
 
   @Field(() => [PlayerDto])
   players!: PlayerDto[];
+
+  @Field(() => FormationDto)
+  formation!: FormationDto;
 
   @Field()
   createdAt!: Date;

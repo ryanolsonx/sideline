@@ -24,6 +24,7 @@ export class TeamResolver {
       coachUsernameFromCookieHeader(request.headers.cookie),
       input.name,
       input.players,
+      input.formation,
     );
   }
 }
