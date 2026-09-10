@@ -33,3 +33,11 @@ export const TeamsQuery = graphql(`
     }
   }
 `);
+
+export const UpdateTeamRosterMutation = graphql(`
+  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }
+`);
+
+export const UpdateTeamFormationMutation = graphql(`
+  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }
+`);
