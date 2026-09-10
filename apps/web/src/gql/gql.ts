@@ -20,6 +20,7 @@ type Documents = {
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": typeof types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": typeof types.UpdateTeamRosterDocument,
     "\n  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }\n": typeof types.UpdateTeamFormationDocument,
+    "\n  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }\n": typeof types.UpdateTeamDocument,
 };
 const documents: Documents = {
     "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_MatchesDocument,
@@ -28,6 +29,7 @@ const documents: Documents = {
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": types.UpdateTeamRosterDocument,
     "\n  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }\n": types.UpdateTeamFormationDocument,
+    "\n  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }\n": types.UpdateTeamDocument,
 };
 
 /**
@@ -68,6 +70,10 @@ export function graphql(source: "\n  mutation UpdateTeamRoster($input: UpdateTea
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }\n"): (typeof documents)["\n  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }\n"): (typeof documents)["\n  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
