@@ -45,6 +45,7 @@ type Player {
 
 type Query {
   matches: [Match!]!
+  team(id: String!): Team!
   teams: [Team!]!
 }
 

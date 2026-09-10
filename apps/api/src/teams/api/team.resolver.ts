@@ -15,6 +15,17 @@ export class TeamResolver {
     );
   }
 
+  @Query(() => TeamDto)
+  team(
+    @Context('req') request: { headers: { cookie?: string } },
+    @Args('id') id: string,
+  ): Promise<TeamDto> {
+    return this.teamService.findForCoach(
+      coachUsernameFromCookieHeader(request.headers.cookie),
+      id,
+    );
+  }
+
   @Mutation(() => TeamDto)
   createTeam(
     @Context('req') request: { headers: { cookie?: string } },
