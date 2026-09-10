@@ -115,6 +115,7 @@ export type UpdateTeamFormationInput = {
 export type UpdateTeamInput = {
   formation: FormationInput;
   id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
   players: Array<Scalars['String']['input']>;
 };
 

@@ -68,6 +68,6 @@ export class TeamResolver {
 
   @Mutation(() => TeamDto)
   updateTeam(@Context('req') request: { headers: { cookie?: string } }, @Args('input') input: UpdateTeamInput): Promise<TeamDto> {
-    return this.teamService.updateForCoach(coachUsernameFromCookieHeader(request.headers.cookie), input.id, input.players, input.formation);
+    return this.teamService.updateForCoach(coachUsernameFromCookieHeader(request.headers.cookie), input.id, input.name, input.players, input.formation);
   }
 }

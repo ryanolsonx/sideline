@@ -50,8 +50,8 @@ function CoachTeams({
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
 
-  if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => setSelectedTeam(undefined)} onSave={async (players, formation) => {
-    await updateTeam({ variables: { input: { id: selectedTeam.id, players, formation } } });
+  if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => setSelectedTeam(undefined)} onSave={async (name, players, formation) => {
+    await updateTeam({ variables: { input: { id: selectedTeam.id, name, players, formation } } });
     await client.refetchQueries({ include: [TeamsQuery] });
   }} />;
 

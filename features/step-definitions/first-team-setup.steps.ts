@@ -169,6 +169,14 @@ When('I save the team', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Save team' }).click();
 });
 
+When('I change its name to {string}', async function (this: SidelineWorld, name: string) {
+  await this.page.getByLabel('Team name').fill(name);
+});
+
+When('I save changes', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Save changes' }).click();
+});
+
 Given('I have not chosen a coach username', async function (this: SidelineWorld) {
   await this.context.clearCookies();
 });

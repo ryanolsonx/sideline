@@ -52,10 +52,10 @@ export class TeamService {
     return this.teamRepository.updateFormation(team, normalizeFormation(formation));
   }
 
-  async updateForCoach(coachUsername: string, id: string, playerNames: string[], formation: Formation): Promise<Team> {
+  async updateForCoach(coachUsername: string, id: string, name: string, playerNames: string[], formation: Formation): Promise<Team> {
     const team = await this.teamRepository.findByIdAndCoachUsername(id, normalizeCoachUsername(coachUsername));
     if (!team) throw new NotFoundException('Team not found.');
-    return this.teamRepository.updateTeam(team, normalizePlayerNames(playerNames), normalizeFormation(formation));
+    return this.teamRepository.updateTeam(team, normalizeTeamName(name), normalizePlayerNames(playerNames), normalizeFormation(formation));
   }
 
   create(name: string, playerNames: string[]): Promise<Team> {
