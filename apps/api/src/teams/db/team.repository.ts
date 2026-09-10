@@ -44,6 +44,11 @@ export class TeamRepository {
     });
   }
 
+  updateFormation(team: TeamEntity, formation: Formation): Promise<TeamEntity> {
+    team.formation = formation;
+    return this.teamRepository.save(team);
+  }
+
   createWithPlayers(
     coachUsername: string,
     name: string,
