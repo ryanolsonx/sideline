@@ -53,6 +53,7 @@ function CoachTeams({
   if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => setSelectedTeam(undefined)} onSave={async (name, players, formation) => {
     const inputFormation = { defender: formation.defender, forward: formation.forward };
     await updateTeam({ variables: { input: { id: selectedTeam.id, name, players, formation: inputFormation } } });
+    setSelectedTeam({ ...selectedTeam, name, players: players.map((playerName) => ({ name: playerName })), formation: inputFormation });
     await client.refetchQueries({ include: [TeamsQuery] });
   }} />;
 
