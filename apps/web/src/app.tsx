@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApolloClient, useMutation, useQuery } from '@apollo/client';
 import {
   forgetCoachUsername,
@@ -13,11 +13,15 @@ import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/te
 export function App() {
   const client = useApolloClient();
   const [coachUsername, setCoachUsername] = useState(readCoachUsername);
+  const [pathname, setPathname] = usePathname();
 
   if (!coachUsername) {
     return (
       <CoachUsernameScreen
-        onContinue={(username) => setCoachUsername(rememberCoachUsername(username))}
+        onContinue={(username) => {
+          setCoachUsername(rememberCoachUsername(username));
+          navigate('/teams');
+        }}
       />
     );
   }
@@ -25,10 +29,12 @@ export function App() {
   return (
     <CoachTeams
       coachUsername={coachUsername}
+      pathname={pathname}
       onSignOut={async () => {
         forgetCoachUsername();
         await client.clearStore();
         setCoachUsername(undefined);
+        navigate('/');
       }}
     />
   );
@@ -36,24 +42,33 @@ export function App() {
 
 function CoachTeams({
   coachUsername,
+  pathname,
   onSignOut,
 }: {
   coachUsername: string;
+  pathname: string;
   onSignOut: () => void;
 }) {
   const client = useApolloClient();
+  useEffect(() => {
+    if (pathname === '/') navigate('/teams');
+  }, [pathname]);
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
   const [updateTeam] = useMutation(UpdateTeamMutation);
-  const [selectedTeam, setSelectedTeam] = useState<EditableTeam>();
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
 
-  if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => setSelectedTeam(undefined)} onSave={async (name, players, formation) => {
+  const teams = (data?.teams ?? []).map((team) => ({
+    id: team.id, name: team.name, players: team.players.map((player) => ({ name: player.name })), formation: team.formation,
+  }));
+  const teamId = pathname.match(/^\/teams\/([^/]+)$/)?.[1];
+  const selectedTeam = teamId ? teams.find((team) => team.id === teamId) : undefined;
+
+  if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => navigate('/teams')} onSave={async (name, players, formation) => {
     const inputFormation = { defender: formation.defender, forward: formation.forward };
     await updateTeam({ variables: { input: { id: selectedTeam.id, name, players, formation: inputFormation } } });
-    setSelectedTeam({ ...selectedTeam, name, players: players.map((playerName) => ({ name: playerName })), formation: inputFormation });
     await client.refetchQueries({ include: [TeamsQuery] });
   }} />;
 
@@ -61,13 +76,10 @@ function CoachTeams({
     <FirstTeamScreen
       coachUsername={coachUsername}
       onSignOut={onSignOut}
-      initialTeams={(data?.teams ?? []).map((team) => ({
-        id: team.id,
-        name: team.name,
-        players: team.players.map((player) => ({ name: player.name })),
-        formation: team.formation,
-      }))}
-      onOpenTeam={setSelectedTeam}
+      key={pathname}
+      initialTeams={teams}
+      startAddingTeam={pathname === '/teams/new'}
+      onOpenTeam={(team) => navigate(`/teams/${team.id}`)}
       onCreateTeam={async (name, players, formation) => {
         const result = await createTeam({ variables: { input: { name, players, formation } } });
         if (!result.data) throw new Error('The team could not be created.');
@@ -75,4 +87,19 @@ function CoachTeams({
       }}
     />
   );
+}
+
+function usePathname(): [string, (pathname: string) => void] {
+  const [pathname, setPathname] = useState(() => window.location.pathname);
+  useEffect(() => {
+    const update = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
+  }, []);
+  return [pathname, (nextPathname) => { window.history.pushState({}, '', nextPathname); setPathname(nextPathname); }];
+}
+
+function navigate(pathname: string) {
+  window.history.pushState({}, '', pathname);
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }

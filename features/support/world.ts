@@ -55,6 +55,7 @@ export class SidelineWorld extends World {
   readonly graphqlUrl = graphqlUrl;
   context!: BrowserContext;
   page!: Page;
+  teamId?: string;
 }
 
 setWorldConstructor(SidelineWorld);

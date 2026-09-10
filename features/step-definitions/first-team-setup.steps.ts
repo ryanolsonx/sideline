@@ -19,7 +19,7 @@ async function seedTeam(
   world: SidelineWorld,
   coachUsername: string,
   teamName: string,
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(world.graphqlUrl, {
     method: 'POST',
     headers: {
@@ -38,6 +38,10 @@ async function seedTeam(
     }),
   });
   if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
+  const result = await response.json() as { data?: { createTeam?: { id?: string } } };
+  const id = result.data?.createTeam?.id;
+  if (!id) throw new Error(`Could not read the id for ${teamName}.`);
+  return id;
 }
 
 Given('I am a coach with no teams', async function (this: SidelineWorld) {
@@ -146,7 +150,16 @@ Then('the team has {int} players', async function (this: SidelineWorld, playerCo
 
 Given('I already manage {string}', async function (this: SidelineWorld, teamName: string) {
   await continueAsCoach(this, defaultCoachUsername);
-  await seedTeam(this, defaultCoachUsername, teamName);
+  this.teamId = await seedTeam(this, defaultCoachUsername, teamName);
+});
+
+When('I open the team URL', async function (this: SidelineWorld) {
+  if (!this.teamId) throw new Error('No team has been created for this scenario.');
+  await this.page.goto(`${appUrl}/teams/${this.teamId}`);
+});
+
+Then('I see the {string} team settings', async function (this: SidelineWorld, teamName: string) {
+  await expect(this.page.getByLabel('Team name')).toHaveValue(teamName);
 });
 
 When('I choose to add another team', async function (this: SidelineWorld) {

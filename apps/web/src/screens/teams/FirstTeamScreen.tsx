@@ -17,6 +17,7 @@ interface FirstTeamScreenProps {
     formation: { defender: number; forward: number },
   ) => Promise<CreatedTeam>;
   onOpenTeam?: (team: CreatedTeam) => void;
+  startAddingTeam?: boolean;
 }
 
 export function FirstTeamScreen({
@@ -25,6 +26,7 @@ export function FirstTeamScreen({
   initialTeams = [],
   onCreateTeam,
   onOpenTeam,
+  startAddingTeam = false,
 }: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
@@ -33,7 +35,7 @@ export function FirstTeamScreen({
   const [formation, setFormation] = useState({ defender: 2, forward: 2 });
   const [isChoosingFormation, setIsChoosingFormation] = useState(false);
   const [teams, setTeams] = useState<CreatedTeam[]>(initialTeams);
-  const [isAddingTeam, setIsAddingTeam] = useState(initialTeams.length === 0);
+  const [isAddingTeam, setIsAddingTeam] = useState(startAddingTeam || initialTeams.length === 0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const playerNameInput = useRef<HTMLInputElement>(null);
