@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { TeamRepository } from '../db/team.repository';
 import {
   Team,
+  Formation,
+  defaultFormation,
   normalizeCoachUsername,
+  normalizeFormation,
   normalizePlayerNames,
   normalizeTeamName,
 } from '../domain/team.model';
@@ -19,18 +22,24 @@ export class TeamService {
     return this.teamRepository.findAllByCoachUsername(normalizeCoachUsername(coachUsername));
   }
 
-  create(name: string, playerNames: string[]): Promise<Team> {
+  create(name: string, playerNames: string[], formation: Formation = defaultFormation): Promise<Team> {
     return this.teamRepository.createLegacyWithPlayers(
       normalizeTeamName(name),
       normalizePlayerNames(playerNames),
     );
   }
 
-  createForCoach(coachUsername: string, name: string, playerNames: string[]): Promise<Team> {
+  createForCoach(
+    coachUsername: string,
+    name: string,
+    playerNames: string[],
+    formation: Formation = defaultFormation,
+  ): Promise<Team> {
     return this.teamRepository.createWithPlayers(
       normalizeCoachUsername(coachUsername),
       normalizeTeamName(name),
       normalizePlayerNames(playerNames),
+      normalizeFormation(formation),
     );
   }
 }
