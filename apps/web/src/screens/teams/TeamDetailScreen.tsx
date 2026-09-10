@@ -21,10 +21,17 @@ export function TeamDetailScreen({
   const [playerName, setPlayerName] = useState('');
   const [formation, setFormation] = useState(team.formation);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string>();
 
   async function save() {
     setSaving(true);
-    try { await onSave(name, players, formation); onBack(); } finally { setSaving(false); }
+    setSaveError(undefined);
+    try {
+      await onSave(name, players, formation);
+      onBack();
+    } catch {
+      setSaveError('We could not save your team. Try again.');
+    } finally { setSaving(false); }
   }
 
   return <main className="onboarding-shell"><section className="onboarding-content team-editor" aria-labelledby="team-heading">
@@ -42,6 +49,7 @@ export function TeamDetailScreen({
       <label className={formation.defender === 1 && formation.forward === 3 ? 'editor-option selected' : 'editor-option'}><input type="radio" name="edit-formation" checked={formation.defender === 1 && formation.forward === 3} onChange={() => setFormation({ defender: 1, forward: 3 })} /><span><b>5v5</b><small>1 defender · 3 forwards</small></span></label>
       <label className={formation.defender === 2 && formation.forward === 3 ? 'editor-option selected' : 'editor-option'}><input type="radio" name="edit-formation" checked={formation.defender === 2 && formation.forward === 3} onChange={() => setFormation({ defender: 2, forward: 3 })} /><span><b>6v6</b><small>2 defenders · 3 forwards</small></span></label>
     </fieldset>
+    {saveError && <p className="save-error" role="alert">{saveError}</p>}
     <button className="finish-button" type="button" disabled={players.length === 0 || !name.trim() || saving} onClick={save}>{saving ? 'Saving…' : 'Save changes'}</button>
   </section></main>;
 }
