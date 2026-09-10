@@ -155,6 +155,20 @@ Then('{string} remains one of my teams', async function (this: SidelineWorld, te
   await expect(this.page.getByText(`Already managing: ${teamName}`)).toBeVisible();
 });
 
+When('I open {string}', async function (this: SidelineWorld, teamName: string) {
+  await this.page.getByRole('button', { name: new RegExp(teamName) }).click();
+});
+
+When('I replace {string} with {string}', async function (this: SidelineWorld, oldName: string, newName: string) {
+  await this.page.getByRole('button', { name: `Remove ${oldName}` }).click();
+  await this.page.getByLabel('Player name').fill(newName);
+  await this.page.getByRole('button', { name: 'Add player' }).click();
+});
+
+When('I save the team', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Save team' }).click();
+});
+
 Given('I have not chosen a coach username', async function (this: SidelineWorld) {
   await this.context.clearCookies();
 });
