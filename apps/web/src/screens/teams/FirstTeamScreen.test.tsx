@@ -10,6 +10,15 @@ describe('FirstTeamScreen', () => {
     expect(screen.getByText('casey morgan')).toBeInTheDocument();
   });
 
+  it('lets the current coach sign out', () => {
+    const signOut = vi.fn();
+    render(<FirstTeamScreen coachUsername="casey morgan" onSignOut={signOut} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+
+    expect(signOut).toHaveBeenCalledOnce();
+  });
+
   it('invites a first-time coach to add a team', () => {
     render(<FirstTeamScreen />);
 
