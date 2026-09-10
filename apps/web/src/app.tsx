@@ -16,10 +16,10 @@ export function App() {
     );
   }
 
-  return <CoachTeams />;
+  return <CoachTeams coachUsername={coachUsername} />;
 }
 
-function CoachTeams() {
+function CoachTeams({ coachUsername }: { coachUsername: string }) {
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
 
@@ -28,6 +28,7 @@ function CoachTeams() {
 
   return (
     <FirstTeamScreen
+      coachUsername={coachUsername}
       initialTeams={(data?.teams ?? []).map((team) => ({
         name: team.name,
         players: team.players.map((player) => ({ name: player.name })),

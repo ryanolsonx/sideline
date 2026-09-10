@@ -6,11 +6,16 @@ export interface CreatedTeam {
 }
 
 interface FirstTeamScreenProps {
+  coachUsername?: string;
   initialTeams?: CreatedTeam[];
   onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
 }
 
-export function FirstTeamScreen({ initialTeams = [], onCreateTeam }: FirstTeamScreenProps) {
+export function FirstTeamScreen({
+  coachUsername,
+  initialTeams = [],
+  onCreateTeam,
+}: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
@@ -71,6 +76,7 @@ export function FirstTeamScreen({ initialTeams = [], onCreateTeam }: FirstTeamSc
       <header className="app-header">
         <span className="brand-mark" aria-hidden="true">S</span>
         <span className="brand-name">Sideline</span>
+        {coachUsername && <span className="coach-identity">{coachUsername}</span>}
       </header>
 
       {!isAddingTeam && teams.length > 0 ? (
