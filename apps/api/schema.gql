@@ -7,6 +7,7 @@ input CreateMatchInput {
 }
 
 input CreateTeamInput {
+  formation: FormationInput
   name: String!
   players: [String!]!
 }
@@ -15,6 +16,16 @@ input CreateTeamInput {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Formation {
+  defender: Int!
+  forward: Int!
+}
+
+input FormationInput {
+  defender: Int!
+  forward: Int!
+}
 
 type Match {
   createdAt: DateTime!
@@ -39,6 +50,7 @@ type Query {
 
 type Team {
   createdAt: DateTime!
+  formation: Formation!
   id: ID!
   name: String!
   players: [Player!]!
