@@ -18,6 +18,6 @@ export class CreateTeamInput {
   @MaxLength(80, { each: true })
   players!: string[];
 
-  @Field(() => FormationInput, { nullable: true })
-  formation?: FormationInput;
+  @Field(() => FormationInput)
+  formation!: FormationInput;
 }
