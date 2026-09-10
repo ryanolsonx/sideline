@@ -19,7 +19,7 @@ export function readCoachUsername(): string | undefined {
 
 export function rememberCoachUsername(username: string): string {
   const normalizedUsername = normalizeCoachUsername(username);
-  document.cookie = `${COACH_USERNAME_COOKIE}=${encodeURIComponent(normalizedUsername)}; Path=/; SameSite=Lax`;
+  document.cookie = `${COACH_USERNAME_COOKIE}=${encodeURIComponent(normalizedUsername)}; Path=/; Max-Age=31536000; SameSite=Lax`;
   return normalizedUsername;
 }
 

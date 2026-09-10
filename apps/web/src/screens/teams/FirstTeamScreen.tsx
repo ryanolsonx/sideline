@@ -80,6 +80,7 @@ export function FirstTeamScreen({
         <span className="brand-name">Sideline</span>
         {coachUsername && (
           <div className="coach-identity">
+            <span className="coach-avatar" aria-hidden="true">{coachUsername.at(0)}</span>
             <span>{coachUsername}</span>
             {onSignOut && <button type="button" onClick={onSignOut}>Sign out</button>}
           </div>
