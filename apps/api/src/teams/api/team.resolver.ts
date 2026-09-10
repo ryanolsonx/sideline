@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { TeamService } from '../service/team.service';
-import { optionalCoachUsernameFromCookieHeader } from './coach-username';
+import { coachUsernameFromCookieHeader } from './coach-username';
 import { CreateTeamInput } from './create-team.input';
 import { TeamDto } from './team.dto';
 
@@ -10,10 +10,9 @@ export class TeamResolver {
 
   @Query(() => [TeamDto])
   teams(@Context('req') request: { headers: { cookie?: string } }): Promise<TeamDto[]> {
-    const coachUsername = optionalCoachUsernameFromCookieHeader(request.headers.cookie);
-    return coachUsername
-      ? this.teamService.findAllForCoach(coachUsername)
-      : this.teamService.findAll();
+    return this.teamService.findAllForCoach(
+      coachUsernameFromCookieHeader(request.headers.cookie),
+    );
   }
 
   @Mutation(() => TeamDto)
@@ -21,9 +20,10 @@ export class TeamResolver {
     @Context('req') request: { headers: { cookie?: string } },
     @Args('input') input: CreateTeamInput,
   ): Promise<TeamDto> {
-    const coachUsername = optionalCoachUsernameFromCookieHeader(request.headers.cookie);
-    return coachUsername
-      ? this.teamService.createForCoach(coachUsername, input.name, input.players)
-      : this.teamService.create(input.name, input.players);
+    return this.teamService.createForCoach(
+      coachUsernameFromCookieHeader(request.headers.cookie),
+      input.name,
+      input.players,
+    );
   }
 }

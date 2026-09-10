@@ -156,3 +156,21 @@ When('I continue as {string}', async function (this: SidelineWorld, username: st
   await this.page.getByLabel('Coach username').fill(username);
   await this.page.getByRole('button', { name: 'Continue' }).click();
 });
+
+Then(
+  'I see {string} as the current coach',
+  async function (this: SidelineWorld, username: string) {
+    await expect(this.page.getByText(username, { exact: true })).toBeVisible();
+  },
+);
+
+Given(
+  '{string} manages {string}',
+  async function (this: SidelineWorld, coachUsername: string, teamName: string) {
+    await seedTeam(this, coachUsername, teamName);
+  },
+);
+
+Then('{string} does not appear', async function (this: SidelineWorld, text: string) {
+  await expect(this.page.getByText(text, { exact: true })).toHaveCount(0);
+});
