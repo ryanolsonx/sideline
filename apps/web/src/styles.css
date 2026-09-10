@@ -56,9 +56,21 @@ input { font: inherit; }
 }
 
 .coach-identity {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   margin-left: auto;
   color: #b9cbd2;
   font-size: .875rem;
+}
+
+.coach-identity button {
+  min-height: 2.75rem;
+  padding: 0 .25rem;
+  color: #67e8f9;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .onboarding-content {

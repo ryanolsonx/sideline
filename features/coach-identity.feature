@@ -10,6 +10,8 @@ Feature: Use Sideline as a coach
     When I continue as "  Casey   Morgan "
     Then I see "casey morgan" as the current coach
     And I am invited to add my first team
+    When I sign out
+    Then I am asked for my coach username
 
   Scenario: A coach sees only their teams
     Given "river coach" manages "Salt Lake Strikers"

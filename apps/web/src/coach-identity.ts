@@ -22,3 +22,7 @@ export function rememberCoachUsername(username: string): string {
   document.cookie = `${COACH_USERNAME_COOKIE}=${encodeURIComponent(normalizedUsername)}; Path=/; SameSite=Lax`;
   return normalizedUsername;
 }
+
+export function forgetCoachUsername(): void {
+  document.cookie = `${COACH_USERNAME_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+}

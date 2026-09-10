@@ -174,3 +174,7 @@ Given(
 Then('{string} does not appear', async function (this: SidelineWorld, text: string) {
   await expect(this.page.getByText(text, { exact: true })).toHaveCount(0);
 });
+
+When('I sign out', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Sign out' }).click();
+});

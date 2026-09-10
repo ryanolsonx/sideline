@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
-import { readCoachUsername, rememberCoachUsername } from './coach-identity';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import {
+  forgetCoachUsername,
+  readCoachUsername,
+  rememberCoachUsername,
+} from './coach-identity';
 import { CoachUsernameScreen } from './screens/coach/CoachUsernameScreen';
 import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { CreateTeamMutation, TeamsQuery } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
+  const client = useApolloClient();
   const [coachUsername, setCoachUsername] = useState(readCoachUsername);
 
   if (!coachUsername) {
@@ -16,10 +21,25 @@ export function App() {
     );
   }
 
-  return <CoachTeams coachUsername={coachUsername} />;
+  return (
+    <CoachTeams
+      coachUsername={coachUsername}
+      onSignOut={async () => {
+        forgetCoachUsername();
+        await client.clearStore();
+        setCoachUsername(undefined);
+      }}
+    />
+  );
 }
 
-function CoachTeams({ coachUsername }: { coachUsername: string }) {
+function CoachTeams({
+  coachUsername,
+  onSignOut,
+}: {
+  coachUsername: string;
+  onSignOut: () => void;
+}) {
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
 
@@ -29,6 +49,7 @@ function CoachTeams({ coachUsername }: { coachUsername: string }) {
   return (
     <FirstTeamScreen
       coachUsername={coachUsername}
+      onSignOut={onSignOut}
       initialTeams={(data?.teams ?? []).map((team) => ({
         name: team.name,
         players: team.players.map((player) => ({ name: player.name })),
