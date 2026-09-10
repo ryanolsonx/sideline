@@ -138,7 +138,8 @@ Remove the temporary directory after the server has stopped and verification is 
 
 ## Stacked versus large PR experiment
 
-When the user explicitly gives the go-ahead after a completed stack:
+When the user explicitly gives the go-ahead after a completed stack, or explicitly invokes
+the repository's `$implement-stack` skill for both deliverables:
 
 - Create a new standalone branch from the stack's trunk (`master` unless stated otherwise).
 - Record the full stack commit list, then cherry-pick every stack commit from bottom to top onto the new branch.

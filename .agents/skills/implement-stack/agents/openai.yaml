@@ -1,0 +1,5 @@
+interface:
+  display_name: "Implement Stack"
+  short_description: "Build a review stack and matching feature PR"
+policy:
+  allow_implicit_invocation: false
