@@ -5,7 +5,10 @@ import { App } from './app';
 import './styles.css';
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:3000/graphql' }),
+  link: new HttpLink({
+    uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:3000/graphql',
+    credentials: 'include',
+  }),
   cache: new InMemoryCache(),
 });
 

@@ -55,6 +55,36 @@ input { font: inherit; }
   letter-spacing: -.02em;
 }
 
+.coach-identity {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-left: auto;
+  color: #b9cbd2;
+  font-size: .875rem;
+}
+
+.coach-avatar {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #10232e;
+  background: #b9cbd2;
+  border-radius: 50%;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.coach-identity button {
+  min-height: 2.75rem;
+  padding: 0 .25rem;
+  color: #67e8f9;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .onboarding-content {
   width: min(100%, 34rem);
   margin: 0 auto;
@@ -123,6 +153,11 @@ h1 {
   border-radius: .7rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.onboarding-form button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
 }
 
 .team-context {

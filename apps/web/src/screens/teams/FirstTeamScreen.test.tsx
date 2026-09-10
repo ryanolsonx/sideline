@@ -4,6 +4,21 @@ import { describe, expect, it, vi } from 'vitest';
 import { FirstTeamScreen } from './FirstTeamScreen';
 
 describe('FirstTeamScreen', () => {
+  it('shows the current coach', () => {
+    render(<FirstTeamScreen coachUsername="casey morgan" />);
+
+    expect(screen.getByText('casey morgan')).toBeInTheDocument();
+  });
+
+  it('lets the current coach sign out', () => {
+    const signOut = vi.fn();
+    render(<FirstTeamScreen coachUsername="casey morgan" onSignOut={signOut} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+
+    expect(signOut).toHaveBeenCalledOnce();
+  });
+
   it('invites a first-time coach to add a team', () => {
     render(<FirstTeamScreen />);
 

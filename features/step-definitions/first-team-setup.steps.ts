@@ -2,8 +2,41 @@ import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { SidelineWorld } from '../support/world';
 
+const appUrl = 'http://127.0.0.1:4173';
+const defaultCoachUsername = 'test coach';
+
+async function continueAsCoach(world: SidelineWorld, username: string): Promise<void> {
+  await world.context.addCookies([
+    {
+      name: 'sidelineCoachUsername',
+      value: username,
+      url: appUrl,
+    },
+  ]);
+}
+
+async function seedTeam(
+  world: SidelineWorld,
+  coachUsername: string,
+  teamName: string,
+): Promise<void> {
+  const response = await fetch(world.graphqlUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      cookie: `sidelineCoachUsername=${encodeURIComponent(coachUsername)}`,
+    },
+    body: JSON.stringify({
+      query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
+      variables: { input: { name: teamName, players: ['Avery'] } },
+    }),
+  });
+  if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
+}
+
 Given('I am a coach with no teams', async function (this: SidelineWorld) {
   await this.context.addInitScript(() => window.localStorage.clear());
+  await continueAsCoach(this, defaultCoachUsername);
 });
 
 When('I open the home page', async function (this: SidelineWorld) {
@@ -61,7 +94,8 @@ Then('the roster count is {int} players', async function (this: SidelineWorld, e
 });
 
 Given('I am adding players to {string}', async function (this: SidelineWorld, teamName: string) {
-  await this.page.goto('http://127.0.0.1:4173');
+  await continueAsCoach(this, defaultCoachUsername);
+  await this.page.goto(appUrl);
   await this.page.getByLabel('Team name').fill(teamName);
   await this.page.getByRole('button', { name: 'Add players' }).click();
 });
@@ -88,15 +122,8 @@ Then('the team has {int} players', async function (this: SidelineWorld, playerCo
 });
 
 Given('I already manage {string}', async function (this: SidelineWorld, teamName: string) {
-  const response = await fetch(this.graphqlUrl, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
-      variables: { input: { name: teamName, players: ['Avery Kim'] } },
-    }),
-  });
-  if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
+  await continueAsCoach(this, defaultCoachUsername);
+  await seedTeam(this, defaultCoachUsername, teamName);
 });
 
 When('I choose to add another team', async function (this: SidelineWorld) {
@@ -109,4 +136,56 @@ Then('I can name a new team', async function (this: SidelineWorld) {
 
 Then('{string} remains one of my teams', async function (this: SidelineWorld, teamName: string) {
   await expect(this.page.getByText(`Already managing: ${teamName}`)).toBeVisible();
+});
+
+Given('I have not chosen a coach username', async function (this: SidelineWorld) {
+  await this.context.clearCookies();
+});
+
+When('I open Sideline', async function (this: SidelineWorld) {
+  await this.page.goto(appUrl);
+});
+
+Then('I am asked for my coach username', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('heading', { name: 'Who is coaching today?' })).toBeVisible();
+  await expect(this.page.getByLabel('Coach username')).toBeVisible();
+});
+
+When('I continue as {string}', async function (this: SidelineWorld, username: string) {
+  if (this.page.url() === 'about:blank') await this.page.goto(appUrl);
+  await this.page.getByLabel('Coach username').fill(username);
+  await this.page.getByRole('button', { name: 'Continue' }).click();
+});
+
+Then(
+  'I see {string} as the current coach',
+  async function (this: SidelineWorld, username: string) {
+    await expect(this.page.getByText(username, { exact: true })).toBeVisible();
+  },
+);
+
+Given(
+  '{string} manages {string}',
+  async function (this: SidelineWorld, coachUsername: string, teamName: string) {
+    await seedTeam(this, coachUsername, teamName);
+  },
+);
+
+Then('{string} does not appear', async function (this: SidelineWorld, text: string) {
+  await expect(this.page.getByText(text, { exact: true })).toHaveCount(0);
+});
+
+Given(
+  'I previously continued as {string}',
+  async function (this: SidelineWorld, username: string) {
+    await continueAsCoach(this, username);
+  },
+);
+
+When('I return to Sideline', async function (this: SidelineWorld) {
+  await this.page.goto(appUrl);
+});
+
+When('I sign out', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Sign out' }).click();
 });

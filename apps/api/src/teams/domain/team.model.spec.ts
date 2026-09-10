@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizePlayerNames, normalizeTeamName } from './team.model';
+import { normalizeCoachUsername, normalizePlayerNames, normalizeTeamName } from './team.model';
 
 describe('team setup', () => {
   it('normalizes the team and player names', () => {
@@ -14,5 +14,10 @@ describe('team setup', () => {
   it('requires at least one named player', () => {
     expect(() => normalizePlayerNames([])).toThrow('At least one player is required.');
     expect(() => normalizePlayerNames(['  '])).toThrow('A player name is required.');
+  });
+
+  it('normalizes a coach username as its identity', () => {
+    expect(normalizeCoachUsername('  Casey   MORGAN ')).toBe('casey morgan');
+    expect(() => normalizeCoachUsername('  ')).toThrow('A coach username is required.');
   });
 });
