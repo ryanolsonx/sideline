@@ -7,6 +7,7 @@ export class TeamFormations1740000000000 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "team" ADD "formation" jsonb NOT NULL DEFAULT '{"defender": 2, "forward": 2}'`,
     );
+    await queryRunner.query('ALTER TABLE "team" ALTER COLUMN "formation" DROP DEFAULT');
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {

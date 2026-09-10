@@ -8,13 +8,7 @@ export interface Formation {
   forward: number;
 }
 
-export const supportedFormations: readonly Formation[] = [
-  { defender: 2, forward: 2 },
-  { defender: 1, forward: 3 },
-  { defender: 2, forward: 3 },
-];
-
-export const defaultFormation: Formation = supportedFormations[0];
+export const legacyFormation: Formation = { defender: 2, forward: 2 };
 
 export interface Team {
   id: string;
@@ -47,13 +41,17 @@ export function normalizePlayerNames(playerNames: string[]): string[] {
 
 export function normalizeFormation(formation: Formation): Formation {
   const normalized = { defender: formation.defender, forward: formation.forward };
-  const isSupported = supportedFormations.some(
-    (candidate) => candidate.defender === normalized.defender && candidate.forward === normalized.forward,
-  );
-  if (!isSupported) throw new Error('Choose a supported formation.');
+  const fieldSize = normalized.defender + normalized.forward + 1;
+  if (!Number.isInteger(normalized.defender) || !Number.isInteger(normalized.forward)
+    || normalized.defender < 1 || normalized.forward < 1 || (fieldSize !== 5 && fieldSize !== 6)) {
+    throw new Error('A formation must be a 5v5 or 6v6 set of positive outfield counts.');
+  }
   return normalized;
 }
 
 export function formatForFormation(formation: Formation): '5v5' | '6v6' {
-  return formation.defender + formation.forward + 1 === 5 ? '5v5' : '6v6';
+  const fieldSize = formation.defender + formation.forward + 1;
+  if (fieldSize === 5) return '5v5';
+  if (fieldSize === 6) return '6v6';
+  throw new Error('A formation must be a 5v5 or 6v6 set of positive outfield counts.');
 }
