@@ -79,7 +79,7 @@ describe('FirstTeamScreen', () => {
     fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add players' }));
 
-    const finishButton = screen.getByRole('button', { name: 'Finish setup' });
+    const finishButton = screen.getByRole('button', { name: 'Choose formation' });
     expect(finishButton).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText('Player name'), { target: { value: 'Avery Kim' } });
@@ -94,6 +94,7 @@ describe('FirstTeamScreen', () => {
     const createTeam = vi.fn().mockResolvedValue({
       name: 'Salt Lake Strikers',
       players: [{ name: 'Avery Kim' }],
+      formation: { defender: 2, forward: 2 },
     });
     render(<FirstTeamScreen onCreateTeam={createTeam} />);
     fireEvent.change(screen.getByLabelText('Team name'), { target: { value: 'Salt Lake Strikers' } });
@@ -101,9 +102,15 @@ describe('FirstTeamScreen', () => {
     fireEvent.change(screen.getByLabelText('Player name'), { target: { value: 'Avery Kim' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
 
+    fireEvent.click(screen.getByRole('button', { name: 'Choose formation' }));
+    expect(screen.getByRole('heading', { name: 'Choose your formation.' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Finish setup' }));
 
-    await waitFor(() => expect(createTeam).toHaveBeenCalledWith('Salt Lake Strikers', ['Avery Kim']));
+    await waitFor(() => expect(createTeam).toHaveBeenCalledWith(
+      'Salt Lake Strikers',
+      ['Avery Kim'],
+      { defender: 2, forward: 2 },
+    ));
     expect(screen.getByRole('heading', { name: 'Salt Lake Strikers' })).toBeInTheDocument();
     expect(screen.getByText('1 player')).toBeInTheDocument();
   });
@@ -111,7 +118,11 @@ describe('FirstTeamScreen', () => {
   it('starts another setup without losing an existing team', () => {
     render(
       <FirstTeamScreen
-        initialTeams={[{ name: 'Salt Lake Strikers', players: [{ name: 'Avery Kim' }] }]}
+        initialTeams={[{
+          name: 'Salt Lake Strikers',
+          players: [{ name: 'Avery Kim' }],
+          formation: { defender: 2, forward: 2 },
+        }]}
         onCreateTeam={vi.fn()}
       />,
     );

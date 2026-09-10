@@ -3,13 +3,18 @@ import { FormEvent, useRef, useState } from 'react';
 export interface CreatedTeam {
   name: string;
   players: { name: string }[];
+  formation: { defender: number; forward: number };
 }
 
 interface FirstTeamScreenProps {
   coachUsername?: string;
   onSignOut?: () => void;
   initialTeams?: CreatedTeam[];
-  onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
+  onCreateTeam?: (
+    name: string,
+    players: string[],
+    formation: { defender: number; forward: number },
+  ) => Promise<CreatedTeam>;
 }
 
 export function FirstTeamScreen({
@@ -22,6 +27,8 @@ export function FirstTeamScreen({
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
   const [players, setPlayers] = useState<string[]>([]);
+  const [formation, setFormation] = useState({ defender: 2, forward: 2 });
+  const [isChoosingFormation, setIsChoosingFormation] = useState(false);
   const [teams, setTeams] = useState<CreatedTeam[]>(initialTeams);
   const [isAddingTeam, setIsAddingTeam] = useState(initialTeams.length === 0);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,7 +44,7 @@ export function FirstTeamScreen({
   function handlePlayerSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = playerName.trim();
-    if (!name) return;
+    if (!name || players.length === 9) return;
 
     setPlayers((currentPlayers) => [...currentPlayers, name]);
     setPlayerName('');
@@ -54,7 +61,7 @@ export function FirstTeamScreen({
     setIsSaving(true);
     setSaveError(undefined);
     try {
-      const createdTeam = await onCreateTeam(teamName, players);
+      const createdTeam = await onCreateTeam(teamName, players, formation);
       setTeams((currentTeams) => [...currentTeams, createdTeam]);
       setIsAddingTeam(false);
     } catch {
@@ -69,6 +76,8 @@ export function FirstTeamScreen({
     setTeamName(undefined);
     setPlayerName('');
     setPlayers([]);
+    setFormation({ defender: 2, forward: 2 });
+    setIsChoosingFormation(false);
     setSaveError(undefined);
     setIsAddingTeam(true);
   }
@@ -134,11 +143,11 @@ export function FirstTeamScreen({
             <button type="submit">Add players</button>
           </form>
         </section>
-      ) : (
+      ) : !isChoosingFormation ? (
         <section className="onboarding-content" aria-labelledby="roster-heading">
           <div className="onboarding-progress">
             <span>Set up your team</span>
-            <span>2 of 2</span>
+            <span>2 of 3</span>
           </div>
           <p className="team-context">{teamName}</p>
           <h1 id="roster-heading">Add your players.</h1>
@@ -154,7 +163,7 @@ export function FirstTeamScreen({
                 placeholder="First and last name"
                 maxLength={80}
               />
-              <button type="submit">Add</button>
+              <button type="submit" disabled={players.length === 9}>Add</button>
             </div>
           </form>
           <div className="roster-heading">
@@ -169,12 +178,60 @@ export function FirstTeamScreen({
               </li>
             ))}
           </ul>
-          <p className="roster-guidance">Most teams have 6–9 players. You can update the roster later.</p>
+          <p className="roster-guidance">Most teams have 6–9 players. A team can have no more than 9 players.</p>
           {saveError && <p className="save-error" role="alert">{saveError}</p>}
           <button
             className="finish-button"
             type="button"
-            disabled={players.length === 0 || isSaving || !onCreateTeam}
+            disabled={players.length === 0}
+            onClick={() => setIsChoosingFormation(true)}
+          >
+            Choose formation
+          </button>
+        </section>
+      ) : (
+        <section className="onboarding-content" aria-labelledby="formation-heading">
+          <div className="onboarding-progress">
+            <span>Set up your team</span>
+            <span>3 of 3</span>
+          </div>
+          <p className="team-context">{teamName}</p>
+          <h1 id="formation-heading">Choose your formation.</h1>
+          <fieldset>
+            <legend>Format</legend>
+            <label>
+              <input
+                type="radio"
+                name="formation"
+                checked={formation.defender === 2 && formation.forward === 2}
+                onChange={() => setFormation({ defender: 2, forward: 2 })}
+              />
+              5v5: 2 defenders, 2 forwards
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="formation"
+                checked={formation.defender === 1 && formation.forward === 3}
+                onChange={() => setFormation({ defender: 1, forward: 3 })}
+              />
+              5v5: 1 defender, 3 forwards
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="formation"
+                checked={formation.defender === 2 && formation.forward === 3}
+                onChange={() => setFormation({ defender: 2, forward: 3 })}
+              />
+              6v6: 2 defenders, 3 forwards
+            </label>
+          </fieldset>
+          {saveError && <p className="save-error" role="alert">{saveError}</p>}
+          <button
+            className="finish-button"
+            type="button"
+            disabled={isSaving || !onCreateTeam}
             onClick={finishSetup}
           >
             {isSaving ? 'Saving…' : 'Finish setup'}
