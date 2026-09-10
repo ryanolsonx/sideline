@@ -1,5 +1,7 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 import { IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { FormationInput } from './formation.input';
 
 @InputType()
@@ -9,5 +11,7 @@ export class UpdateTeamFormationInput {
   id!: string;
 
   @Field(() => FormationInput)
+  @ValidateNested()
+  @Type(() => FormationInput)
   formation!: FormationInput;
 }
