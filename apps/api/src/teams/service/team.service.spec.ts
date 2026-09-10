@@ -44,4 +44,17 @@ describe('TeamService', () => {
     await expect(service.findForCoach('River Coach', 'team-1')).rejects.toThrow('Team not found.');
     expect(repository.findByIdAndCoachUsername).toHaveBeenCalledWith('team-1', 'river coach');
   });
+
+  it('normalizes a replacement roster after establishing ownership', async () => {
+    const team = { id: 'team-1' };
+    const repository = {
+      findByIdAndCoachUsername: vi.fn().mockResolvedValue(team),
+      replacePlayers: vi.fn().mockResolvedValue(team),
+    } as unknown as TeamRepository;
+    const service = new TeamService(repository);
+
+    await service.updateRosterForCoach('River Coach', 'team-1', [' Avery Kim ']);
+
+    expect(repository.replacePlayers).toHaveBeenCalledWith(team, ['Avery Kim']);
+  });
 });

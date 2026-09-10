@@ -33,6 +33,17 @@ export class TeamRepository {
     });
   }
 
+  async replacePlayers(team: TeamEntity, playerNames: string[]): Promise<TeamEntity> {
+    return this.dataSource.transaction(async (manager) => {
+      const players = manager.getRepository(PlayerEntity);
+      await players.delete({ teamId: team.id });
+      team.players = await players.save(
+        playerNames.map((name) => players.create({ name, teamId: team.id })),
+      );
+      return team;
+    });
+  }
+
   createWithPlayers(
     coachUsername: string,
     name: string,
