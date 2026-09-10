@@ -19,3 +19,10 @@ Feature: Use Sideline as a coach
     When I continue as " River Coach "
     Then "Salt Lake Strikers" appears under "Your teams"
     And "Mountain United" does not appear
+
+  Scenario: Return as the remembered coach
+    Given I previously continued as "casey morgan"
+    When I return to Sideline
+    Then I see "casey morgan" as the current coach
+    When I sign out
+    Then I am asked for my coach username

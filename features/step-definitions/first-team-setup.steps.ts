@@ -175,6 +175,17 @@ Then('{string} does not appear', async function (this: SidelineWorld, text: stri
   await expect(this.page.getByText(text, { exact: true })).toHaveCount(0);
 });
 
+Given(
+  'I previously continued as {string}',
+  async function (this: SidelineWorld, username: string) {
+    await continueAsCoach(this, username);
+  },
+);
+
+When('I return to Sideline', async function (this: SidelineWorld) {
+  await this.page.goto(appUrl);
+});
+
 When('I sign out', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Sign out' }).click();
 });

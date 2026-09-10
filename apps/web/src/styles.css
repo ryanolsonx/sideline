@@ -64,6 +64,18 @@ input { font: inherit; }
   font-size: .875rem;
 }
 
+.coach-avatar {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #10232e;
+  background: #b9cbd2;
+  border-radius: 50%;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .coach-identity button {
   min-height: 2.75rem;
   padding: 0 .25rem;
