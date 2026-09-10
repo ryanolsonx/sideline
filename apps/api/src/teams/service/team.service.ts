@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { TeamRepository } from '../db/team.repository';
-import { Team, normalizePlayerNames, normalizeTeamName } from '../domain/team.model';
+import {
+  Team,
+  normalizeCoachUsername,
+  normalizePlayerNames,
+  normalizeTeamName,
+} from '../domain/team.model';
 
 @Injectable()
 export class TeamService {
@@ -10,8 +15,20 @@ export class TeamService {
     return this.teamRepository.findAll();
   }
 
+  findAllForCoach(coachUsername: string): Promise<Team[]> {
+    return this.teamRepository.findAllByCoachUsername(normalizeCoachUsername(coachUsername));
+  }
+
   create(name: string, playerNames: string[]): Promise<Team> {
+    return this.teamRepository.createLegacyWithPlayers(
+      normalizeTeamName(name),
+      normalizePlayerNames(playerNames),
+    );
+  }
+
+  createForCoach(coachUsername: string, name: string, playerNames: string[]): Promise<Team> {
     return this.teamRepository.createWithPlayers(
+      normalizeCoachUsername(coachUsername),
       normalizeTeamName(name),
       normalizePlayerNames(playerNames),
     );

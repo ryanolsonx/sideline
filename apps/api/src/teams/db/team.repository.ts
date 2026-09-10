@@ -17,11 +17,23 @@ export class TeamRepository {
     return this.teamRepository.find({ relations: { players: true }, order: { createdAt: 'ASC' } });
   }
 
-  createWithPlayers(name: string, playerNames: string[]): Promise<TeamEntity> {
+  findAllByCoachUsername(coachUsername: string): Promise<TeamEntity[]> {
+    return this.teamRepository.find({
+      where: { coachUsername },
+      relations: { players: true },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  createWithPlayers(
+    coachUsername: string,
+    name: string,
+    playerNames: string[],
+  ): Promise<TeamEntity> {
     return this.dataSource.transaction(async (manager) => {
       const teams = manager.getRepository(TeamEntity);
       const players = manager.getRepository(PlayerEntity);
-      const team = await teams.save(teams.create({ name }));
+      const team = await teams.save(teams.create({ coachUsername, name }));
       const savedPlayers = await players.save(
         playerNames.map((playerName) => players.create({ name: playerName, teamId: team.id })),
       );
@@ -29,5 +41,9 @@ export class TeamRepository {
       team.players = savedPlayers;
       return team;
     });
+  }
+
+  createLegacyWithPlayers(name: string, playerNames: string[]): Promise<TeamEntity> {
+    return this.createWithPlayers('legacy', name, playerNames);
   }
 }
