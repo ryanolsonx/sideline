@@ -9,6 +9,10 @@ export const CreateTeamMutation = graphql(`
         id
         name
       }
+      formation {
+        defender
+        forward
+      }
     }
   }
 `);
@@ -21,6 +25,10 @@ export const TeamsQuery = graphql(`
       players {
         id
         name
+      }
+      formation {
+        defender
+        forward
       }
     }
   }

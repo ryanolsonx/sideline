@@ -118,6 +118,23 @@ When('I finish setup', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Finish setup' }).click();
 });
 
+When('I continue to formation', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Choose formation' }).click();
+});
+
+Then('I can choose a supported 5v5 formation', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('heading', { name: 'Choose your formation.' })).toBeVisible();
+  await expect(this.page.getByLabel('5v5: 2 defenders, 2 forwards')).toBeVisible();
+  await expect(this.page.getByLabel('5v5: 1 defender, 3 forwards')).toBeVisible();
+});
+
+When(
+  'I choose the 5v5 formation with 1 defender and 3 forwards',
+  async function (this: SidelineWorld) {
+    await this.page.getByLabel('5v5: 1 defender, 3 forwards').check();
+  },
+);
+
 Then('{string} appears under {string}', async function (this: SidelineWorld, teamName: string, heading: string) {
   const section = this.page.getByRole('region', { name: heading });
   await expect(section.getByRole('heading', { name: teamName })).toBeVisible();
