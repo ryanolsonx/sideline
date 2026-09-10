@@ -3,7 +3,6 @@ import { TeamRepository } from '../db/team.repository';
 import {
   Team,
   Formation,
-  defaultFormation,
   normalizeCoachUsername,
   normalizeFormation,
   normalizePlayerNames,
@@ -22,7 +21,7 @@ export class TeamService {
     return this.teamRepository.findAllByCoachUsername(normalizeCoachUsername(coachUsername));
   }
 
-  create(name: string, playerNames: string[], formation: Formation = defaultFormation): Promise<Team> {
+  create(name: string, playerNames: string[]): Promise<Team> {
     return this.teamRepository.createLegacyWithPlayers(
       normalizeTeamName(name),
       normalizePlayerNames(playerNames),
@@ -33,7 +32,7 @@ export class TeamService {
     coachUsername: string,
     name: string,
     playerNames: string[],
-    formation: Formation = defaultFormation,
+    formation: Formation,
   ): Promise<Team> {
     return this.teamRepository.createWithPlayers(
       normalizeCoachUsername(coachUsername),

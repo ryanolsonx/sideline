@@ -3,7 +3,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PlayerEntity } from './player.entity';
 import { TeamEntity } from './team.entity';
-import { Formation } from '../domain/team.model';
+import { Formation, legacyFormation } from '../domain/team.model';
 
 @Injectable()
 export class TeamRepository {
@@ -46,6 +46,6 @@ export class TeamRepository {
   }
 
   createLegacyWithPlayers(name: string, playerNames: string[]): Promise<TeamEntity> {
-    return this.createWithPlayers('legacy', name, playerNames, { defender: 2, forward: 2 });
+    return this.createWithPlayers('legacy', name, playerNames, legacyFormation);
   }
 }

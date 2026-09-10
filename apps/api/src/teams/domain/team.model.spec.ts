@@ -28,11 +28,11 @@ describe('team setup', () => {
     );
   });
 
-  it('accepts only supported formations and derives their format', () => {
-    expect(normalizeFormation({ defender: 1, forward: 3 })).toEqual({ defender: 1, forward: 3 });
+  it('accepts legal outfield counts and derives their format', () => {
+    expect(normalizeFormation({ defender: 3, forward: 1 })).toEqual({ defender: 3, forward: 1 });
     expect(formatForFormation({ defender: 2, forward: 3 })).toBe('6v6');
-    expect(() => normalizeFormation({ defender: 3, forward: 1 })).toThrow(
-      'Choose a supported formation.',
+    expect(() => normalizeFormation({ defender: 3, forward: 3 })).toThrow(
+      'A formation must be a 5v5 or 6v6 set of positive outfield counts.',
     );
   });
 
