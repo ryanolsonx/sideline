@@ -20,12 +20,18 @@ describe('TeamService', () => {
     } as unknown as TeamRepository;
     const service = new TeamService(repository);
 
-    await service.createForCoach(' River   Coach ', ' Salt Lake   Strikers ', [' Avery  Kim ']);
+    await service.createForCoach(
+      ' River   Coach ',
+      ' Salt Lake   Strikers ',
+      [' Avery  Kim '],
+      { defender: 1, forward: 3 },
+    );
 
     expect(repository.createWithPlayers).toHaveBeenCalledWith(
       'river coach',
       'Salt Lake Strikers',
       ['Avery Kim'],
+      { defender: 1, forward: 3 },
     );
   });
 });

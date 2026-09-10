@@ -25,6 +25,7 @@ describe('TeamRepository', () => {
       id: 'team-1',
       coachUsername: 'river coach',
       name: 'Salt Lake Strikers',
+      formation: { defender: 2, forward: 2 },
       createdAt: new Date(),
     } as TeamEntity;
     const savedPlayers = [
@@ -35,6 +36,7 @@ describe('TeamRepository', () => {
       create: vi.fn().mockReturnValue({
         coachUsername: savedTeam.coachUsername,
         name: savedTeam.name,
+        formation: savedTeam.formation,
       }),
       save: vi.fn().mockResolvedValue(savedTeam),
     };
@@ -54,12 +56,14 @@ describe('TeamRepository', () => {
       savedTeam.coachUsername,
       savedTeam.name,
       ['Avery Kim', 'Jordan Lee'],
+      savedTeam.formation,
     );
 
     expect(dataSource.transaction).toHaveBeenCalledOnce();
     expect(teams.create).toHaveBeenCalledWith({
       coachUsername: 'river coach',
       name: 'Salt Lake Strikers',
+      formation: { defender: 2, forward: 2 },
     });
     expect(players.save).toHaveBeenCalledWith([
       { name: 'Avery Kim', teamId: 'team-1' },

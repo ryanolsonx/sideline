@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PlayerEntity } from './player.entity';
+import { Formation } from '../domain/team.model';
 
 @Entity({ name: 'team' })
 export class TeamEntity {
@@ -11,6 +12,9 @@ export class TeamEntity {
 
   @Column({ type: 'varchar', length: 80 })
   coachUsername!: string;
+
+  @Column({ type: 'jsonb' })
+  formation!: Formation;
 
   @CreateDateColumn()
   createdAt!: Date;
