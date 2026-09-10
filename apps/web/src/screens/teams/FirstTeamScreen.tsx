@@ -111,10 +111,20 @@ export function FirstTeamScreen({
             <div className="team-list">
               {teams.map((team) => (
               <button className="team-card" type="button" key={team.id || team.name} onClick={() => onOpenTeam?.(team)}>
-                  <div>
+                <div>
+                  <div className="team-card-title-row">
                     <h3>{team.name}</h3>
-                    <p>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</p>
+                    <span className="team-format">{team.formation.defender + team.formation.forward + 1}v{team.formation.defender + team.formation.forward + 1}</span>
                   </div>
+                  <p className="team-card-formation">{team.formation.defender} defender{team.formation.defender === 1 ? '' : 's'} · {team.formation.forward} forwards</p>
+                  <div className="team-card-footer">
+                    <span>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</span>
+                    <span className="team-player-preview" aria-label={`Roster preview: ${team.players.slice(0, 3).map((player) => player.name).join(', ')}`}>
+                      {team.players.slice(0, 3).map((player) => <i key={player.name}>{player.name.at(0)}</i>)}
+                      {team.players.length > 3 && <b>+{team.players.length - 3}</b>}
+                    </span>
+                  </div>
+                </div>
                   <span aria-hidden="true">›</span>
               </button>
               ))}
@@ -200,35 +210,13 @@ export function FirstTeamScreen({
           </div>
           <p className="team-context">{teamName}</p>
           <h1 id="formation-heading">Choose your formation.</h1>
-          <fieldset>
-            <legend>Format</legend>
-            <label>
-              <input
-                type="radio"
-                name="formation"
-                checked={formation.defender === 2 && formation.forward === 2}
-                onChange={() => setFormation({ defender: 2, forward: 2 })}
-              />
-              5v5: 2 defenders, 2 forwards
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="formation"
-                checked={formation.defender === 1 && formation.forward === 3}
-                onChange={() => setFormation({ defender: 1, forward: 3 })}
-              />
-              5v5: 1 defender, 3 forwards
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="formation"
-                checked={formation.defender === 2 && formation.forward === 3}
-                onChange={() => setFormation({ defender: 2, forward: 3 })}
-              />
-              6v6: 2 defenders, 3 forwards
-            </label>
+          <fieldset className="formation-picker">
+            <legend>Pick the shape your team plays</legend>
+            <div className="formation-cards">
+              <FormationCard label="5v5" defenders={2} forwards={2} selected={formation.defender === 2 && formation.forward === 2} onChoose={() => setFormation({ defender: 2, forward: 2 })} />
+              <FormationCard label="5v5" defenders={1} forwards={3} selected={formation.defender === 1 && formation.forward === 3} onChoose={() => setFormation({ defender: 1, forward: 3 })} />
+              <FormationCard label="6v6" defenders={2} forwards={3} selected={formation.defender === 2 && formation.forward === 3} onChoose={() => setFormation({ defender: 2, forward: 3 })} />
+            </div>
           </fieldset>
           {saveError && <p className="save-error" role="alert">{saveError}</p>}
           <button
@@ -243,4 +231,27 @@ export function FirstTeamScreen({
       )}
     </main>
   );
+}
+
+function FormationCard({ label, defenders, forwards, selected, onChoose }: {
+  label: string;
+  defenders: number;
+  forwards: number;
+  selected: boolean;
+  onChoose: () => void;
+}) {
+  const description = `${label}: ${defenders} ${defenders === 1 ? 'defender' : 'defenders'}, ${forwards} forwards`;
+  return <label className={`formation-card${selected ? ' formation-card--selected' : ''}`}>
+    <input type="radio" name="formation" checked={selected} onChange={onChoose} aria-label={description} />
+    <span className="formation-card__heading"><strong>{label}</strong><span className="formation-shape">{defenders}–{forwards}</span>{selected && <b className="formation-check" aria-hidden="true">✓</b>}</span>
+    <span className="formation-pitch" aria-hidden="true">
+      <span className="formation-zone-label">Goalie</span>
+      <span className="formation-zone-label">Defenders</span>
+      <span className="formation-zone-label">Forwards</span>
+      <span className="formation-goalie"><i /></span>
+      <span className="formation-line formation-line--defenders">{Array.from({ length: defenders }, (_, index) => <i key={index} />)}</span>
+      <span className="formation-line formation-line--forwards">{Array.from({ length: forwards }, (_, index) => <i key={index} />)}</span>
+    </span>
+    <span className="formation-card__caption">{defenders} defender{defenders === 1 ? '' : 's'} · {forwards} forwards</span>
+  </label>;
 }
