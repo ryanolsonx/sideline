@@ -30,7 +30,7 @@ export class TeamRepository {
     coachUsername: string,
     name: string,
     playerNames: string[],
-    formation: Formation,
+    formation: Formation = legacyFormation,
   ): Promise<TeamEntity> {
     return this.dataSource.transaction(async (manager) => {
       const teams = manager.getRepository(TeamEntity);
