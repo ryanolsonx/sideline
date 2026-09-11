@@ -111,7 +111,7 @@ Given('the roster is empty', async function (this: SidelineWorld) {
 });
 
 Then('I cannot finish setup', async function (this: SidelineWorld) {
-  await expect(this.page.getByRole('button', { name: 'Finish setup' })).toBeDisabled();
+  await expect(this.page.getByRole('button', { name: 'Choose formation' })).toBeDisabled();
 });
 
 When('I finish setup', async function (this: SidelineWorld) {
