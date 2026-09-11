@@ -65,7 +65,6 @@ export class TeamService {
       normalizePlayerNames(playerNames),
     );
   }
-
   createForCoach(
     coachUsername: string,
     name: string,
