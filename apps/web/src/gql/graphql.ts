@@ -50,6 +50,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createMatch: Match;
   createTeam: Team;
+  updateTeamFormation: Team;
   updateTeamRoster: Team;
 };
 
@@ -61,6 +62,11 @@ export type MutationCreateMatchArgs = {
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
+};
+
+
+export type MutationUpdateTeamFormationArgs = {
+  input: UpdateTeamFormationInput;
 };
 
 
@@ -93,6 +99,11 @@ export type Team = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   players: Array<Player>;
+};
+
+export type UpdateTeamFormationInput = {
+  formation: FormationInput;
+  id: Scalars['ID']['input'];
 };
 
 export type UpdateTeamRosterInput = {
