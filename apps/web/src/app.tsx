@@ -51,7 +51,8 @@ function CoachTeams({
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
 
   if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => setSelectedTeam(undefined)} onSave={async (players, formation) => {
-    await updateTeam({ variables: { input: { id: selectedTeam.id, players, formation } } });
+    const inputFormation = { defender: formation.defender, forward: formation.forward };
+    await updateTeam({ variables: { input: { id: selectedTeam.id, players, formation: inputFormation } } });
     await client.refetchQueries({ include: [TeamsQuery] });
   }} />;
 
