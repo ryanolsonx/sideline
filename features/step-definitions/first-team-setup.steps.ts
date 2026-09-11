@@ -172,7 +172,7 @@ When('I replace {string} with {string}', async function (this: SidelineWorld, ol
 });
 
 When('I save the team', async function (this: SidelineWorld) {
-  await this.page.getByRole('button', { name: 'Save team' }).click();
+  await this.page.getByRole('button', { name: 'Save changes' }).click();
 });
 
 Given('I have not chosen a coach username', async function (this: SidelineWorld) {
