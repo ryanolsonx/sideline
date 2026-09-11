@@ -23,8 +23,20 @@ export type CreateMatchInput = {
 };
 
 export type CreateTeamInput = {
+  formation: FormationInput;
   name: Scalars['String']['input'];
   players: Array<Scalars['String']['input']>;
+};
+
+export type Formation = {
+  __typename?: 'Formation';
+  defender: Scalars['Int']['output'];
+  forward: Scalars['Int']['output'];
+};
+
+export type FormationInput = {
+  defender: Scalars['Int']['input'];
+  forward: Scalars['Int']['input'];
 };
 
 export type Match = {
@@ -65,6 +77,7 @@ export type Query = {
 export type Team = {
   __typename?: 'Team';
   createdAt: Scalars['DateTime']['output'];
+  formation: Formation;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   players: Array<Player>;

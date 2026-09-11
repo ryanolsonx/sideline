@@ -55,7 +55,9 @@ function CoachTeams({
         players: team.players.map((player) => ({ name: player.name })),
       }))}
       onCreateTeam={async (name, players) => {
-        const result = await createTeam({ variables: { input: { name, players } } });
+        const result = await createTeam({
+          variables: { input: { name, players, formation: { defender: 2, forward: 2 } } },
+        });
         if (!result.data) throw new Error('The team could not be created.');
         return result.data.createTeam;
       }}
