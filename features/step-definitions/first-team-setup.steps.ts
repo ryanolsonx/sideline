@@ -28,7 +28,13 @@ async function seedTeam(
     },
     body: JSON.stringify({
       query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
-      variables: { input: { name: teamName, players: ['Avery'] } },
+      variables: {
+        input: {
+          name: teamName,
+          players: ['Avery'],
+          formation: { defender: 2, forward: 2 },
+        },
+      },
     }),
   });
   if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
