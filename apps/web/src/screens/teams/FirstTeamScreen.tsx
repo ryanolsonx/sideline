@@ -1,15 +1,23 @@
 import { FormEvent, useRef, useState } from 'react';
 
 export interface CreatedTeam {
+  id: string;
   name: string;
   players: { name: string }[];
+  formation: { defender: number; forward: number };
 }
 
 interface FirstTeamScreenProps {
   coachUsername?: string;
   onSignOut?: () => void;
   initialTeams?: CreatedTeam[];
-  onCreateTeam?: (name: string, players: string[]) => Promise<CreatedTeam>;
+  onCreateTeam?: (
+    name: string,
+    players: string[],
+    formation: { defender: number; forward: number },
+  ) => Promise<CreatedTeam>;
+  onOpenTeam?: (team: CreatedTeam) => void;
+  startAddingTeam?: boolean;
 }
 
 export function FirstTeamScreen({
@@ -17,13 +25,17 @@ export function FirstTeamScreen({
   onSignOut,
   initialTeams = [],
   onCreateTeam,
+  onOpenTeam,
+  startAddingTeam = false,
 }: FirstTeamScreenProps) {
   const [draftName, setDraftName] = useState('');
   const [teamName, setTeamName] = useState<string>();
   const [playerName, setPlayerName] = useState('');
   const [players, setPlayers] = useState<string[]>([]);
+  const [formation, setFormation] = useState({ defender: 2, forward: 2 });
+  const [isChoosingFormation, setIsChoosingFormation] = useState(false);
   const [teams, setTeams] = useState<CreatedTeam[]>(initialTeams);
-  const [isAddingTeam, setIsAddingTeam] = useState(initialTeams.length === 0);
+  const [isAddingTeam, setIsAddingTeam] = useState(startAddingTeam || initialTeams.length === 0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const playerNameInput = useRef<HTMLInputElement>(null);
@@ -37,7 +49,7 @@ export function FirstTeamScreen({
   function handlePlayerSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = playerName.trim();
-    if (!name) return;
+    if (!name || players.length === 9) return;
 
     setPlayers((currentPlayers) => [...currentPlayers, name]);
     setPlayerName('');
@@ -54,7 +66,7 @@ export function FirstTeamScreen({
     setIsSaving(true);
     setSaveError(undefined);
     try {
-      const createdTeam = await onCreateTeam(teamName, players);
+      const createdTeam = await onCreateTeam(teamName, players, formation);
       setTeams((currentTeams) => [...currentTeams, createdTeam]);
       setIsAddingTeam(false);
     } catch {
@@ -69,6 +81,8 @@ export function FirstTeamScreen({
     setTeamName(undefined);
     setPlayerName('');
     setPlayers([]);
+    setFormation({ defender: 2, forward: 2 });
+    setIsChoosingFormation(false);
     setSaveError(undefined);
     setIsAddingTeam(true);
   }
@@ -98,13 +112,23 @@ export function FirstTeamScreen({
             </div>
             <div className="team-list">
               {teams.map((team) => (
-                <article className="team-card" key={team.name}>
-                  <div>
+              <button className="team-card" type="button" key={team.id || team.name} onClick={() => onOpenTeam?.(team)}>
+                <div>
+                  <div className="team-card-title-row">
                     <h3>{team.name}</h3>
-                    <p>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</p>
+                    <span className="team-format">{team.formation.defender + team.formation.forward + 1}v{team.formation.defender + team.formation.forward + 1}</span>
                   </div>
+                  <p className="team-card-formation">{team.formation.defender} defender{team.formation.defender === 1 ? '' : 's'} · {team.formation.forward} forwards</p>
+                  <div className="team-card-footer">
+                    <span>{team.players.length} {team.players.length === 1 ? 'player' : 'players'}</span>
+                    <span className="team-player-preview" aria-label={`Roster preview: ${team.players.slice(0, 3).map((player) => player.name).join(', ')}`}>
+                      {team.players.slice(0, 3).map((player) => <i key={player.name}>{player.name.at(0)}</i>)}
+                      {team.players.length > 3 && <b>+{team.players.length - 3}</b>}
+                    </span>
+                  </div>
+                </div>
                   <span aria-hidden="true">›</span>
-                </article>
+              </button>
               ))}
             </div>
           </section>
@@ -134,11 +158,11 @@ export function FirstTeamScreen({
             <button type="submit">Add players</button>
           </form>
         </section>
-      ) : (
+      ) : !isChoosingFormation ? (
         <section className="onboarding-content" aria-labelledby="roster-heading">
           <div className="onboarding-progress">
             <span>Set up your team</span>
-            <span>2 of 2</span>
+            <span>2 of 3</span>
           </div>
           <p className="team-context">{teamName}</p>
           <h1 id="roster-heading">Add your players.</h1>
@@ -154,7 +178,7 @@ export function FirstTeamScreen({
                 placeholder="First and last name"
                 maxLength={80}
               />
-              <button type="submit">Add</button>
+              <button type="submit" disabled={players.length === 9}>Add</button>
             </div>
           </form>
           <div className="roster-heading">
@@ -169,12 +193,38 @@ export function FirstTeamScreen({
               </li>
             ))}
           </ul>
-          <p className="roster-guidance">Most teams have 6–9 players. You can update the roster later.</p>
+          <p className="roster-guidance">Most teams have 6–9 players. A team can have no more than 9 players.</p>
           {saveError && <p className="save-error" role="alert">{saveError}</p>}
           <button
             className="finish-button"
             type="button"
-            disabled={players.length === 0 || isSaving || !onCreateTeam}
+            disabled={players.length === 0}
+            onClick={() => setIsChoosingFormation(true)}
+          >
+            Choose formation
+          </button>
+        </section>
+      ) : (
+        <section className="onboarding-content" aria-labelledby="formation-heading">
+          <div className="onboarding-progress">
+            <span>Set up your team</span>
+            <span>3 of 3</span>
+          </div>
+          <p className="team-context">{teamName}</p>
+          <h1 id="formation-heading">Choose your formation.</h1>
+          <fieldset className="formation-picker">
+            <legend>Pick the shape your team plays</legend>
+            <div className="formation-cards">
+              <FormationCard label="5v5" defenders={2} forwards={2} selected={formation.defender === 2 && formation.forward === 2} onChoose={() => setFormation({ defender: 2, forward: 2 })} />
+              <FormationCard label="5v5" defenders={1} forwards={3} selected={formation.defender === 1 && formation.forward === 3} onChoose={() => setFormation({ defender: 1, forward: 3 })} />
+              <FormationCard label="6v6" defenders={2} forwards={3} selected={formation.defender === 2 && formation.forward === 3} onChoose={() => setFormation({ defender: 2, forward: 3 })} />
+            </div>
+          </fieldset>
+          {saveError && <p className="save-error" role="alert">{saveError}</p>}
+          <button
+            className="finish-button"
+            type="button"
+            disabled={isSaving || !onCreateTeam}
             onClick={finishSetup}
           >
             {isSaving ? 'Saving…' : 'Finish setup'}
@@ -183,4 +233,27 @@ export function FirstTeamScreen({
       )}
     </main>
   );
+}
+
+function FormationCard({ label, defenders, forwards, selected, onChoose }: {
+  label: string;
+  defenders: number;
+  forwards: number;
+  selected: boolean;
+  onChoose: () => void;
+}) {
+  const description = `${label}: ${defenders} ${defenders === 1 ? 'defender' : 'defenders'}, ${forwards} forwards`;
+  return <label className={`formation-card${selected ? ' formation-card--selected' : ''}`}>
+    <input type="radio" name="formation" checked={selected} onChange={onChoose} aria-label={description} />
+    <span className="formation-card__heading"><strong>{label}</strong><span className="formation-shape">{defenders}–{forwards}</span>{selected && <b className="formation-check" aria-hidden="true">✓</b>}</span>
+    <span className="formation-pitch" aria-hidden="true">
+      <span className="formation-zone-label">Goalie</span>
+      <span className="formation-zone-label">Defenders</span>
+      <span className="formation-zone-label">Forwards</span>
+      <span className="formation-goalie"><i /></span>
+      <span className="formation-line formation-line--defenders">{Array.from({ length: defenders }, (_, index) => <i key={index} />)}</span>
+      <span className="formation-line formation-line--forwards">{Array.from({ length: forwards }, (_, index) => <i key={index} />)}</span>
+    </span>
+    <span className="formation-card__caption">{defenders} defender{defenders === 1 ? '' : 's'} · {forwards} forwards</span>
+  </label>;
 }

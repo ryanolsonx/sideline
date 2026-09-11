@@ -19,7 +19,7 @@ async function seedTeam(
   world: SidelineWorld,
   coachUsername: string,
   teamName: string,
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(world.graphqlUrl, {
     method: 'POST',
     headers: {
@@ -28,10 +28,20 @@ async function seedTeam(
     },
     body: JSON.stringify({
       query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
-      variables: { input: { name: teamName, players: ['Avery'] } },
+      variables: {
+        input: {
+          name: teamName,
+          players: ['Avery'],
+          formation: { defender: 2, forward: 2 },
+        },
+      },
     }),
   });
   if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
+  const result = await response.json() as { data?: { createTeam?: { id?: string } } };
+  const id = result.data?.createTeam?.id;
+  if (!id) throw new Error(`Could not read the id for ${teamName}.`);
+  return id;
 }
 
 Given('I am a coach with no teams', async function (this: SidelineWorld) {
@@ -105,12 +115,29 @@ Given('the roster is empty', async function (this: SidelineWorld) {
 });
 
 Then('I cannot finish setup', async function (this: SidelineWorld) {
-  await expect(this.page.getByRole('button', { name: 'Finish setup' })).toBeDisabled();
+  await expect(this.page.getByRole('button', { name: 'Choose formation' })).toBeDisabled();
 });
 
 When('I finish setup', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Finish setup' }).click();
 });
+
+When('I continue to formation', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Choose formation' }).click();
+});
+
+Then('I can choose a supported 5v5 formation', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('heading', { name: 'Choose your formation.' })).toBeVisible();
+  await expect(this.page.getByLabel('5v5: 2 defenders, 2 forwards')).toBeVisible();
+  await expect(this.page.getByLabel('5v5: 1 defender, 3 forwards')).toBeVisible();
+});
+
+When(
+  'I choose the 5v5 formation with 1 defender and 3 forwards',
+  async function (this: SidelineWorld) {
+    await this.page.getByLabel('5v5: 1 defender, 3 forwards').check({ force: true });
+  },
+);
 
 Then('{string} appears under {string}', async function (this: SidelineWorld, teamName: string, heading: string) {
   const section = this.page.getByRole('region', { name: heading });
@@ -123,7 +150,16 @@ Then('the team has {int} players', async function (this: SidelineWorld, playerCo
 
 Given('I already manage {string}', async function (this: SidelineWorld, teamName: string) {
   await continueAsCoach(this, defaultCoachUsername);
-  await seedTeam(this, defaultCoachUsername, teamName);
+  this.teamId = await seedTeam(this, defaultCoachUsername, teamName);
+});
+
+When('I open the team URL', async function (this: SidelineWorld) {
+  if (!this.teamId) throw new Error('No team has been created for this scenario.');
+  await this.page.goto(`${appUrl}/teams/${this.teamId}`);
+});
+
+Then('I see the {string} team settings', async function (this: SidelineWorld, teamName: string) {
+  await expect(this.page.getByLabel('Team name')).toHaveValue(teamName);
 });
 
 When('I choose to add another team', async function (this: SidelineWorld) {
@@ -136,6 +172,28 @@ Then('I can name a new team', async function (this: SidelineWorld) {
 
 Then('{string} remains one of my teams', async function (this: SidelineWorld, teamName: string) {
   await expect(this.page.getByText(`Already managing: ${teamName}`)).toBeVisible();
+});
+
+When('I open {string}', async function (this: SidelineWorld, teamName: string) {
+  await this.page.getByRole('button', { name: new RegExp(teamName) }).click();
+});
+
+When('I replace {string} with {string}', async function (this: SidelineWorld, oldName: string, newName: string) {
+  await this.page.getByRole('button', { name: `Remove ${oldName}` }).click();
+  await this.page.getByLabel('Add a player').fill(newName);
+  await this.page.getByRole('button', { name: 'Add' }).click();
+});
+
+When('I save the team', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Save changes' }).click();
+});
+
+When('I change its name to {string}', async function (this: SidelineWorld, name: string) {
+  await this.page.getByLabel('Team name').fill(name);
+});
+
+When('I save changes', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Save changes' }).click();
 });
 
 Given('I have not chosen a coach username', async function (this: SidelineWorld) {

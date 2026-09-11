@@ -1,5 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { ArrayMinSize, IsArray, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { FormationInput } from './formation.input';
 
 @InputType()
 export class CreateTeamInput {
@@ -16,4 +18,9 @@ export class CreateTeamInput {
   @IsNotEmpty({ each: true })
   @MaxLength(80, { each: true })
   players!: string[];
+
+  @Field(() => FormationInput)
+  @ValidateNested()
+  @Type(() => FormationInput)
+  formation!: FormationInput;
 }

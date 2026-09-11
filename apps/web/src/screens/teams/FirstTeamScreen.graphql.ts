@@ -9,6 +9,10 @@ export const CreateTeamMutation = graphql(`
         id
         name
       }
+      formation {
+        defender
+        forward
+      }
     }
   }
 `);
@@ -22,6 +26,22 @@ export const TeamsQuery = graphql(`
         id
         name
       }
+      formation {
+        defender
+        forward
+      }
     }
   }
+`);
+
+export const UpdateTeamRosterMutation = graphql(`
+  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }
+`);
+
+export const UpdateTeamFormationMutation = graphql(`
+  mutation UpdateTeamFormation($input: UpdateTeamFormationInput!) { updateTeamFormation(input: $input) { id } }
+`);
+
+export const UpdateTeamMutation = graphql(`
+  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }
 `);

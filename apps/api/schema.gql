@@ -7,6 +7,7 @@ input CreateMatchInput {
 }
 
 input CreateTeamInput {
+  formation: FormationInput!
   name: String!
   players: [String!]!
 }
@@ -15,6 +16,16 @@ input CreateTeamInput {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Formation {
+  defender: Int!
+  forward: Int!
+}
+
+input FormationInput {
+  defender: Int!
+  forward: Int!
+}
 
 type Match {
   createdAt: DateTime!
@@ -25,6 +36,9 @@ type Match {
 type Mutation {
   createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
+  updateTeam(input: UpdateTeamInput!): Team!
+  updateTeamFormation(input: UpdateTeamFormationInput!): Team!
+  updateTeamRoster(input: UpdateTeamRosterInput!): Team!
 }
 
 type Player {
@@ -34,12 +48,31 @@ type Player {
 
 type Query {
   matches: [Match!]!
+  team(id: String!): Team!
   teams: [Team!]!
 }
 
 type Team {
   createdAt: DateTime!
+  formation: Formation!
   id: ID!
   name: String!
   players: [Player!]!
+}
+
+input UpdateTeamFormationInput {
+  formation: FormationInput!
+  id: ID!
+}
+
+input UpdateTeamInput {
+  formation: FormationInput!
+  id: ID!
+  name: String!
+  players: [String!]!
+}
+
+input UpdateTeamRosterInput {
+  id: ID!
+  players: [String!]!
 }
