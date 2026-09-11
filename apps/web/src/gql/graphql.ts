@@ -50,6 +50,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createMatch: Match;
   createTeam: Team;
+  updateTeamRoster: Team;
 };
 
 
@@ -60,6 +61,11 @@ export type MutationCreateMatchArgs = {
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
+};
+
+
+export type MutationUpdateTeamRosterArgs = {
+  input: UpdateTeamRosterInput;
 };
 
 export type Player = {
@@ -87,6 +93,11 @@ export type Team = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   players: Array<Player>;
+};
+
+export type UpdateTeamRosterInput = {
+  id: Scalars['ID']['input'];
+  players: Array<Scalars['String']['input']>;
 };
 
 export type MatchesScreen_MatchesQueryVariables = Exact<{ [key: string]: never; }>;
