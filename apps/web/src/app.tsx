@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import {
   forgetCoachUsername,
   readCoachUsername,
@@ -11,9 +12,13 @@ import { TeamDetailScreen, EditableTeam } from './screens/teams/TeamDetailScreen
 import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
+  return <BrowserRouter><AppRouter /></BrowserRouter>;
+}
+
+function AppRouter() {
   const client = useApolloClient();
   const [coachUsername, setCoachUsername] = useState(readCoachUsername);
-  const [pathname, setPathname] = usePathname();
+  const navigate = useNavigate();
 
   if (!coachUsername) {
     return (
@@ -29,7 +34,6 @@ export function App() {
   return (
     <CoachTeams
       coachUsername={coachUsername}
-      pathname={pathname}
       onSignOut={async () => {
         forgetCoachUsername();
         await client.clearStore();
@@ -42,17 +46,13 @@ export function App() {
 
 function CoachTeams({
   coachUsername,
-  pathname,
   onSignOut,
 }: {
   coachUsername: string;
-  pathname: string;
   onSignOut: () => void;
 }) {
   const client = useApolloClient();
-  useEffect(() => {
-    if (pathname === '/') navigate('/teams');
-  }, [pathname]);
+  const navigate = useNavigate();
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
   const [updateTeam] = useMutation(UpdateTeamMutation);
@@ -63,43 +63,46 @@ function CoachTeams({
   const teams = (data?.teams ?? []).map((team) => ({
     id: team.id, name: team.name, players: team.players.map((player) => ({ name: player.name })), formation: team.formation,
   }));
-  const teamId = pathname.match(/^\/teams\/([^/]+)$/)?.[1];
-  const selectedTeam = teamId ? teams.find((team) => team.id === teamId) : undefined;
-
-  if (selectedTeam) return <TeamDetailScreen team={selectedTeam} onBack={() => navigate('/teams')} onSave={async (name, players, formation) => {
+  const saveTeam = async (team: EditableTeam, name: string, players: string[], formation: EditableTeam['formation']) => {
     const inputFormation = { defender: formation.defender, forward: formation.forward };
-    await updateTeam({ variables: { input: { id: selectedTeam.id, name, players, formation: inputFormation } } });
+    await updateTeam({ variables: { input: { id: team.id, name, players, formation: inputFormation } } });
     await client.refetchQueries({ include: [TeamsQuery] });
-  }} />;
+  };
 
-  return (
-    <FirstTeamScreen
-      coachUsername={coachUsername}
-      onSignOut={onSignOut}
-      key={pathname}
-      initialTeams={teams}
-      startAddingTeam={pathname === '/teams/new'}
-      onOpenTeam={(team) => navigate(`/teams/${team.id}`)}
-      onCreateTeam={async (name, players, formation) => {
-        const result = await createTeam({ variables: { input: { name, players, formation } } });
-        if (!result.data) throw new Error('The team could not be created.');
-        return result.data.createTeam;
-      }}
-    />
-  );
+  const teamSetup = (startAddingTeam: boolean) => <FirstTeamScreen
+    coachUsername={coachUsername}
+    onSignOut={onSignOut}
+    key={startAddingTeam ? 'new-team' : 'teams'}
+    initialTeams={teams}
+    startAddingTeam={startAddingTeam}
+    onOpenTeam={(team) => navigate(`/teams/${team.id}`)}
+    onCreateTeam={async (name, players, formation) => {
+      const result = await createTeam({ variables: { input: { name, players, formation } } });
+      if (!result.data) throw new Error('The team could not be created.');
+      return result.data.createTeam;
+    }}
+  />;
+
+  return <Routes>
+    <Route path="/" element={<Navigate to="/teams" replace />} />
+    <Route path="/teams" element={teamSetup(false)} />
+    <Route path="/teams/new" element={teamSetup(true)} />
+    <Route path="/teams/:teamId" element={<TeamSettings teams={teams} onSave={saveTeam} />} />
+    <Route path="*" element={<Navigate to="/teams" replace />} />
+  </Routes>;
 }
 
-function usePathname(): [string, (pathname: string) => void] {
-  const [pathname, setPathname] = useState(() => window.location.pathname);
-  useEffect(() => {
-    const update = () => setPathname(window.location.pathname);
-    window.addEventListener('popstate', update);
-    return () => window.removeEventListener('popstate', update);
-  }, []);
-  return [pathname, (nextPathname) => { window.history.pushState({}, '', nextPathname); setPathname(nextPathname); }];
-}
+function TeamSettings({
+  teams,
+  onSave,
+}: {
+  teams: EditableTeam[];
+  onSave: (team: EditableTeam, name: string, players: string[], formation: EditableTeam['formation']) => Promise<void>;
+}) {
+  const { teamId } = useParams();
+  const navigate = useNavigate();
+  const team = teams.find((candidate) => candidate.id === teamId);
 
-function navigate(pathname: string) {
-  window.history.pushState({}, '', pathname);
-  window.dispatchEvent(new PopStateEvent('popstate'));
+  if (!team) return <Navigate to="/teams" replace />;
+  return <TeamDetailScreen team={team} onBack={() => navigate('/teams')} onSave={(name, players, formation) => onSave(team, name, players, formation)} />;
 }
