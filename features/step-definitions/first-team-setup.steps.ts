@@ -131,7 +131,7 @@ Then('I can choose a supported 5v5 formation', async function (this: SidelineWor
 When(
   'I choose the 5v5 formation with 1 defender and 3 forwards',
   async function (this: SidelineWorld) {
-    await this.page.getByLabel('5v5: 1 defender, 3 forwards').check();
+    await this.page.getByLabel('5v5: 1 defender, 3 forwards').check({ force: true });
   },
 );
 
@@ -167,8 +167,8 @@ When('I open {string}', async function (this: SidelineWorld, teamName: string) {
 
 When('I replace {string} with {string}', async function (this: SidelineWorld, oldName: string, newName: string) {
   await this.page.getByRole('button', { name: `Remove ${oldName}` }).click();
-  await this.page.getByLabel('Player name').fill(newName);
-  await this.page.getByRole('button', { name: 'Add player' }).click();
+  await this.page.getByLabel('Add a player').fill(newName);
+  await this.page.getByRole('button', { name: 'Add' }).click();
 });
 
 When('I save the team', async function (this: SidelineWorld) {
