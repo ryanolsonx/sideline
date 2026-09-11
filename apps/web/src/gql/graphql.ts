@@ -71,7 +71,13 @@ export type Player = {
 export type Query = {
   __typename?: 'Query';
   matches: Array<Match>;
+  team: Team;
   teams: Array<Team>;
+};
+
+
+export type QueryTeamArgs = {
+  id: Scalars['String']['input'];
 };
 
 export type Team = {
