@@ -136,6 +136,21 @@ Remove the temporary directory after the server has stopped and verification is 
   - In this environment, use `gh api --method PATCH repos/<owner>/<repo>/pulls/<number> ...` for title/body updates; verify through `gh api`. The installed `gh pr edit` command did not persist edits reliably.
   - Use `gh pr ready <number>` to mark a PR ready for review.
 
+### Per-PR CI gate
+
+Treat every branch in a stack as a mergeable application, not merely an incremental
+diff. Before submitting, walk the stack from bottom to top and run the same checks CI
+runs on each checked-out branch: generated-artifact verification, API and web
+typechecking/builds, unit tests, and the browser BDD suite. Publish only after every
+layer is green; a green stack tip does not prove an intermediate PR is mergeable.
+
+When a GraphQL schema makes an input field required, the same PR must include the
+regenerated schema/client artifacts and compatible callers, test seed helpers, and
+fixtures. If the product UI that supplies the field arrives in a later PR, keep the
+earlier branch deployable with a narrow default compatibility seam, then replace it in
+the UI slice. Confirm artifact ownership with `git diff --exit-code --
+apps/api/schema.gql apps/web/src/gql` on that branch.
+
 ## Stacked versus large PR experiment
 
 When the user explicitly gives the go-ahead after a completed stack, or explicitly invokes
