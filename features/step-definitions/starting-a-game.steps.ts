@@ -39,6 +39,7 @@ Given('I have started a game for {string}', async function (this: SidelineWorld,
   await this.page.getByRole('button', { name: new RegExp(teamName) }).click();
   await this.page.getByRole('button', { name: 'Start a game' }).click();
   await expect(this.page.getByRole('heading', { name: "Who's here?" })).toBeVisible();
+  this.gameUrl = this.page.url();
 });
 
 When('I mark {string} as absent', async function (this: SidelineWorld, playerName: string) {
@@ -63,4 +64,35 @@ Then('every other player is marked present', async function (this: SidelineWorld
   for (const playerName of present) {
     await expect(playerCheckbox(this, playerName)).toBeChecked();
   }
+});
+
+Given('I have confirmed who is here', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: "Confirm who's here" }).click();
+  await expect(this.page.getByText('This game is waiting to begin')).toBeVisible();
+});
+
+When(
+  'I replace {string} with {string} on the team',
+  async function (this: SidelineWorld, oldName: string, newName: string) {
+    if (!this.teamId) throw new Error('No team has been created for this scenario.');
+    await this.page.goto(`${appUrl}/teams/${this.teamId}`);
+    await this.page.getByRole('button', { name: `Remove ${oldName}` }).click();
+    await this.page.getByLabel('Add a player').fill(newName);
+    await this.page.getByRole('button', { name: 'Add' }).click();
+    await this.page.getByRole('button', { name: 'Save changes' }).click();
+    await expect(this.page.getByRole('heading', { name: 'Your teams' })).toBeVisible();
+  },
+);
+
+When('I return to the game', async function (this: SidelineWorld) {
+  if (!this.gameUrl) throw new Error('No game has been started for this scenario.');
+  await this.page.goto(this.gameUrl);
+});
+
+Then('{string} is still part of the game', async function (this: SidelineWorld, playerName: string) {
+  await expect(playerCheckbox(this, playerName)).toBeVisible();
+});
+
+Then('{string} is not part of the game', async function (this: SidelineWorld, playerName: string) {
+  await expect(playerCheckbox(this, playerName)).toHaveCount(0);
 });

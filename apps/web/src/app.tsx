@@ -9,9 +9,8 @@ import {
 import { CoachUsernameScreen } from './screens/coach/CoachUsernameScreen';
 import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { TeamDetailScreen, EditableTeam } from './screens/teams/TeamDetailScreen';
-import { GameSetupScreen, GameSetupScreen_GameFragment } from './screens/games/GameSetupScreen';
-import { MarkAttendanceMutation, StartGameMutation } from './screens/games/GameSetupScreen.graphql';
-import { FragmentType } from './gql';
+import { GameSetupScreen } from './screens/games/GameSetupScreen';
+import { GameQuery, MarkAttendanceMutation, StartGameMutation } from './screens/games/GameSetupScreen.graphql';
 import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
@@ -61,7 +60,6 @@ function CoachTeams({
   const [updateTeam] = useMutation(UpdateTeamMutation);
   const [startGame] = useMutation(StartGameMutation);
   const [markAttendance] = useMutation(MarkAttendanceMutation);
-  const [openGame, setOpenGame] = useState<OpenGame>();
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -99,15 +97,12 @@ function CoachTeams({
       onStartGame={async (team) => {
         const result = await startGame({ variables: { input: { teamId: team.id } } });
         if (!result.data) throw new Error('The game could not be started.');
-        setOpenGame(result.data.startGame);
         navigate(`/teams/${team.id}/games/${result.data.startGame.id}`);
       }}
     />} />
     <Route path="/teams/:teamId/games/:gameId" element={<GameSetup
-      game={openGame}
       onConfirm={async (gameId, presentPlayerIds) => {
-        const result = await markAttendance({ variables: { input: { gameId, presentPlayerIds } } });
-        if (result.data) setOpenGame((current) => current && { ...current, ...result.data!.markAttendance });
+        await markAttendance({ variables: { input: { gameId, presentPlayerIds } } });
       }}
     />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
@@ -136,19 +131,20 @@ function TeamSettings({
   />;
 }
 
-type OpenGame = { id: string; teamId: string } & FragmentType<typeof GameSetupScreen_GameFragment>;
-
+/** A game is reached only through its own URL, so opening one is a query rather than a memory. */
 function GameSetup({
-  game,
   onConfirm,
 }: {
-  game: OpenGame | undefined;
   onConfirm: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
 }) {
-  const { teamId, gameId } = useParams();
+  const { gameId } = useParams();
   const navigate = useNavigate();
+  const { data, loading, error } = useQuery(GameQuery, { variables: { id: gameId ?? '' } });
 
-  if (!game || game.id !== gameId) return <Navigate to={`/teams/${teamId}`} replace />;
+  if (loading) return <p className="app-status">Loading this game…</p>;
+  if (error || !data) return <p className="app-status" role="alert">Could not load this game.</p>;
+
+  const game = data.game;
   return <GameSetupScreen
     game={game}
     onBack={() => navigate(`/teams/${game.teamId}`)}

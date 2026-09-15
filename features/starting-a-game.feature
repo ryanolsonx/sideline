@@ -26,5 +26,14 @@ Feature: Start a game
     When I mark "Riley Chen" as absent
     And I confirm who is here
     Then the game is waiting to begin
-    And "Riley Chen" is marked absent
+    When I return to the game
+    Then "Riley Chen" is marked absent
     And every other player is marked present
+
+  Scenario: A game keeps the roster it began with
+    Given I have started a game for "Salt Lake Strikers"
+    And I have confirmed who is here
+    When I replace "Avery Kim" with "Morgan Park" on the team
+    And I return to the game
+    Then "Avery Kim" is still part of the game
+    And "Morgan Park" is not part of the game

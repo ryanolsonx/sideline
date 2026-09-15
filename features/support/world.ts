@@ -58,6 +58,7 @@ export class SidelineWorld extends World {
   teamId?: string;
   rosterPlayerNames: string[] = [];
   absentPlayerNames: string[] = [];
+  gameUrl?: string;
 }
 
 setWorldConstructor(SidelineWorld);

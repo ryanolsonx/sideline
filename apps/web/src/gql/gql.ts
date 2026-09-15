@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": typeof types.GameDocument,
     "\n  mutation StartGame($input: StartGameInput!) {\n    startGame(input: $input) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": typeof types.StartGameDocument,
     "\n  mutation MarkAttendance($input: MarkAttendanceInput!) {\n    markAttendance(input: $input) {\n      id\n      ...GameSetupScreen_Game\n    }\n  }\n": typeof types.MarkAttendanceDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    attendanceConfirmed\n    players {\n      id\n      name\n      present\n    }\n  }\n": typeof types.GameSetupScreen_GameFragmentDoc,
@@ -26,6 +27,7 @@ type Documents = {
     "\n  mutation UpdateTeam($input: UpdateTeamInput!) { updateTeam(input: $input) { id } }\n": typeof types.UpdateTeamDocument,
 };
 const documents: Documents = {
+    "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": types.GameDocument,
     "\n  mutation StartGame($input: StartGameInput!) {\n    startGame(input: $input) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": types.StartGameDocument,
     "\n  mutation MarkAttendance($input: MarkAttendanceInput!) {\n    markAttendance(input: $input) {\n      id\n      ...GameSetupScreen_Game\n    }\n  }\n": types.MarkAttendanceDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    attendanceConfirmed\n    players {\n      id\n      name\n      present\n    }\n  }\n": types.GameSetupScreen_GameFragmentDoc,
@@ -52,6 +54,10 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n"): (typeof documents)["\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
