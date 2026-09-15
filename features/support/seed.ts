@@ -42,3 +42,25 @@ export async function seedTeam(
   if (!id) throw new Error(`Could not read the id for ${teamName}.`);
   return id;
 }
+
+export async function seedGame(
+  world: SidelineWorld,
+  coachUsername: string,
+  teamId: string,
+): Promise<string> {
+  const response = await fetch(world.graphqlUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      cookie: `sidelineCoachUsername=${encodeURIComponent(coachUsername)}`,
+    },
+    body: JSON.stringify({
+      query: 'mutation SeedGame($input: StartGameInput!) { startGame(input: $input) { id } }',
+      variables: { input: { teamId } },
+    }),
+  });
+  const result = await response.json() as { data?: { startGame?: { id?: string } } };
+  const id = result.data?.startGame?.id;
+  if (!id) throw new Error('Could not seed a game.');
+  return id;
+}

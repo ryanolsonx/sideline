@@ -36,3 +36,8 @@ Feature: Start a game
     And I return to the game
     Then "Avery Kim" is still part of the game
     And "Morgan Park" is not part of the game
+
+  Scenario: A game belongs to the coach whose team it is
+    Given another coach has started a game
+    When I open that game
+    Then I am told it is not my game
