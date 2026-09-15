@@ -124,47 +124,8 @@ Remove the temporary directory after the server has stopped and verification is 
 
 ## Stacked pull requests
 
-- Keep PRs small and focused on one technology or vertical-slice concern.
-- Create branches with `gh stack add <branch>` and publish/update the stack with `gh stack submit`.
-- When `master` belongs to multiple historical local stacks, `gh stack add` prompts for the parent stack; select the stack containing the current trunk lineage before creating the branch.
-- For non-interactive publication, use `gh stack submit --auto --open` so newly created PRs are ready for review.
-- If submission creates the PR chain but GitHub stack grouping fails because the local stack still references an old merged PR, preserve the correctly chained PR bases and run `gh stack link --open <bottom-pr> ... <top-pr>` to create the GitHub stack explicitly.
-- PRs should be ready for review, not drafts, unless the user explicitly asks otherwise.
-- Set and verify PR metadata after publishing:
-  - Use plain-English titles without conventional-commit prefixes.
-  - Use `## Summary`, `## What changes`, and `## Review focus` in each body.
-  - In this environment, use `gh api --method PATCH repos/<owner>/<repo>/pulls/<number> ...` for title/body updates; verify through `gh api`. The installed `gh pr edit` command did not persist edits reliably.
-  - Use `gh pr ready <number>` to mark a PR ready for review.
-
-### Per-PR CI gate
-
-Treat every branch in a stack as a mergeable application, not merely an incremental
-diff. Before submitting, walk the stack from bottom to top and run the same checks CI
-runs on each checked-out branch: generated-artifact verification, API and web
-typechecking/builds, unit tests, and the browser BDD suite. Publish only after every
-layer is green; a green stack tip does not prove an intermediate PR is mergeable.
-
-When a GraphQL schema makes an input field required, the same PR must include the
-regenerated schema/client artifacts and compatible callers, test seed helpers, and
-fixtures. If the product UI that supplies the field arrives in a later PR, keep the
-earlier branch deployable with a narrow default compatibility seam, then replace it in
-the UI slice. Confirm artifact ownership with `git diff --exit-code --
-apps/api/schema.gql apps/web/src/gql` on that branch.
-
-## Stacked versus large PR experiment
-
-When the user explicitly gives the go-ahead after a completed stack, or explicitly invokes
-the repository's `$implement-stack` skill for both deliverables:
-
-- Create a new standalone branch from the stack's trunk (`master` unless stated otherwise).
-- Record the full stack commit list, then cherry-pick every stack commit from bottom to top onto the new branch.
-- Do not alter, squash, or rebase the original stack as part of creating the comparison PR.
-- Push the new branch and create a normal, ready-for-review PR against the trunk.
-- Write the large PR as though it were the primary implementation:
-  - Do not mention cherry-picking, the source stack, or the comparison experiment.
-  - Use a conventional product-facing title.
-  - Its body should summarize the complete change, key implementation areas, and review/testing guidance.
-- Use the repository's REST API metadata workflow (`gh api ...`) and verify the final title, body, base branch, and ready-for-review status.
+Stacked PRs go through the `gh stack` CLI. Use the `gh-stack` skill for branch shape, the
+per-PR CI gate, submission, PR metadata, and the large-PR comparison experiment.
 
 ## The `matches` module is an example
 

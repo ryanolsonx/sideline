@@ -10,3 +10,5 @@ test-results
 !docs/agents/
 !.scratch/
 !CONTEXT.md
+!.claude/
+!.agents/
