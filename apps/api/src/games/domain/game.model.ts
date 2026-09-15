@@ -20,3 +20,19 @@ export interface Game extends GameSnapshot {
   teamId: string;
   startedAt: Date;
 }
+
+/**
+ * Copies the team onto a game. Later Team edits change the team, never a game already
+ * under way, so the players and the formation are values here rather than references.
+ */
+export function startingSnapshot(
+  team: { players: RosterPlayer[]; formation: Formation },
+  rotationSeed: string,
+): GameSnapshot {
+  if (team.players.length === 0) throw new Error('A game needs at least one player.');
+  return {
+    roster: team.players.map((player) => ({ id: player.id, name: player.name })),
+    formation: { defender: team.formation.defender, forward: team.formation.forward },
+    rotationSeed,
+  };
+}
