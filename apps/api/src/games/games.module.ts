@@ -3,9 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GameActionEntity } from './db/game-action.entity';
 import { GameEntity } from './db/game.entity';
 import { GameRepository } from './db/game.repository';
+import { GameService } from './service/game.service';
+import { TeamsModule } from '../teams/teams.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GameEntity, GameActionEntity])],
-  providers: [GameRepository],
+  imports: [TypeOrmModule.forFeature([GameEntity, GameActionEntity]), TeamsModule],
+  providers: [GameRepository, GameService],
 })
 export class GamesModule {}
