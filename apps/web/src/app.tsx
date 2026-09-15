@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useApolloClient, useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import {
   forgetCoachUsername,
@@ -151,6 +151,22 @@ function TeamSettings({
   />;
 }
 
+const gameProblems: Record<string, string> = {
+  NOT_YOURS: "Sorry, that's not your game.",
+  NOT_SIGNED_IN: 'Sign in to open this game.',
+  NOT_FOUND: 'We could not find that game.',
+};
+
+function whyThisGameWillNotOpen(error: ApolloError | undefined): string {
+  if (error?.networkError) return 'We could not reach Sideline. Check your connection.';
+
+  const code = error?.graphQLErrors
+    .map((problem) => problem.extensions?.code)
+    .find((problem): problem is string => typeof problem === 'string' && problem in gameProblems);
+
+  return code ? gameProblems[code] : 'We could not open that game.';
+}
+
 /** A game is reached only through its own URL, so opening one is a query rather than a memory. */
 function OpenGame({
   onBegin,
@@ -162,7 +178,9 @@ function OpenGame({
   const { data, loading, error } = useQuery(GameQuery, { variables: { id: gameId ?? '' } });
 
   if (loading) return <p className="app-status">Loading this game…</p>;
-  if (error || !data) return <p className="app-status" role="alert">We could not open that game.</p>;
+  if (error || !data) {
+    return <p className="app-status" role="alert">{whyThisGameWillNotOpen(error)}</p>;
+  }
 
   const game = data.game;
   const backToTeam = () => navigate(`/teams/${game.teamId}`);
