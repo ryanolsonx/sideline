@@ -18,6 +18,11 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type BeginGameInput = {
+  gameId: Scalars['ID']['input'];
+  presentPlayerIds: Array<Scalars['ID']['input']>;
+};
+
 export type CreateMatchInput = {
   name: Scalars['String']['input'];
 };
@@ -39,6 +44,37 @@ export type FormationInput = {
   forward: Scalars['Int']['input'];
 };
 
+export type Game = {
+  __typename?: 'Game';
+  attendanceConfirmed: Scalars['Boolean']['output'];
+  currentRound?: Maybe<Round>;
+  formation: Formation;
+  id: Scalars['ID']['output'];
+  lifecycle: GameLifecycle;
+  players: Array<GamePlayer>;
+  startedAt: Scalars['DateTime']['output'];
+  teamId: Scalars['ID']['output'];
+};
+
+export enum GameLifecycle {
+  Abandoned = 'ABANDONED',
+  Ended = 'ENDED',
+  Live = 'LIVE',
+  Setup = 'SETUP'
+}
+
+export type GamePlayer = {
+  __typename?: 'GamePlayer';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  present: Scalars['Boolean']['output'];
+};
+
+export type MarkAttendanceInput = {
+  gameId: Scalars['ID']['input'];
+  presentPlayerIds: Array<Scalars['ID']['input']>;
+};
+
 export type Match = {
   __typename?: 'Match';
   createdAt: Scalars['DateTime']['output'];
@@ -48,11 +84,19 @@ export type Match = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  beginGame: Game;
   createMatch: Match;
   createTeam: Team;
+  markAttendance: Game;
+  startGame: Game;
   updateTeam: Team;
   updateTeamFormation: Team;
   updateTeamRoster: Team;
+};
+
+
+export type MutationBeginGameArgs = {
+  input: BeginGameInput;
 };
 
 
@@ -63,6 +107,16 @@ export type MutationCreateMatchArgs = {
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
+};
+
+
+export type MutationMarkAttendanceArgs = {
+  input: MarkAttendanceInput;
+};
+
+
+export type MutationStartGameArgs = {
+  input: StartGameInput;
 };
 
 
@@ -86,16 +140,45 @@ export type Player = {
   name: Scalars['String']['output'];
 };
 
+export enum Position {
+  Defender = 'DEFENDER',
+  Forward = 'FORWARD',
+  Goalie = 'GOALIE'
+}
+
 export type Query = {
   __typename?: 'Query';
+  game: Game;
   matches: Array<Match>;
   team: Team;
   teams: Array<Team>;
 };
 
 
+export type QueryGameArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryTeamArgs = {
   id: Scalars['String']['input'];
+};
+
+export type Round = {
+  __typename?: 'Round';
+  number: Scalars['Int']['output'];
+  out: Array<GamePlayer>;
+  slots: Array<RoundSlot>;
+};
+
+export type RoundSlot = {
+  __typename?: 'RoundSlot';
+  player?: Maybe<GamePlayer>;
+  position: Position;
+};
+
+export type StartGameInput = {
+  teamId: Scalars['ID']['input'];
 };
 
 export type Team = {
