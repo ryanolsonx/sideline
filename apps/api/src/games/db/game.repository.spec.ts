@@ -55,7 +55,9 @@ describe('GameRepository', () => {
       dataSource,
     );
 
-    await repository.append('game-1', 'MARK_ATTENDANCE', { presentPlayerIds: ['player-1'] });
+    await repository.append('game-1', [
+      { kind: 'MARK_ATTENDANCE', payload: { presentPlayerIds: ['player-1'] } },
+    ]);
 
     expect(actions.create).toHaveBeenCalledWith({
       gameId: 'game-1',
@@ -63,6 +65,35 @@ describe('GameRepository', () => {
       kind: 'MARK_ATTENDANCE',
       payload: { presentPlayerIds: ['player-1'] },
     });
+  });
+
+  it('gives one gesture’s entries consecutive places in one transaction', async () => {
+    const actions = {
+      countBy: vi.fn().mockResolvedValue(1),
+      create: vi.fn((values) => values),
+      save: vi.fn().mockResolvedValue([]),
+    };
+    const games = { findOne: vi.fn().mockResolvedValue({ id: 'game-1' }) };
+    const manager = { getRepository: vi.fn((entity) => (entity === GameEntity ? games : actions)) };
+    const dataSource = {
+      transaction: vi.fn((work: (manager: unknown) => Promise<unknown>) => work(manager)),
+    } as unknown as DataSource;
+    const repository = new GameRepository(
+      {} as Repository<GameEntity>,
+      {} as Repository<GameActionEntity>,
+      dataSource,
+    );
+
+    await repository.append('game-1', [
+      { kind: 'MARK_ATTENDANCE', payload: {} },
+      { kind: 'USE_LINEUP', payload: { round: 1 } },
+    ]);
+
+    expect(dataSource.transaction).toHaveBeenCalledTimes(1);
+    expect(actions.save).toHaveBeenCalledWith([
+      { gameId: 'game-1', sequence: 1, kind: 'MARK_ATTENDANCE', payload: {} },
+      { gameId: 'game-1', sequence: 2, kind: 'USE_LINEUP', payload: { round: 1 } },
+    ]);
   });
 
   it('locks the game while it works out the next place in the log', async () => {
@@ -84,7 +115,7 @@ describe('GameRepository', () => {
       dataSource,
     );
 
-    await repository.append('game-1', 'MARK_ATTENDANCE', {});
+    await repository.append('game-1', [{ kind: 'MARK_ATTENDANCE', payload: {} }]);
 
     expect(games.findOne).toHaveBeenCalledWith({
       where: { id: 'game-1' },
