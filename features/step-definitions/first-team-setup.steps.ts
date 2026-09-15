@@ -1,48 +1,7 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { SidelineWorld } from '../support/world';
-
-const appUrl = 'http://127.0.0.1:4173';
-const defaultCoachUsername = 'test coach';
-
-async function continueAsCoach(world: SidelineWorld, username: string): Promise<void> {
-  await world.context.addCookies([
-    {
-      name: 'sidelineCoachUsername',
-      value: username,
-      url: appUrl,
-    },
-  ]);
-}
-
-async function seedTeam(
-  world: SidelineWorld,
-  coachUsername: string,
-  teamName: string,
-): Promise<string> {
-  const response = await fetch(world.graphqlUrl, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      cookie: `sidelineCoachUsername=${encodeURIComponent(coachUsername)}`,
-    },
-    body: JSON.stringify({
-      query: 'mutation SeedTeam($input: CreateTeamInput!) { createTeam(input: $input) { id } }',
-      variables: {
-        input: {
-          name: teamName,
-          players: ['Avery'],
-          formation: { defender: 2, forward: 2 },
-        },
-      },
-    }),
-  });
-  if (!response.ok) throw new Error(`Could not seed ${teamName}.`);
-  const result = await response.json() as { data?: { createTeam?: { id?: string } } };
-  const id = result.data?.createTeam?.id;
-  if (!id) throw new Error(`Could not read the id for ${teamName}.`);
-  return id;
-}
+import { appUrl, continueAsCoach, defaultCoachUsername, seedTeam } from '../support/seed';
 
 Given('I am a coach with no teams', async function (this: SidelineWorld) {
   await this.context.addInitScript(() => window.localStorage.clear());
@@ -246,4 +205,12 @@ When('I return to Sideline', async function (this: SidelineWorld) {
 
 When('I sign out', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Sign out' }).click();
+});
+
+Then('I am on the {string} team screen', async function (this: SidelineWorld, teamName: string) {
+  await expect(this.page.getByRole('heading', { level: 1, name: teamName })).toBeVisible();
+});
+
+When('I open team settings', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Team settings' }).click();
 });

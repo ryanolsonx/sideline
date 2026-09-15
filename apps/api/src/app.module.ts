@@ -4,7 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'node:path';
 import { databaseOptions } from './database/typeorm.config';
-import { MatchesModule } from './matches/matches.module';
+import { GamesModule } from './games/games.module';
 import { TeamsModule } from './teams/teams.module';
 
 @Module({
@@ -19,7 +19,7 @@ import { TeamsModule } from './teams/teams.module';
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
       sortSchema: true,
     }),
-    MatchesModule,
+    GamesModule,
     TeamsModule,
   ],
 })

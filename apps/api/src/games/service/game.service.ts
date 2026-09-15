@@ -1,0 +1,123 @@
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { GameRepository } from '../db/game.repository';
+import {
+  Game,
+  GameAction,
+  GameState,
+  gameActionFrom,
+  markAttendance,
+  payloadOf,
+  useFirstLineup,
+  projectGame,
+  startingSnapshot,
+} from '../domain/game.model';
+import { newRotationSeed } from './rotation-seed';
+import { TeamService } from '../../teams/service/team.service';
+import { Team, normalizeCoachUsername } from '../../teams/domain/team.model';
+
+/** A broken domain rule is something the caller asked for, not a fault in the server. */
+function refusing<T>(rule: () => T): T {
+  try {
+    return rule();
+  } catch (error) {
+    throw new BadRequestException(error instanceof Error ? error.message : 'That is not allowed.');
+  }
+}
+
+export interface GameView {
+  game: Game;
+  state: GameState;
+}
+
+@Injectable()
+export class GameService {
+  constructor(
+    private readonly gameRepository: GameRepository,
+    private readonly teamService: TeamService,
+  ) {}
+
+  async startGameForCoach(coachUsername: string, teamId: string): Promise<GameView> {
+    const team = await this.ownedTeam(coachUsername, teamId);
+    const snapshot = refusing(() => startingSnapshot(team, newRotationSeed()));
+    return this.viewOf(await this.gameRepository.create(team.id, snapshot));
+  }
+
+  async findForCoach(coachUsername: string, gameId: string): Promise<GameView> {
+    return this.viewOf(await this.ownedGame(coachUsername, gameId));
+  }
+
+  async markAttendanceForCoach(
+    coachUsername: string,
+    gameId: string,
+    presentPlayerIds: string[],
+  ): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const state = projectGame(game, await this.actionsOf(game.id));
+    const action = refusing(() => markAttendance(game, state, presentPlayerIds));
+
+    await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
+
+    return this.viewOf(game);
+  }
+
+  /**
+   * One tap by the coach: who is here, and round one onto the field. Two entries in the log
+   * because they are two permanent shapes, but one transaction because it was one gesture.
+   */
+  async beginGameForCoach(
+    coachUsername: string,
+    gameId: string,
+    presentPlayerIds: string[],
+  ): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const actions = await this.actionsOf(game.id);
+    const attendance = refusing(() => markAttendance(game, projectGame(game, actions), presentPlayerIds));
+    const lineup = refusing(() =>
+      useFirstLineup(game, projectGame(game, [...actions, attendance])),
+    );
+
+    await this.gameRepository.append(game.id, [attendance, lineup].map((action) => ({
+      kind: action.kind,
+      payload: payloadOf(action),
+    })));
+
+    return this.viewOf(game);
+  }
+
+  private async viewOf(game: Game): Promise<GameView> {
+    return { game, state: projectGame(game, await this.actionsOf(game.id)) };
+  }
+
+  private async actionsOf(gameId: string): Promise<GameAction[]> {
+    const rows = await this.gameRepository.findActions(gameId);
+    return rows
+      .map((row) => gameActionFrom(row.kind, row.payload))
+      .filter((action) => action !== undefined);
+  }
+
+  private async ownedGame(coachUsername: string, gameId: string): Promise<Game> {
+    const game = await this.gameRepository.findById(gameId);
+    if (!game) throw new NotFoundException('Game not found.');
+
+    const team = await this.teamService.findById(game.teamId);
+    if (!team) throw new NotFoundException('Team not found.');
+    if (team.coachUsername !== normalizeCoachUsername(coachUsername)) {
+      throw new ForbiddenException('Sorry, that is not your game.');
+    }
+
+    return game;
+  }
+
+  /**
+   * An unknown team and someone else's team are told apart rather than flattened into one
+   * answer, because this app keeps no secrets and a coach deserves a comprehensible error.
+   */
+  private async ownedTeam(coachUsername: string, teamId: string): Promise<Team> {
+    const team = await this.teamService.findById(teamId);
+    if (!team) throw new NotFoundException('Team not found.');
+    if (team.coachUsername !== normalizeCoachUsername(coachUsername)) {
+      throw new ForbiddenException('Sorry, that is not your team.');
+    }
+    return team;
+  }
+}
