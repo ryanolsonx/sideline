@@ -19,8 +19,6 @@ type Documents = {
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      ...GameSetupScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": typeof types.BeginGameDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": typeof types.GameSetupScreen_GameFragmentDoc,
     "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      out {\n        id\n        name\n      }\n      slots {\n        position\n        player {\n          id\n          name\n        }\n      }\n    }\n  }\n": typeof types.RoundScreen_GameFragmentDoc,
-    "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_MatchesDocument,
-    "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": typeof types.MatchesScreen_CreateMatchDocument,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": typeof types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": typeof types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": typeof types.UpdateTeamRosterDocument,
@@ -33,8 +31,6 @@ const documents: Documents = {
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      ...GameSetupScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": types.BeginGameDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": types.GameSetupScreen_GameFragmentDoc,
     "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      out {\n        id\n        name\n      }\n      slots {\n        position\n        player {\n          id\n          name\n        }\n      }\n    }\n  }\n": types.RoundScreen_GameFragmentDoc,
-    "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_MatchesDocument,
-    "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n": types.MatchesScreen_CreateMatchDocument,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": types.UpdateTeamRosterDocument,
@@ -76,14 +72,6 @@ export function graphql(source: "\n  fragment GameSetupScreen_Game on Game {\n  
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      out {\n        id\n        name\n      }\n      slots {\n        position\n        player {\n          id\n          name\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      out {\n        id\n        name\n      }\n      slots {\n        position\n        player {\n          id\n          name\n        }\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query MatchesScreen_Matches {\n    matches {\n      id\n      name\n      createdAt\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation MatchesScreen_CreateMatch($input: CreateMatchInput!) {\n    createMatch(input: $input) {\n      id\n      name\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

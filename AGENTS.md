@@ -127,15 +127,13 @@ Remove the temporary directory after the server has stopped and verification is 
 Stacked PRs go through the `gh stack` CLI. Use the `gh-stack` skill for branch shape, the
 per-PR CI gate, submission, PR metadata, and the large-PR comparison experiment.
 
-## The `matches` module is an example
+## The `games` module is the worked example
 
-`matches/` in both apps is not a feature. It is the worked example of the layering
-`ARCHITECTURE.md` describes, carried end to end: entity, repository, service, domain
-model, DTO, input, resolver, and a screen with a component test. Nothing renders it and
-nothing depends on it. Copy its shape when building a real feature; never build on it.
+`games/` in both apps carries the layering `ARCHITECTURE.md` describes end to end: entity,
+repository, domain model with its projection, service, DTO, input, resolver, and a screen
+with a component test. It is also a real feature, so copy its shape and build on it.
 
-It is deleted outright once a real feature touches the full stack in the same way, at
-which point that feature is the example.
+It replaced `matches/`, which existed only to be that example.
 
 ## Agent skills
 
