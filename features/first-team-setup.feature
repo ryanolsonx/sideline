@@ -37,7 +37,7 @@ Feature: Set up a first team
     And I continue to formation
     And I finish setup
     And I open "Salt Lake Strikers"
-    Then I see the "Salt Lake Strikers" team settings
+    Then I am on the "Salt Lake Strikers" team screen
 
   Scenario: A coach cannot finish without a player
     Given I am adding players to "Salt Lake Strikers"
