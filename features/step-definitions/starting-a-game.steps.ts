@@ -1,7 +1,7 @@
 import { DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { SidelineWorld } from '../support/world';
-import { appUrl, continueAsCoach, defaultCoachUsername, seedTeam } from '../support/seed';
+import { appUrl, continueAsCoach, defaultCoachUsername, seedGame, seedTeam } from '../support/seed';
 
 function playerCheckbox(world: SidelineWorld, playerName: string) {
   return world.page.getByRole('checkbox', { name: playerName });
@@ -97,4 +97,18 @@ Then('every other player is part of round 1', async function (this: SidelineWorl
   for (const playerName of here) {
     await expect(this.page.getByText(playerName, { exact: true })).toBeVisible();
   }
+});
+
+Given('another coach has started a game', async function (this: SidelineWorld) {
+  const otherTeamId = await seedTeam(this, 'hill coach', 'Mountain United', ['Rowan Fox']);
+  this.gameUrl = `${appUrl}/teams/${otherTeamId}/games/${await seedGame(this, 'hill coach', otherTeamId)}`;
+});
+
+When('I open that game', async function (this: SidelineWorld) {
+  if (!this.gameUrl) throw new Error('No game has been started for this scenario.');
+  await this.page.goto(this.gameUrl);
+});
+
+Then('I am told it is not my game', async function (this: SidelineWorld) {
+  await expect(this.page.getByRole('alert')).toHaveText("Sorry, that's not your game.");
 });
