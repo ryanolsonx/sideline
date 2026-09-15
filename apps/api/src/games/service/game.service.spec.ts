@@ -91,6 +91,7 @@ describe('GameService', () => {
       lifecycle: 'SETUP',
       attendanceConfirmed: false,
       presentPlayerIds: ['player-1', 'player-2'],
+      rounds: [],
     });
   });
 
@@ -120,10 +121,9 @@ describe('GameService', () => {
     await service.markAttendanceForCoach('river coach', 'game-1', ['player-2']);
 
     expect(append).toHaveBeenCalledTimes(1);
-    expect(append).toHaveBeenCalledWith('game-1', 'MARK_ATTENDANCE', {
-      fromRound: 1,
-      presentPlayerIds: ['player-2'],
-    });
+    expect(append).toHaveBeenCalledWith('game-1', [
+      { kind: 'MARK_ATTENDANCE', payload: { fromRound: 1, presentPlayerIds: ['player-2'] } },
+    ]);
   });
 
   it('reads a game back from its log', async () => {
@@ -143,7 +143,42 @@ describe('GameService', () => {
       lifecycle: 'SETUP',
       attendanceConfirmed: true,
       presentPlayerIds: ['player-2'],
+      rounds: [],
     });
+  });
+
+  it('records who is here and round one in one gesture', async () => {
+    const append = vi.fn().mockResolvedValue([]);
+    const service = serviceFor(
+      { findById: vi.fn().mockResolvedValue(team) },
+      { findById: vi.fn().mockResolvedValue(game), append },
+    );
+
+    await service.beginGameForCoach('river coach', 'game-1', ['player-1', 'player-2']);
+
+    expect(append).toHaveBeenCalledTimes(1);
+    const [, entries] = append.mock.calls[0];
+    expect(entries.map((entry: { kind: string }) => entry.kind))
+      .toEqual(['MARK_ATTENDANCE', 'USE_LINEUP']);
+    expect(entries[1].payload.round).toBe(1);
+  });
+
+  it('will not begin a game that has already begun', async () => {
+    const service = serviceFor(
+      { findById: vi.fn().mockResolvedValue(team) },
+      {
+        findById: vi.fn().mockResolvedValue(game),
+        append: vi.fn(),
+        findActions: vi.fn().mockResolvedValue([
+          { kind: 'MARK_ATTENDANCE', payload: { fromRound: 1, presentPlayerIds: ['player-1'] } },
+          { kind: 'USE_LINEUP', payload: { round: 1, lineup: { goalie: ['player-1'], defenders: [], forwards: [] } } },
+        ]),
+      },
+    );
+
+    await expect(
+      service.beginGameForCoach('river coach', 'game-1', ['player-1']),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('cannot open a game that does not exist', async () => {
