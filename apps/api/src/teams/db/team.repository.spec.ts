@@ -20,6 +20,18 @@ describe('TeamRepository', () => {
     });
   });
 
+  it('loads a team by id so ownership can be judged separately', async () => {
+    const teams = { findOne: vi.fn().mockResolvedValue(null) } as unknown as Repository<TeamEntity>;
+    const repository = new TeamRepository(teams, {} as DataSource);
+
+    await repository.findById('team-1');
+
+    expect(teams.findOne).toHaveBeenCalledWith({
+      where: { id: 'team-1' },
+      relations: { players: true },
+    });
+  });
+
   it('loads a team only when it belongs to the coach', async () => {
     const teams = { findOne: vi.fn().mockResolvedValue(null) } as unknown as Repository<TeamEntity>;
     const repository = new TeamRepository(teams, {} as DataSource);
