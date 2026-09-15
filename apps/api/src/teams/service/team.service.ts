@@ -22,6 +22,10 @@ export class TeamService {
     return this.teamRepository.findAllByCoachUsername(normalizeCoachUsername(coachUsername));
   }
 
+  findById(id: string): Promise<Team | null> {
+    return this.teamRepository.findById(id);
+  }
+
   async findForCoach(coachUsername: string, id: string): Promise<Team> {
     const team = await this.teamRepository.findByIdAndCoachUsername(
       id,
