@@ -79,6 +79,7 @@ function CoachTeams({
     onCreateTeam={async (name, players, formation) => {
       const result = await createTeam({ variables: { input: { name, players, formation } } });
       if (!result.data) throw new Error('The team could not be created.');
+      await client.refetchQueries({ include: [TeamsQuery] });
       return result.data.createTeam;
     }}
   />;
