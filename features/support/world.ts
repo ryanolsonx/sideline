@@ -56,6 +56,8 @@ export class SidelineWorld extends World {
   context!: BrowserContext;
   page!: Page;
   teamId?: string;
+  rosterPlayerNames: string[] = [];
+  absentPlayerNames: string[] = [];
 }
 
 setWorldConstructor(SidelineWorld);
@@ -97,7 +99,7 @@ BeforeAll(async () => {
 });
 
 Before(async function (this: SidelineWorld) {
-  await database.query('TRUNCATE TABLE "player", "team" RESTART IDENTITY CASCADE');
+  await database.query('TRUNCATE TABLE "game_action", "game", "player", "team" RESTART IDENTITY CASCADE');
   this.context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   this.page = await this.context.newPage();
 });

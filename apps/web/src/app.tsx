@@ -9,6 +9,9 @@ import {
 import { CoachUsernameScreen } from './screens/coach/CoachUsernameScreen';
 import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { TeamDetailScreen, EditableTeam } from './screens/teams/TeamDetailScreen';
+import { GameSetupScreen, GameSetupScreen_GameFragment } from './screens/games/GameSetupScreen';
+import { MarkAttendanceMutation, StartGameMutation } from './screens/games/GameSetupScreen.graphql';
+import { FragmentType } from './gql';
 import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
@@ -56,6 +59,9 @@ function CoachTeams({
   const { data, loading, error } = useQuery(TeamsQuery);
   const [createTeam] = useMutation(CreateTeamMutation);
   const [updateTeam] = useMutation(UpdateTeamMutation);
+  const [startGame] = useMutation(StartGameMutation);
+  const [markAttendance] = useMutation(MarkAttendanceMutation);
+  const [openGame, setOpenGame] = useState<OpenGame>();
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -87,7 +93,23 @@ function CoachTeams({
     <Route path="/" element={<Navigate to="/teams" replace />} />
     <Route path="/teams" element={teamSetup(false)} />
     <Route path="/teams/new" element={teamSetup(true)} />
-    <Route path="/teams/:teamId" element={<TeamSettings teams={teams} onSave={saveTeam} />} />
+    <Route path="/teams/:teamId" element={<TeamSettings
+      teams={teams}
+      onSave={saveTeam}
+      onStartGame={async (team) => {
+        const result = await startGame({ variables: { input: { teamId: team.id } } });
+        if (!result.data) throw new Error('The game could not be started.');
+        setOpenGame(result.data.startGame);
+        navigate(`/teams/${team.id}/games/${result.data.startGame.id}`);
+      }}
+    />} />
+    <Route path="/teams/:teamId/games/:gameId" element={<GameSetup
+      game={openGame}
+      onConfirm={async (gameId, presentPlayerIds) => {
+        const result = await markAttendance({ variables: { input: { gameId, presentPlayerIds } } });
+        if (result.data) setOpenGame((current) => current && { ...current, ...result.data!.markAttendance });
+      }}
+    />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
   </Routes>;
 }
@@ -95,14 +117,41 @@ function CoachTeams({
 function TeamSettings({
   teams,
   onSave,
+  onStartGame,
 }: {
   teams: EditableTeam[];
   onSave: (team: EditableTeam, name: string, players: string[], formation: EditableTeam['formation']) => Promise<void>;
+  onStartGame: (team: EditableTeam) => Promise<void>;
 }) {
   const { teamId } = useParams();
   const navigate = useNavigate();
   const team = teams.find((candidate) => candidate.id === teamId);
 
   if (!team) return <Navigate to="/teams" replace />;
-  return <TeamDetailScreen team={team} onBack={() => navigate('/teams')} onSave={(name, players, formation) => onSave(team, name, players, formation)} />;
+  return <TeamDetailScreen
+    team={team}
+    onBack={() => navigate('/teams')}
+    onSave={(name, players, formation) => onSave(team, name, players, formation)}
+    onStartGame={() => onStartGame(team)}
+  />;
+}
+
+type OpenGame = { id: string; teamId: string } & FragmentType<typeof GameSetupScreen_GameFragment>;
+
+function GameSetup({
+  game,
+  onConfirm,
+}: {
+  game: OpenGame | undefined;
+  onConfirm: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
+}) {
+  const { teamId, gameId } = useParams();
+  const navigate = useNavigate();
+
+  if (!game || game.id !== gameId) return <Navigate to={`/teams/${teamId}`} replace />;
+  return <GameSetupScreen
+    game={game}
+    onBack={() => navigate(`/teams/${game.teamId}`)}
+    onConfirm={(presentPlayerIds) => onConfirm(game.id, presentPlayerIds)}
+  />;
 }

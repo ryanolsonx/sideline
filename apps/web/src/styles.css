@@ -411,6 +411,18 @@ h1 {
 .editor-option b { color: #f3fbfc; }
 .editor-option small { color: #aebdc5; }
 
+.team-primary-action { margin: 1.25rem 0 2rem; }
+.start-game-button { width: 100%; min-height: 3.5rem; color: #082a34; background: #67e8f9; border: 0; border-radius: .7rem; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.start-game-button:disabled { cursor: not-allowed; opacity: .45; }
+.editor-settings-heading { margin: 0 0 .5rem; color: #aebdc5; font-size: .95rem; font-weight: 700; }
+
+.attendance-count { margin: .25rem 0 1rem; color: #67e8f9; font-weight: 700; }
+.attendance-list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.attendance-option { display: flex; align-items: center; gap: .75rem; min-height: 3.5rem; padding: .65rem .85rem; background: #152430; border: 1px solid #374f5e; border-radius: .7rem; cursor: pointer; }
+.attendance-option--present { background: #153440; border-color: #67e8f9; }
+.attendance-option input { width: 1.35rem; height: 1.35rem; accent-color: #67e8f9; }
+.game-status { margin-top: 1.5rem; padding: .9rem; color: #082a34; background: #67e8f9; border-radius: .7rem; font-weight: 700; text-align: center; }
+
 @media (min-width: 700px) {
   .onboarding-content { padding-top: 6rem; }
 }

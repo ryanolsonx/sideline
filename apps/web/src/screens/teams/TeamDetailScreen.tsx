@@ -11,10 +11,12 @@ export function TeamDetailScreen({
   team,
   onBack,
   onSave,
+  onStartGame,
 }: {
   team: EditableTeam;
   onBack: () => void;
   onSave: (name: string, players: string[], formation: EditableTeam['formation']) => Promise<void>;
+  onStartGame: () => Promise<void>;
 }) {
   const [name, setName] = useState(team.name);
   const [players, setPlayers] = useState(team.players.map((player) => player.name));
@@ -22,6 +24,25 @@ export function TeamDetailScreen({
   const [formation, setFormation] = useState(team.formation);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string>();
+
+  const unsavedChanges = name !== team.name
+    || formation.defender !== team.formation.defender
+    || formation.forward !== team.formation.forward
+    || players.length !== team.players.length
+    || players.some((player, index) => player !== team.players[index].name);
+
+  async function startGame() {
+    setStarting(true);
+    setStartError(undefined);
+    try {
+      await onStartGame();
+    } catch {
+      setStartError('We could not start the game. Try again.');
+      setStarting(false);
+    }
+  }
 
   async function save() {
     setSaving(true);
@@ -36,8 +57,14 @@ export function TeamDetailScreen({
 
   return <main className="onboarding-shell"><section className="onboarding-content team-editor" aria-labelledby="team-heading">
     <button className="back-link" type="button" onClick={onBack}>‹ Back to teams</button>
-    <p className="editor-eyebrow">Team settings</p>
-    <h1 id="team-heading">Team settings</h1>
+    <p className="editor-eyebrow">Your team</p>
+    <h1 id="team-heading">{team.name}</h1>
+    <div className="team-primary-action">
+      <button className="start-game-button" type="button" disabled={starting || unsavedChanges} onClick={startGame}>{starting ? 'Starting…' : 'Start a game'}</button>
+      {unsavedChanges && <p className="field-hint">Save your changes first. A game keeps the team it started with.</p>}
+      {startError && <p className="save-error" role="alert">{startError}</p>}
+    </div>
+    <h2 className="editor-settings-heading">Team settings</h2>
     <div className="editor-team-name"><label htmlFor="team-name">Team name</label><input id="team-name" value={name} onChange={(event) => setName(event.target.value)} /></div>
     <section className="editor-section" aria-labelledby="roster-heading">
       <div className="editor-section-heading"><div><h2 id="roster-heading">Roster</h2><p>Up to 9 players</p></div><span>{players.length} players</span></div>
