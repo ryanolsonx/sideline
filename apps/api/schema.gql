@@ -27,6 +27,34 @@ input FormationInput {
   forward: Int!
 }
 
+type Game {
+  attendanceConfirmed: Boolean!
+  formation: Formation!
+  id: ID!
+  lifecycle: GameLifecycle!
+  players: [GamePlayer!]!
+  startedAt: DateTime!
+  teamId: ID!
+}
+
+enum GameLifecycle {
+  ABANDONED
+  ENDED
+  LIVE
+  SETUP
+}
+
+type GamePlayer {
+  id: ID!
+  name: String!
+  present: Boolean!
+}
+
+input MarkAttendanceInput {
+  gameId: ID!
+  presentPlayerIds: [ID!]!
+}
+
 type Match {
   createdAt: DateTime!
   id: ID!
@@ -36,6 +64,8 @@ type Match {
 type Mutation {
   createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
+  markAttendance(input: MarkAttendanceInput!): Game!
+  startGame(input: StartGameInput!): Game!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamFormation(input: UpdateTeamFormationInput!): Team!
   updateTeamRoster(input: UpdateTeamRosterInput!): Team!
@@ -47,9 +77,14 @@ type Player {
 }
 
 type Query {
+  game(id: ID!): Game!
   matches: [Match!]!
   team(id: String!): Team!
   teams: [Team!]!
+}
+
+input StartGameInput {
+  teamId: ID!
 }
 
 type Team {

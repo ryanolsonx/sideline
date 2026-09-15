@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { GraphQLSchemaBuilderModule, GraphQLSchemaFactory } from '@nestjs/graphql';
 import { Test } from '@nestjs/testing';
 import { lexicographicSortSchema, printSchema } from 'graphql';
+import { GameResolver } from './games/api/game.resolver';
+import { GameService } from './games/service/game.service';
 import { MatchResolver } from './matches/api/match.resolver';
 import { MatchService } from './matches/service/match.service';
 import { TeamResolver } from './teams/api/team.resolver';
@@ -12,8 +14,13 @@ async function generateSchema() {
   const module = await Test.createTestingModule({
     imports: [GraphQLSchemaBuilderModule],
     providers: [
+      GameResolver,
       MatchResolver,
       TeamResolver,
+      {
+        provide: GameService,
+        useValue: {},
+      },
       {
         provide: MatchService,
         useValue: {},
@@ -25,7 +32,7 @@ async function generateSchema() {
     ],
   }).compile();
   const factory = module.get(GraphQLSchemaFactory);
-  const schema = await factory.create([MatchResolver, TeamResolver]);
+  const schema = await factory.create([GameResolver, MatchResolver, TeamResolver]);
 
   const generatedHeader = '# ------------------------------------------------------\n# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)\n# ------------------------------------------------------\n\n';
   await writeFile(join(process.cwd(), 'schema.gql'), `${generatedHeader}${printSchema(lexicographicSortSchema(schema))}`);

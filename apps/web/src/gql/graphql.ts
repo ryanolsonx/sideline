@@ -39,6 +39,36 @@ export type FormationInput = {
   forward: Scalars['Int']['input'];
 };
 
+export type Game = {
+  __typename?: 'Game';
+  attendanceConfirmed: Scalars['Boolean']['output'];
+  formation: Formation;
+  id: Scalars['ID']['output'];
+  lifecycle: GameLifecycle;
+  players: Array<GamePlayer>;
+  startedAt: Scalars['DateTime']['output'];
+  teamId: Scalars['ID']['output'];
+};
+
+export enum GameLifecycle {
+  Abandoned = 'ABANDONED',
+  Ended = 'ENDED',
+  Live = 'LIVE',
+  Setup = 'SETUP'
+}
+
+export type GamePlayer = {
+  __typename?: 'GamePlayer';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  present: Scalars['Boolean']['output'];
+};
+
+export type MarkAttendanceInput = {
+  gameId: Scalars['ID']['input'];
+  presentPlayerIds: Array<Scalars['ID']['input']>;
+};
+
 export type Match = {
   __typename?: 'Match';
   createdAt: Scalars['DateTime']['output'];
@@ -50,6 +80,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createMatch: Match;
   createTeam: Team;
+  markAttendance: Game;
+  startGame: Game;
   updateTeam: Team;
   updateTeamFormation: Team;
   updateTeamRoster: Team;
@@ -63,6 +95,16 @@ export type MutationCreateMatchArgs = {
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
+};
+
+
+export type MutationMarkAttendanceArgs = {
+  input: MarkAttendanceInput;
+};
+
+
+export type MutationStartGameArgs = {
+  input: StartGameInput;
 };
 
 
@@ -88,14 +130,24 @@ export type Player = {
 
 export type Query = {
   __typename?: 'Query';
+  game: Game;
   matches: Array<Match>;
   team: Team;
   teams: Array<Team>;
 };
 
 
+export type QueryGameArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryTeamArgs = {
   id: Scalars['String']['input'];
+};
+
+export type StartGameInput = {
+  teamId: Scalars['ID']['input'];
 };
 
 export type Team = {
