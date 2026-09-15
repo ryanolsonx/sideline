@@ -247,3 +247,11 @@ When('I return to Sideline', async function (this: SidelineWorld) {
 When('I sign out', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Sign out' }).click();
 });
+
+Then('I am on the {string} team screen', async function (this: SidelineWorld, teamName: string) {
+  await expect(this.page.getByRole('heading', { level: 1, name: teamName })).toBeVisible();
+});
+
+When('I open team settings', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Team settings' }).click();
+});
