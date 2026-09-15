@@ -30,14 +30,20 @@ export class GameRepository {
 
   /**
    * Locks the game so two requests cannot claim the same place in the log, then appends.
-   * Appending is the only write a game ever takes.
+   * Appending is the only write a game ever takes, and one coach action is one transaction
+   * however many entries it writes.
    */
-  append(gameId: string, kind: string, payload: Record<string, unknown>): Promise<GameActionEntity> {
+  append(
+    gameId: string,
+    entries: readonly { kind: string; payload: Record<string, unknown> }[],
+  ): Promise<GameActionEntity[]> {
     return this.dataSource.transaction(async (manager) => {
       await manager.getRepository(GameEntity).findOne({ where: { id: gameId }, lock: { mode: 'pessimistic_write' } });
       const actions = manager.getRepository(GameActionEntity);
-      const sequence = await actions.countBy({ gameId });
-      return actions.save(actions.create({ gameId, sequence, kind, payload }));
+      const nextSequence = await actions.countBy({ gameId });
+      return actions.save(
+        entries.map((entry, index) => actions.create({ gameId, sequence: nextSequence + index, ...entry })),
+      );
     });
   }
 }
