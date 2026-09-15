@@ -92,11 +92,11 @@ pnpm codegen
 pnpm serve
 ```
 
-Open http://localhost:5173. Clicking **Save match** calls the GraphQL mutation, persists a row in PostgreSQL, refetches `matches`, and displays the saved record.
+Open http://localhost:5173. Continue as a coach, add a team and its roster, then start a game and mark who turned up.
 
 ## Behavior-driven end-to-end tests
 
-Executable product specifications live in `features/*.feature`. Cucumber maps their Gherkin steps to TypeScript step definitions, and Playwright exercises the application through its browser-visible interface. The current feature covers the existing create-and-display match journey.
+Executable product specifications live in `features/*.feature`. Cucumber maps their Gherkin steps to TypeScript step definitions, and Playwright exercises the application through its browser-visible interface. The current features cover signing in as a coach, setting up and managing a team, and starting a game.
 
 Install Chromium once after installing dependencies:
 

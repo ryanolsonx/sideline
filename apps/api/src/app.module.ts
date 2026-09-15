@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'node:path';
 import { databaseOptions } from './database/typeorm.config';
 import { GamesModule } from './games/games.module';
-import { MatchesModule } from './matches/matches.module';
 import { TeamsModule } from './teams/teams.module';
 
 @Module({
@@ -21,7 +20,6 @@ import { TeamsModule } from './teams/teams.module';
       sortSchema: true,
     }),
     GamesModule,
-    MatchesModule,
     TeamsModule,
   ],
 })

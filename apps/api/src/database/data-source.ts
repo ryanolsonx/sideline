@@ -4,6 +4,7 @@ import { TeamRosters1720000000000 } from './migrations/1720000000000-team-roster
 import { TeamCoachUsernames1730000000000 } from './migrations/1730000000000-team-coach-usernames';
 import { TeamFormations1740000000000 } from './migrations/1740000000000-team-formations';
 import { Games1750000000000 } from './migrations/1750000000000-games';
+import { DropMatchExample1760000000000 } from './migrations/1760000000000-drop-match-example';
 import { databaseOptions } from './typeorm.config';
 
 export default new DataSource({
@@ -14,5 +15,6 @@ export default new DataSource({
     TeamCoachUsernames1730000000000,
     TeamFormations1740000000000,
     Games1750000000000,
+    DropMatchExample1760000000000,
   ],
 });

@@ -7,10 +7,6 @@ input BeginGameInput {
   presentPlayerIds: [ID!]!
 }
 
-input CreateMatchInput {
-  name: String!
-}
-
 input CreateTeamInput {
   formation: FormationInput!
   name: String!
@@ -61,15 +57,8 @@ input MarkAttendanceInput {
   presentPlayerIds: [ID!]!
 }
 
-type Match {
-  createdAt: DateTime!
-  id: ID!
-  name: String!
-}
-
 type Mutation {
   beginGame(input: BeginGameInput!): Game!
-  createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
   markAttendance(input: MarkAttendanceInput!): Game!
   startGame(input: StartGameInput!): Game!
@@ -91,7 +80,6 @@ enum Position {
 
 type Query {
   game(id: ID!): Game!
-  matches: [Match!]!
   team(id: String!): Team!
   teams: [Team!]!
 }
