@@ -9,6 +9,7 @@ import {
 import { CoachUsernameScreen } from './screens/coach/CoachUsernameScreen';
 import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { TeamDetailScreen, EditableTeam } from './screens/teams/TeamDetailScreen';
+import { TeamScreen } from './screens/teams/TeamScreen';
 import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/teams/FirstTeamScreen.graphql';
 
 export function App() {
@@ -88,9 +89,23 @@ function CoachTeams({
     <Route path="/" element={<Navigate to="/teams" replace />} />
     <Route path="/teams" element={teamSetup(false)} />
     <Route path="/teams/new" element={teamSetup(true)} />
-    <Route path="/teams/:teamId" element={<TeamSettings teams={teams} onSave={saveTeam} />} />
+    <Route path="/teams/:teamId" element={<TeamHome teams={teams} />} />
+    <Route path="/teams/:teamId/edit" element={<TeamSettings teams={teams} onSave={saveTeam} />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
   </Routes>;
+}
+
+function TeamHome({ teams }: { teams: EditableTeam[] }) {
+  const { teamId } = useParams();
+  const navigate = useNavigate();
+  const team = teams.find((candidate) => candidate.id === teamId);
+
+  if (!team) return <Navigate to="/teams" replace />;
+  return <TeamScreen
+    team={team}
+    onBack={() => navigate('/teams')}
+    onEditTeam={() => navigate(`/teams/${team.id}/edit`)}
+  />;
 }
 
 function TeamSettings({
@@ -105,5 +120,9 @@ function TeamSettings({
   const team = teams.find((candidate) => candidate.id === teamId);
 
   if (!team) return <Navigate to="/teams" replace />;
-  return <TeamDetailScreen team={team} onBack={() => navigate('/teams')} onSave={(name, players, formation) => onSave(team, name, players, formation)} />;
+  return <TeamDetailScreen
+    team={team}
+    onBack={() => navigate(`/teams/${team.id}`)}
+    onSave={(name, players, formation) => onSave(team, name, players, formation)}
+  />;
 }
