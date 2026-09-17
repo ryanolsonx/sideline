@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input BeginGameInput {
+  gameId: ID!
+  presentPlayerIds: [ID!]!
+}
+
 input CreateMatchInput {
   name: String!
 }
@@ -27,6 +32,35 @@ input FormationInput {
   forward: Int!
 }
 
+type Game {
+  attendanceConfirmed: Boolean!
+  currentRound: Round
+  formation: Formation!
+  id: ID!
+  lifecycle: GameLifecycle!
+  players: [GamePlayer!]!
+  startedAt: DateTime!
+  teamId: ID!
+}
+
+enum GameLifecycle {
+  ABANDONED
+  ENDED
+  LIVE
+  SETUP
+}
+
+type GamePlayer {
+  id: ID!
+  name: String!
+  present: Boolean!
+}
+
+input MarkAttendanceInput {
+  gameId: ID!
+  presentPlayerIds: [ID!]!
+}
+
 type Match {
   createdAt: DateTime!
   id: ID!
@@ -34,8 +68,11 @@ type Match {
 }
 
 type Mutation {
+  beginGame(input: BeginGameInput!): Game!
   createMatch(input: CreateMatchInput!): Match!
   createTeam(input: CreateTeamInput!): Team!
+  markAttendance(input: MarkAttendanceInput!): Game!
+  startGame(input: StartGameInput!): Game!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamFormation(input: UpdateTeamFormationInput!): Team!
   updateTeamRoster(input: UpdateTeamRosterInput!): Team!
@@ -46,10 +83,32 @@ type Player {
   name: String!
 }
 
+enum Position {
+  DEFENDER
+  FORWARD
+  GOALIE
+}
+
 type Query {
+  game(id: ID!): Game!
   matches: [Match!]!
   team(id: String!): Team!
   teams: [Team!]!
+}
+
+type Round {
+  number: Int!
+  out: [GamePlayer!]!
+  slots: [RoundSlot!]!
+}
+
+type RoundSlot {
+  player: GamePlayer
+  position: Position!
+}
+
+input StartGameInput {
+  teamId: ID!
 }
 
 type Team {
