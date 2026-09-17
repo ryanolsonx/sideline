@@ -1,4 +1,5 @@
 import { Args, Context, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { answering } from './answering';
 import { BeginGameInput } from './begin-game.input';
 import { GameDto, GamePlayerDto, RoundDto } from './game.dto';
 import { MarkAttendanceInput } from './mark-attendance.input';
@@ -62,9 +63,9 @@ export class GameResolver {
 
   @Query(() => GameDto)
   async game(@Context('req') request: Request, @Args('id', { type: () => ID }) id: string): Promise<GameDto> {
-    return toGameDto(
+    return answering(async () => toGameDto(
       await this.gameService.findForCoach(coachUsernameFromCookieHeader(request.headers.cookie), id),
-    );
+    ));
   }
 
   @Mutation(() => GameDto)
@@ -72,12 +73,12 @@ export class GameResolver {
     @Context('req') request: Request,
     @Args('input') input: StartGameInput,
   ): Promise<GameDto> {
-    return toGameDto(
+    return answering(async () => toGameDto(
       await this.gameService.startGameForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.teamId,
       ),
-    );
+    ));
   }
 
   @Mutation(() => GameDto)
@@ -85,13 +86,13 @@ export class GameResolver {
     @Context('req') request: Request,
     @Args('input') input: BeginGameInput,
   ): Promise<GameDto> {
-    return toGameDto(
+    return answering(async () => toGameDto(
       await this.gameService.beginGameForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
         input.presentPlayerIds,
       ),
-    );
+    ));
   }
 
   @Mutation(() => GameDto)
@@ -99,12 +100,12 @@ export class GameResolver {
     @Context('req') request: Request,
     @Args('input') input: MarkAttendanceInput,
   ): Promise<GameDto> {
-    return toGameDto(
+    return answering(async () => toGameDto(
       await this.gameService.markAttendanceForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
         input.presentPlayerIds,
       ),
-    );
+    ));
   }
 }
