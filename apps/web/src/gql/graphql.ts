@@ -78,6 +78,7 @@ export type Mutation = {
   createTeam: Team;
   markAttendance: Game;
   startGame: Game;
+  swapPlayers: Game;
   updateTeam: Team;
   updateTeamFormation: Team;
   updateTeamRoster: Team;
@@ -102,6 +103,11 @@ export type MutationMarkAttendanceArgs = {
 
 export type MutationStartGameArgs = {
   input: StartGameInput;
+};
+
+
+export type MutationSwapPlayersArgs = {
+  input: SwapPlayersInput;
 };
 
 
@@ -168,6 +174,11 @@ export type RoundSlot = {
 
 export type StartGameInput = {
   teamId: Scalars['ID']['input'];
+};
+
+export type SwapPlayersInput = {
+  gameId: Scalars['ID']['input'];
+  playerIds: Array<Scalars['ID']['input']>;
 };
 
 export type Team = {

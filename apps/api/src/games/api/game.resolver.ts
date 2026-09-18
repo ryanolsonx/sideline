@@ -4,6 +4,7 @@ import { BeginGameInput } from './begin-game.input';
 import { GameDto, GamePlayerDto, RoundDto } from './game.dto';
 import { MarkAttendanceInput } from './mark-attendance.input';
 import { StartGameInput } from './start-game.input';
+import { SwapPlayersInput } from './swap-players.input';
 import { UseLineupInput } from './use-lineup.input';
 import { GameService, GameView } from '../service/game.service';
 import { Position, StartingLineup, outPlayerIds } from '../domain/lineup';
@@ -107,6 +108,20 @@ export class GameResolver {
       await this.gameService.useLineupForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
+      ),
+    ));
+  }
+
+  @Mutation(() => GameDto)
+  async swapPlayers(
+    @Context('req') request: Request,
+    @Args('input') input: SwapPlayersInput,
+  ): Promise<GameDto> {
+    return answering(async () => toGameDto(
+      await this.gameService.swapPlayersForCoach(
+        coachUsernameFromCookieHeader(request.headers.cookie),
+        input.gameId,
+        input.playerIds,
       ),
     ));
   }

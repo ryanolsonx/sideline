@@ -42,6 +42,7 @@ export type GameLifecycle = 'SETUP' | 'LIVE' | 'ENDED' | 'ABANDONED';
 
 export const MARK_ATTENDANCE = 'MARK_ATTENDANCE';
 export const USE_LINEUP = 'USE_LINEUP';
+export const SWAP = 'SWAP';
 
 /**
  * The whole present-player list, stamped with the round it takes effect from. One coach
@@ -53,18 +54,48 @@ export interface MarkAttendanceAction {
   presentPlayerIds: string[];
 }
 
-/** The lineup a round went onto the field with. A round keeps what it began as. */
+/** The lineup the engine offered for a round. A round keeps what it began as. */
 export interface UseLineupAction {
   kind: typeof USE_LINEUP;
   round: number;
   lineup: StartingLineup;
 }
 
-export type GameAction = MarkAttendanceAction | UseLineupAction;
+/**
+ * Two players trading places, which is the whole of a coach adjustment. It names the round it
+ * targets and the screen it was made on, so the fold knows whether it changes what a round
+ * begins as or what is on the field now.
+ */
+export interface SwapAction {
+  kind: typeof SWAP;
+  round: number;
+  screen: RoundScreen;
+  playerIds: [string, string];
+}
+
+export type RoundScreen = 'PLAN' | 'LIVE';
+
+export type GameAction = MarkAttendanceAction | UseLineupAction | SwapAction;
 
 export interface Round {
   round: number;
   startingLineup: StartingLineup;
+}
+
+/** Two players trading places in a lineup. Everyone else stays where the engine put them. */
+export function swappedLineup(lineup: StartingLineup, [one, another]: readonly [string, string]): StartingLineup {
+  const traded = (playerId: string) =>
+    playerId === one ? another : playerId === another ? one : playerId;
+
+  return {
+    goalie: lineup.goalie.map(traded),
+    defenders: lineup.defenders.map(traded),
+    forwards: lineup.forwards.map(traded),
+  };
+}
+
+function afterSwaps(lineup: StartingLineup, swaps: readonly (readonly [string, string])[]): StartingLineup {
+  return swaps.reduce(swappedLineup, lineup);
 }
 
 export interface GameState {
@@ -75,6 +106,8 @@ export interface GameState {
   currentRound?: number;
   /** The round waiting for the coach to use a lineup. Nothing about it is stored. */
   plannedRound?: number;
+  /** The swaps the coach has made to the round being planned, in the order they were made. */
+  plannedSwaps: [string, string][];
 }
 
 /** Reads an action off a stored row, ignoring kinds this version does not know. */
@@ -95,13 +128,27 @@ export function gameActionFrom(kind: string, payload: Record<string, unknown>): 
     };
   }
 
+  if (kind === SWAP) {
+    return {
+      kind: SWAP,
+      round: Number(payload.round ?? 1),
+      screen: (payload.screen as RoundScreen | undefined) ?? 'PLAN',
+      playerIds: payload.playerIds as [string, string],
+    };
+  }
+
   return undefined;
 }
 
 export function payloadOf(action: GameAction): Record<string, unknown> {
-  return action.kind === MARK_ATTENDANCE
-    ? { fromRound: action.fromRound, presentPlayerIds: action.presentPlayerIds }
-    : { round: action.round, lineup: action.lineup };
+  if (action.kind === MARK_ATTENDANCE) {
+    return { fromRound: action.fromRound, presentPlayerIds: action.presentPlayerIds };
+  }
+  if (action.kind === SWAP) {
+    return { round: action.round, screen: action.screen, playerIds: action.playerIds };
+  }
+
+  return { round: action.round, lineup: action.lineup };
 }
 
 /**
@@ -118,7 +165,14 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
         attendanceConfirmed: true,
         presentPlayerIds: everyone.filter((id) => action.presentPlayerIds.includes(id)),
         plannedRound: state.currentRound === undefined ? 1 : state.plannedRound,
+        plannedSwaps: [],
       };
+    }
+
+    if (action.kind === SWAP) {
+      return action.round === state.plannedRound && action.screen === 'PLAN'
+        ? { ...state, plannedSwaps: [...state.plannedSwaps, action.playerIds] }
+        : state;
     }
 
     if (action.kind === USE_LINEUP) {
@@ -127,15 +181,22 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
         lifecycle: 'LIVE',
         currentRound: action.round,
         plannedRound: undefined,
+        plannedSwaps: [],
         rounds: [
           ...state.rounds.filter((round) => round.round !== action.round),
-          { round: action.round, startingLineup: action.lineup },
+          { round: action.round, startingLineup: afterSwaps(action.lineup, state.plannedSwaps) },
         ],
       };
     }
 
     return state;
-  }, { lifecycle: 'SETUP', attendanceConfirmed: false, presentPlayerIds: everyone, rounds: [] });
+  }, {
+    lifecycle: 'SETUP',
+    attendanceConfirmed: false,
+    presentPlayerIds: everyone,
+    rounds: [],
+    plannedSwaps: [],
+  });
 }
 
 export function roundOf(state: GameState, round: number): Round | undefined {
@@ -153,18 +214,40 @@ export function planRound(snapshot: GameSnapshot, state: GameState): Round {
 
   return {
     round: state.plannedRound,
-    startingLineup: suggestFirstRound(snapshot, state.presentPlayerIds),
+    startingLineup: afterSwaps(suggestFirstRound(snapshot, state.presentPlayerIds), state.plannedSwaps),
   };
 }
 
 /**
- * The coach taking the plan onto the field. What the round begins as is recorded here rather
- * than recomputed later, so reading the game back gives the round that was actually played.
+ * The coach trading two players around the plan. The engine's rules bind the engine rather
+ * than the coach, so the only players refused are ones who are not playing in this game.
+ */
+export function swapPlayers(state: GameState, playerIds: [string, string]): SwapAction {
+  if (state.plannedRound === undefined) throw new Error('No round is being planned.');
+
+  const [one, another] = playerIds;
+  if (one === another) throw new Error('A player cannot swap with themselves.');
+  if (![one, another].every((playerId) => state.presentPlayerIds.includes(playerId))) {
+    throw new Error('That player is not playing in this game.');
+  }
+
+  return { kind: SWAP, round: state.plannedRound, screen: 'PLAN', playerIds };
+}
+
+/**
+ * The coach taking the plan onto the field. The action carries the lineup the engine offered;
+ * the swaps already in the log are what make the round begin as the coach arranged it.
  */
 export function useLineup(snapshot: GameSnapshot, state: GameState): UseLineupAction {
-  const planned = planRound(snapshot, state);
+  if (state.plannedRound === undefined) {
+    throw new Error(state.attendanceConfirmed ? 'No round is being planned.' : 'Nobody has been marked present yet.');
+  }
 
-  return { kind: USE_LINEUP, round: planned.round, lineup: planned.startingLineup };
+  return {
+    kind: USE_LINEUP,
+    round: state.plannedRound,
+    lineup: suggestFirstRound(snapshot, state.presentPlayerIds),
+  };
 }
 
 /** The one action a coach's confirmation writes, whoever they ticked and unticked on the way. */
