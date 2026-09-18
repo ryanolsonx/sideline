@@ -19,11 +19,12 @@ type Documents = {
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.BeginGameDocument,
     "\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.ResetPlanDocument,
     "\n  mutation SwapPlayers($input: SwapPlayersInput!) {\n    swapPlayers(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.SwapPlayersDocument,
+    "\n  mutation TakeSubs($input: TakeSubsInput!) {\n    takeSubs(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": typeof types.TakeSubsDocument,
     "\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": typeof types.UseLineupDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": typeof types.GameSetupScreen_GameFragmentDoc,
     "\n  fragment RoundLineup_Round on Round {\n    number\n    out {\n      id\n      name\n    }\n    slots {\n      position\n      player {\n        id\n        name\n      }\n    }\n  }\n": typeof types.RoundLineup_RoundFragmentDoc,
     "\n  fragment RoundPlanScreen_Game on Game {\n    plannedRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": typeof types.RoundPlanScreen_GameFragmentDoc,
-    "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": typeof types.RoundScreen_GameFragmentDoc,
+    "\n  fragment RoundScreen_Game on Game {\n    rounds\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": typeof types.RoundScreen_GameFragmentDoc,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": typeof types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": typeof types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": typeof types.UpdateTeamRosterDocument,
@@ -36,11 +37,12 @@ const documents: Documents = {
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.BeginGameDocument,
     "\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.ResetPlanDocument,
     "\n  mutation SwapPlayers($input: SwapPlayersInput!) {\n    swapPlayers(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.SwapPlayersDocument,
+    "\n  mutation TakeSubs($input: TakeSubsInput!) {\n    takeSubs(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": types.TakeSubsDocument,
     "\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": types.UseLineupDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": types.GameSetupScreen_GameFragmentDoc,
     "\n  fragment RoundLineup_Round on Round {\n    number\n    out {\n      id\n      name\n    }\n    slots {\n      position\n      player {\n        id\n        name\n      }\n    }\n  }\n": types.RoundLineup_RoundFragmentDoc,
     "\n  fragment RoundPlanScreen_Game on Game {\n    plannedRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": types.RoundPlanScreen_GameFragmentDoc,
-    "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": types.RoundScreen_GameFragmentDoc,
+    "\n  fragment RoundScreen_Game on Game {\n    rounds\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n": types.RoundScreen_GameFragmentDoc,
     "\n  mutation CreateTeam($input: CreateTeamInput!) {\n    createTeam(input: $input) {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": types.CreateTeamDocument,
     "\n  query Teams {\n    teams {\n      id\n      name\n      players {\n        id\n        name\n      }\n      formation {\n        defender\n        forward\n      }\n    }\n  }\n": types.TeamsDocument,
     "\n  mutation UpdateTeamRoster($input: UpdateTeamRosterInput!) { updateTeamRoster(input: $input) { id } }\n": types.UpdateTeamRosterDocument,
@@ -85,6 +87,10 @@ export function graphql(source: "\n  mutation SwapPlayers($input: SwapPlayersInp
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation TakeSubs($input: TakeSubsInput!) {\n    takeSubs(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n"): (typeof documents)["\n  mutation TakeSubs($input: TakeSubsInput!) {\n    takeSubs(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n"): (typeof documents)["\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -101,7 +107,7 @@ export function graphql(source: "\n  fragment RoundPlanScreen_Game on Game {\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n"): (typeof documents)["\n  fragment RoundScreen_Game on Game {\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n"];
+export function graphql(source: "\n  fragment RoundScreen_Game on Game {\n    rounds\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n"): (typeof documents)["\n  fragment RoundScreen_Game on Game {\n    rounds\n    currentRound {\n      number\n      ...RoundLineup_Round\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -60,6 +60,21 @@ export const SwapPlayersMutation = graphql(`
   }
 `);
 
+export const TakeSubsMutation = graphql(`
+  mutation TakeSubs($input: TakeSubsInput!) {
+    takeSubs(input: $input) {
+      id
+      lifecycle
+      attendanceConfirmed
+      plannedRound {
+        number
+      }
+      ...RoundPlanScreen_Game
+      ...RoundScreen_Game
+    }
+  }
+`);
+
 export const UseLineupMutation = graphql(`
   mutation UseLineup($input: UseLineupInput!) {
     useLineup(input: $input) {

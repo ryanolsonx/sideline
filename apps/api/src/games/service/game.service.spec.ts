@@ -271,6 +271,35 @@ describe('GameService', () => {
       .rejects.toBeInstanceOf(BadRequestException);
   });
 
+  it('plans the next round when the coach calls subs', async () => {
+    const append = vi.fn().mockResolvedValue([]);
+    const service = serviceFor(
+      { findById: vi.fn().mockResolvedValue(team) },
+      {
+        findById: vi.fn().mockResolvedValue(game),
+        append,
+        findActions: vi.fn().mockResolvedValue([
+          { kind: 'MARK_ATTENDANCE', payload: { fromRound: 1, presentPlayerIds: ['player-1', 'player-2'] } },
+          { kind: 'USE_LINEUP', payload: { round: 1, lineup: { goalie: ['player-1'], defenders: ['player-2'], forwards: [] } } },
+        ]),
+      },
+    );
+
+    await service.takeSubsForCoach('river coach', 'game-1');
+
+    expect(append).toHaveBeenCalledWith('game-1', [{ kind: 'SUBS', payload: {} }]);
+  });
+
+  it('will not call subs before a round is on the field', async () => {
+    const service = serviceFor(
+      { findById: vi.fn().mockResolvedValue(team) },
+      { findById: vi.fn().mockResolvedValue(game), append: vi.fn() },
+    );
+
+    await expect(service.takeSubsForCoach('river coach', 'game-1'))
+      .rejects.toBeInstanceOf(BadRequestException);
+  });
+
   it('cannot open a game that does not exist', async () => {
     const service = serviceFor(
       { findById: vi.fn().mockResolvedValue(team) },

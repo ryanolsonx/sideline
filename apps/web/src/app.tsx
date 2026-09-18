@@ -17,6 +17,7 @@ import {
   ResetPlanMutation,
   StartGameMutation,
   SwapPlayersMutation,
+  TakeSubsMutation,
   UseLineupMutation,
 } from './screens/games/GameSetupScreen.graphql';
 import { RoundPlanScreen } from './screens/games/RoundPlanScreen';
@@ -73,6 +74,7 @@ function CoachTeams({
   const [useLineup] = useMutation(UseLineupMutation);
   const [swapPlayers] = useMutation(SwapPlayersMutation);
   const [resetPlan] = useMutation(ResetPlanMutation);
+  const [takeSubs] = useMutation(TakeSubsMutation);
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -126,6 +128,9 @@ function CoachTeams({
       }}
       onReset={async (gameId) => {
         await resetPlan({ variables: { input: { gameId } } });
+      }}
+      onTakeSubs={async (gameId) => {
+        await takeSubs({ variables: { input: { gameId } } });
       }}
     />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
@@ -193,11 +198,13 @@ function OpenGame({
   onUseLineup,
   onSwap,
   onReset,
+  onTakeSubs,
 }: {
   onBegin: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
   onUseLineup: (gameId: string) => Promise<void>;
   onSwap: (gameId: string, playerIds: [string, string]) => Promise<void>;
   onReset: (gameId: string) => Promise<void>;
+  onTakeSubs: (gameId: string) => Promise<void>;
 }) {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -229,5 +236,5 @@ function OpenGame({
     />;
   }
 
-  return <RoundScreen game={game} onBack={backToTeam} />;
+  return <RoundScreen game={game} onBack={backToTeam} onTakeSubs={() => onTakeSubs(game.id)} />;
 }

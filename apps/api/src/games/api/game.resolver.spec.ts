@@ -58,6 +58,8 @@ describe('GameResolver', () => {
         { id: 'player-2', name: 'Jordan', present: false },
       ],
       currentRound: undefined,
+      plannedRound: undefined,
+      rounds: 8,
     });
   });
 
@@ -108,6 +110,15 @@ describe('GameResolver', () => {
     await new GameResolver(service).resetPlan(request, { gameId: 'game-1' });
 
     expect(resetPlanForCoach).toHaveBeenCalledWith('river coach', 'game-1');
+  });
+
+  it('calls subs as the coach the request carries', async () => {
+    const takeSubsForCoach = vi.fn().mockResolvedValue(liveView);
+    const service = { takeSubsForCoach } as unknown as GameService;
+
+    await new GameResolver(service).takeSubs(request, { gameId: 'game-1' });
+
+    expect(takeSubsForCoach).toHaveBeenCalledWith('river coach', 'game-1');
   });
 
   it('uses the lineup as the coach the request carries', async () => {

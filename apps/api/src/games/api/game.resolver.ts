@@ -6,10 +6,11 @@ import { MarkAttendanceInput } from './mark-attendance.input';
 import { ResetPlanInput } from './reset-plan.input';
 import { StartGameInput } from './start-game.input';
 import { SwapPlayersInput } from './swap-players.input';
+import { TakeSubsInput } from './take-subs.input';
 import { UseLineupInput } from './use-lineup.input';
 import { GameService, GameView } from '../service/game.service';
 import { Position, StartingLineup, outPlayerIds } from '../domain/lineup';
-import { Round, roundOf } from '../domain/game.model';
+import { ROUNDS_IN_A_GAME, Round, roundOf } from '../domain/game.model';
 import { coachUsernameFromCookieHeader } from '../../teams/api/coach-username';
 
 type Request = { headers: { cookie?: string } };
@@ -57,6 +58,7 @@ function toGameDto({ game, state, plan }: GameView): GameDto {
     lifecycle: state.lifecycle,
     attendanceConfirmed: state.attendanceConfirmed,
     players,
+    rounds: ROUNDS_IN_A_GAME,
     currentRound: round && asRoundDto(round),
     plannedRound: plan && asRoundDto(plan),
   };
@@ -134,6 +136,19 @@ export class GameResolver {
   ): Promise<GameDto> {
     return answering(async () => toGameDto(
       await this.gameService.resetPlanForCoach(
+        coachUsernameFromCookieHeader(request.headers.cookie),
+        input.gameId,
+      ),
+    ));
+  }
+
+  @Mutation(() => GameDto)
+  async takeSubs(
+    @Context('req') request: Request,
+    @Args('input') input: TakeSubsInput,
+  ): Promise<GameDto> {
+    return answering(async () => toGameDto(
+      await this.gameService.takeSubsForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
       ),

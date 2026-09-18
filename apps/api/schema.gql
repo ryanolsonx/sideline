@@ -36,6 +36,7 @@ type Game {
   lifecycle: GameLifecycle!
   plannedRound: Round
   players: [GamePlayer!]!
+  rounds: Int!
   startedAt: DateTime!
   teamId: ID!
 }
@@ -65,6 +66,7 @@ type Mutation {
   resetPlan(input: ResetPlanInput!): Game!
   startGame(input: StartGameInput!): Game!
   swapPlayers(input: SwapPlayersInput!): Game!
+  takeSubs(input: TakeSubsInput!): Game!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamFormation(input: UpdateTeamFormationInput!): Team!
   updateTeamRoster(input: UpdateTeamRosterInput!): Team!
@@ -110,6 +112,10 @@ input StartGameInput {
 input SwapPlayersInput {
   gameId: ID!
   playerIds: [ID!]!
+}
+
+input TakeSubsInput {
+  gameId: ID!
 }
 
 type Team {
