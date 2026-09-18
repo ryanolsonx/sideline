@@ -90,7 +90,7 @@ export class GameResolver {
     @Args('input') input: BeginGameInput,
   ): Promise<GameDto> {
     return answering(async () => toGameDto(
-      await this.gameService.beginGameForCoach(
+      await this.gameService.markAttendanceForCoach(
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
         input.presentPlayerIds,

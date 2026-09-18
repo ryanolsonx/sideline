@@ -77,16 +77,16 @@ describe('GameResolver', () => {
     });
   });
 
-  it('begins the game as the coach the request carries', async () => {
-    const beginGameForCoach = vi.fn().mockResolvedValue(liveView);
-    const service = { beginGameForCoach } as unknown as GameService;
+  it('begins the game by recording who is here', async () => {
+    const markAttendanceForCoach = vi.fn().mockResolvedValue(liveView);
+    const service = { markAttendanceForCoach } as unknown as GameService;
 
     await new GameResolver(service).beginGame(request, {
       gameId: 'game-1',
       presentPlayerIds: ['player-1'],
     });
 
-    expect(beginGameForCoach).toHaveBeenCalledWith('river coach', 'game-1', ['player-1']);
+    expect(markAttendanceForCoach).toHaveBeenCalledWith('river coach', 'game-1', ['player-1']);
   });
 
   it('uses the lineup as the coach the request carries', async () => {
