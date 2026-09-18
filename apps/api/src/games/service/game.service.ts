@@ -11,6 +11,7 @@ import {
   planRound,
   projectGame,
   startingSnapshot,
+  swapPlayers,
   useLineup,
 } from '../domain/game.model';
 import { newRotationSeed } from './rotation-seed';
@@ -62,6 +63,21 @@ export class GameService {
     const game = await this.ownedGame(coachUsername, gameId);
     const state = projectGame(game, await this.actionsOf(game.id));
     const action = refusing(() => markAttendance(game, state, presentPlayerIds));
+
+    await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
+
+    return this.viewOf(game);
+  }
+
+  /** Two players trading places in the round being planned. */
+  async swapPlayersForCoach(
+    coachUsername: string,
+    gameId: string,
+    playerIds: [string, string],
+  ): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const state = projectGame(game, await this.actionsOf(game.id));
+    const action = refusing(() => swapPlayers(state, playerIds));
 
     await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
 

@@ -63,6 +63,7 @@ type Mutation {
   createTeam(input: CreateTeamInput!): Team!
   markAttendance(input: MarkAttendanceInput!): Game!
   startGame(input: StartGameInput!): Game!
+  swapPlayers(input: SwapPlayersInput!): Game!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamFormation(input: UpdateTeamFormationInput!): Team!
   updateTeamRoster(input: UpdateTeamRosterInput!): Team!
@@ -99,6 +100,11 @@ type RoundSlot {
 
 input StartGameInput {
   teamId: ID!
+}
+
+input SwapPlayersInput {
+  gameId: ID!
+  playerIds: [ID!]!
 }
 
 type Team {

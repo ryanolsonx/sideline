@@ -89,6 +89,18 @@ describe('GameResolver', () => {
     expect(markAttendanceForCoach).toHaveBeenCalledWith('river coach', 'game-1', ['player-1']);
   });
 
+  it('swaps two players as the coach the request carries', async () => {
+    const swapPlayersForCoach = vi.fn().mockResolvedValue(liveView);
+    const service = { swapPlayersForCoach } as unknown as GameService;
+
+    await new GameResolver(service).swapPlayers(request, {
+      gameId: 'game-1',
+      playerIds: ['player-1', 'player-2'],
+    });
+
+    expect(swapPlayersForCoach).toHaveBeenCalledWith('river coach', 'game-1', ['player-1', 'player-2']);
+  });
+
   it('uses the lineup as the coach the request carries', async () => {
     const useLineupForCoach = vi.fn().mockResolvedValue(liveView);
     const service = { useLineupForCoach } as unknown as GameService;

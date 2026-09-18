@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   GameAction,
   MARK_ATTENDANCE,
+  SWAP,
   USE_LINEUP,
   gameActionFrom,
   markAttendance,
@@ -10,6 +11,7 @@ import {
   roundOf,
   planRound,
   startingSnapshot,
+  swapPlayers,
   useLineup,
 } from './game.model';
 
@@ -64,6 +66,7 @@ describe('projectGame', () => {
       attendanceConfirmed: false,
       presentPlayerIds: ['player-1', 'player-2', 'player-3'],
       rounds: [],
+      plannedSwaps: [],
     });
   });
 
@@ -185,5 +188,81 @@ describe('useLineup', () => {
     ]);
 
     expect(roundOf(reread, 1)?.startingLineup).toEqual(action.lineup);
+  });
+});
+
+describe('swapPlayers', () => {
+  const confirmed = projectGame(snapshot, [attendance]);
+  const planned = planRound(snapshot, confirmed).startingLineup;
+  const [inGoal] = planned.goalie;
+  const [aDefender] = planned.defenders;
+
+  function after(...swaps: GameAction[]) {
+    return projectGame(snapshot, [attendance, ...swaps]);
+  }
+
+  it('trades the places of the two players the coach tapped', () => {
+    const state = after(swapPlayers(confirmed, [inGoal, aDefender]));
+
+    expect(planRound(snapshot, state).startingLineup.goalie).toEqual([aDefender]);
+    expect(planRound(snapshot, state).startingLineup.defenders).toContain(inGoal);
+  });
+
+  it('leaves everyone else where the engine put them', () => {
+    const state = after(swapPlayers(confirmed, [inGoal, aDefender]));
+    const untouched = planned.forwards;
+
+    expect(planRound(snapshot, state).startingLineup.forwards).toEqual(untouched);
+  });
+
+  it('keeps the swaps in the order the coach made them', () => {
+    const first = swapPlayers(confirmed, [inGoal, aDefender]);
+    const second = swapPlayers(projectGame(snapshot, [attendance, first]), [aDefender, inGoal]);
+
+    expect(after(first, second).plannedSwaps).toEqual([[inGoal, aDefender], [aDefender, inGoal]]);
+    expect(planRound(snapshot, after(first, second)).startingLineup).toEqual(planned);
+  });
+
+  it('records what the coach arranged as what the round began with', () => {
+    const swap = swapPlayers(confirmed, [inGoal, aDefender]);
+    const swapped = projectGame(snapshot, [attendance, swap]);
+    const state = projectGame(snapshot, [attendance, swap, useLineup(snapshot, swapped)]);
+
+    expect(roundOf(state, 1)?.startingLineup.goalie).toEqual([aDefender]);
+  });
+
+  it('leaves no swaps waiting once the round is on the field', () => {
+    const swap = swapPlayers(confirmed, [inGoal, aDefender]);
+    const swapped = projectGame(snapshot, [attendance, swap]);
+
+    expect(projectGame(snapshot, [attendance, swap, useLineup(snapshot, swapped)]).plannedSwaps)
+      .toEqual([]);
+  });
+
+  it('survives a round trip through the stored row', () => {
+    const action = swapPlayers(confirmed, [inGoal, aDefender]);
+
+    expect(gameActionFrom(action.kind, payloadOf(action))).toEqual(action);
+  });
+
+  it('ignores a swap aimed at a round that is no longer being planned', () => {
+    const swap = { kind: SWAP, round: 7, screen: 'PLAN', playerIds: [inGoal, aDefender] } as GameAction;
+
+    expect(after(swap).plannedSwaps).toEqual([]);
+  });
+
+  it('refuses a swap with somebody who is not playing', () => {
+    expect(() => swapPlayers(confirmed, ['player-1', 'player-9']))
+      .toThrow('That player is not playing in this game.');
+  });
+
+  it('refuses a player swapping with themselves', () => {
+    expect(() => swapPlayers(confirmed, ['player-1', 'player-1']))
+      .toThrow('A player cannot swap with themselves.');
+  });
+
+  it('will not swap when no round is being planned', () => {
+    expect(() => swapPlayers(projectGame(snapshot, []), ['player-1', 'player-2']))
+      .toThrow('No round is being planned.');
   });
 });
