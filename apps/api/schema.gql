@@ -62,6 +62,7 @@ type Mutation {
   beginGame(input: BeginGameInput!): Game!
   createTeam(input: CreateTeamInput!): Team!
   markAttendance(input: MarkAttendanceInput!): Game!
+  resetPlan(input: ResetPlanInput!): Game!
   startGame(input: StartGameInput!): Game!
   swapPlayers(input: SwapPlayersInput!): Game!
   updateTeam(input: UpdateTeamInput!): Team!
@@ -85,6 +86,10 @@ type Query {
   game(id: ID!): Game!
   team(id: String!): Team!
   teams: [Team!]!
+}
+
+input ResetPlanInput {
+  gameId: ID!
 }
 
 type Round {

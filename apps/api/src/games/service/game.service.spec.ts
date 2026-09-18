@@ -225,6 +225,25 @@ describe('GameService', () => {
       .rejects.toBeInstanceOf(BadRequestException);
   });
 
+  it('records a reset against the round being planned', async () => {
+    const append = vi.fn().mockResolvedValue([]);
+    const service = serviceFor(
+      { findById: vi.fn().mockResolvedValue(team) },
+      {
+        findById: vi.fn().mockResolvedValue(game),
+        append,
+        findActions: vi.fn().mockResolvedValue([
+          { kind: 'MARK_ATTENDANCE', payload: { fromRound: 1, presentPlayerIds: ['player-1', 'player-2'] } },
+          { kind: 'SWAP', payload: { round: 1, screen: 'PLAN', playerIds: ['player-1', 'player-2'] } },
+        ]),
+      },
+    );
+
+    await service.resetPlanForCoach('river coach', 'game-1');
+
+    expect(append).toHaveBeenCalledWith('game-1', [{ kind: 'RESET_PLAN', payload: { round: 1 } }]);
+  });
+
   it('will not use a lineup for a round that is already on the field', async () => {
     const service = serviceFor(
       { findById: vi.fn().mockResolvedValue(team) },

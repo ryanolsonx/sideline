@@ -43,6 +43,7 @@ export type GameLifecycle = 'SETUP' | 'LIVE' | 'ENDED' | 'ABANDONED';
 export const MARK_ATTENDANCE = 'MARK_ATTENDANCE';
 export const USE_LINEUP = 'USE_LINEUP';
 export const SWAP = 'SWAP';
+export const RESET_PLAN = 'RESET_PLAN';
 
 /**
  * The whole present-player list, stamped with the round it takes effect from. One coach
@@ -75,7 +76,16 @@ export interface SwapAction {
 
 export type RoundScreen = 'PLAN' | 'LIVE';
 
-export type GameAction = MarkAttendanceAction | UseLineupAction | SwapAction;
+/**
+ * The coach asking the engine again for the round being planned. It carries nothing: the fold
+ * drops the swaps made to that round, which is what re-running the engine amounts to.
+ */
+export interface ResetPlanAction {
+  kind: typeof RESET_PLAN;
+  round: number;
+}
+
+export type GameAction = MarkAttendanceAction | UseLineupAction | SwapAction | ResetPlanAction;
 
 export interface Round {
   round: number;
@@ -128,6 +138,8 @@ export function gameActionFrom(kind: string, payload: Record<string, unknown>): 
     };
   }
 
+  if (kind === RESET_PLAN) return { kind: RESET_PLAN, round: Number(payload.round ?? 1) };
+
   if (kind === SWAP) {
     return {
       kind: SWAP,
@@ -147,6 +159,7 @@ export function payloadOf(action: GameAction): Record<string, unknown> {
   if (action.kind === SWAP) {
     return { round: action.round, screen: action.screen, playerIds: action.playerIds };
   }
+  if (action.kind === RESET_PLAN) return { round: action.round };
 
   return { round: action.round, lineup: action.lineup };
 }
@@ -167,6 +180,10 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
         plannedRound: state.currentRound === undefined ? 1 : state.plannedRound,
         plannedSwaps: [],
       };
+    }
+
+    if (action.kind === RESET_PLAN) {
+      return action.round === state.plannedRound ? { ...state, plannedSwaps: [] } : state;
     }
 
     if (action.kind === SWAP) {
@@ -232,6 +249,16 @@ export function swapPlayers(state: GameState, playerIds: [string, string]): Swap
   }
 
   return { kind: SWAP, round: state.plannedRound, screen: 'PLAN', playerIds };
+}
+
+/**
+ * Reset. ADR 0007 has it re-run the engine rather than restore a snapshot, which is what
+ * dropping this round's swaps comes to, since the suggestion is derived rather than stored.
+ */
+export function resetPlan(state: GameState): ResetPlanAction {
+  if (state.plannedRound === undefined) throw new Error('No round is being planned.');
+
+  return { kind: RESET_PLAN, round: state.plannedRound };
 }
 
 /**
