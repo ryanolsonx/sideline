@@ -89,6 +89,15 @@ describe('GameResolver', () => {
     expect(beginGameForCoach).toHaveBeenCalledWith('river coach', 'game-1', ['player-1']);
   });
 
+  it('uses the lineup as the coach the request carries', async () => {
+    const useLineupForCoach = vi.fn().mockResolvedValue(liveView);
+    const service = { useLineupForCoach } as unknown as GameService;
+
+    await new GameResolver(service).useLineup(request, { gameId: 'game-1' });
+
+    expect(useLineupForCoach).toHaveBeenCalledWith('river coach', 'game-1');
+  });
+
   it('acts as the coach the request carries', async () => {
     const startGameForCoach = vi.fn().mockResolvedValue(view);
     const service = { startGameForCoach } as unknown as GameService;

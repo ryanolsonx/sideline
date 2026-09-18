@@ -4,12 +4,14 @@ import {
   Game,
   GameAction,
   GameState,
+  Round,
   gameActionFrom,
   markAttendance,
   payloadOf,
-  useFirstLineup,
+  planRound,
   projectGame,
   startingSnapshot,
+  useLineup,
 } from '../domain/game.model';
 import { newRotationSeed } from './rotation-seed';
 import { TeamService } from '../../teams/service/team.service';
@@ -27,6 +29,8 @@ function refusing<T>(rule: () => T): T {
 export interface GameView {
   game: Game;
   state: GameState;
+  /** The lineup offered for the round being planned, derived on every read and never stored. */
+  plan?: Round;
 }
 
 @Injectable()
@@ -72,9 +76,7 @@ export class GameService {
     const game = await this.ownedGame(coachUsername, gameId);
     const actions = await this.actionsOf(game.id);
     const attendance = refusing(() => markAttendance(game, projectGame(game, actions), presentPlayerIds));
-    const lineup = refusing(() =>
-      useFirstLineup(game, projectGame(game, [...actions, attendance])),
-    );
+    const lineup = refusing(() => useLineup(game, projectGame(game, [...actions, attendance])));
 
     await this.gameRepository.append(game.id, [attendance, lineup].map((action) => ({
       kind: action.kind,
@@ -84,8 +86,25 @@ export class GameService {
     return this.viewOf(game);
   }
 
+  /** The coach taking the planned round onto the field. */
+  async useLineupForCoach(coachUsername: string, gameId: string): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const state = projectGame(game, await this.actionsOf(game.id));
+    const action = refusing(() => useLineup(game, state));
+
+    await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
+
+    return this.viewOf(game);
+  }
+
   private async viewOf(game: Game): Promise<GameView> {
-    return { game, state: projectGame(game, await this.actionsOf(game.id)) };
+    const state = projectGame(game, await this.actionsOf(game.id));
+
+    return {
+      game,
+      state,
+      plan: state.plannedRound === undefined ? undefined : planRound(game, state),
+    };
   }
 
   private async actionsOf(gameId: string): Promise<GameAction[]> {
