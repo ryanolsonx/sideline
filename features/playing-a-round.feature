@@ -30,6 +30,17 @@ Feature: Play the first round
     Then round 1 is on the field
     And round 1 has the lineup I used
 
+  Scenario: Swapping two players before the round starts
+    Given I have started a game for "Salt Lake Strikers"
+    And I have begun the game
+    When I swap the player in goal with the player who is out
+    Then the swapped players have traded places
+    When I return to the game
+    Then the swapped players have traded places
+    When I use the lineup
+    And I return to the game
+    Then the swapped players have traded places
+
   Scenario: A short-handed side plays rather than being refused
     Given I have started a game for "Salt Lake Strikers"
     When I mark "Riley Chen" as absent

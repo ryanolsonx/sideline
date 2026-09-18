@@ -42,6 +42,15 @@ export const BeginGameMutation = graphql(`
   }
 `);
 
+export const SwapPlayersMutation = graphql(`
+  mutation SwapPlayers($input: SwapPlayersInput!) {
+    swapPlayers(input: $input) {
+      id
+      ...RoundPlanScreen_Game
+    }
+  }
+`);
+
 export const UseLineupMutation = graphql(`
   mutation UseLineup($input: UseLineupInput!) {
     useLineup(input: $input) {
