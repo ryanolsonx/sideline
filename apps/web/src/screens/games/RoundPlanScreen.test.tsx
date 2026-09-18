@@ -22,13 +22,13 @@ const round = {
 
 describe('RoundPlanScreen', () => {
   it('names the round being planned', () => {
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Round 1' })).toBeInTheDocument();
   });
 
   it('says the round is not on the field yet', () => {
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     expect(screen.getByText('Planned')).toBeInTheDocument();
     expect(screen.getByText(/Nobody is on the field yet/)).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('RoundPlanScreen', () => {
 
   it('asks for the two players the coach tapped to trade places', async () => {
     const onSwap = vi.fn().mockResolvedValue(undefined);
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
     fireEvent.click(screen.getByRole('button', { name: 'Riley Chen' }));
@@ -46,7 +46,7 @@ describe('RoundPlanScreen', () => {
 
   it('says so when a swap could not be recorded', async () => {
     const onSwap = vi.fn().mockRejectedValue(new Error('no'));
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
     fireEvent.click(screen.getByRole('button', { name: 'Riley Chen' }));
@@ -55,7 +55,7 @@ describe('RoundPlanScreen', () => {
   });
 
   it('shows which player is waiting to be swapped', () => {
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
 
@@ -64,7 +64,7 @@ describe('RoundPlanScreen', () => {
 
   it('lets the coach tap the same player again to change their mind', async () => {
     const onSwap = vi.fn();
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={onSwap} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
     fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
@@ -75,15 +75,33 @@ describe('RoundPlanScreen', () => {
 
   it('takes the suggestion as it stands when the coach swaps nobody', async () => {
     const onUseLineup = vi.fn().mockResolvedValue(undefined);
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={onUseLineup} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={onUseLineup} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Use Lineup' }));
 
     await waitFor(() => expect(onUseLineup).toHaveBeenCalledTimes(1));
   });
 
+  it('asks the engine again when the coach resets', async () => {
+    const onReset = vi.fn().mockResolvedValue(undefined);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={onReset} onUseLineup={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+    await waitFor(() => expect(onReset).toHaveBeenCalledTimes(1));
+  });
+
+  it('forgets a player waiting to be swapped when the coach resets', async () => {
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Avery Kim' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Avery Kim' })).toHaveAttribute('aria-pressed', 'false'));
+  });
+
   it('shows who is out before anyone on the field', () => {
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={vi.fn()} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     const headings = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent);
     expect(headings).toEqual(['Out', 'Goalie', 'Defenders', 'Forwards']);
@@ -95,7 +113,7 @@ describe('RoundPlanScreen', () => {
       ...round,
       out: [],
       slots: [...round.slots.slice(0, 4), { position: 'FORWARD', player: null }],
-    })} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={vi.fn()} />);
+    })} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={vi.fn()} />);
 
     expect(within(screen.getByRole('list', { name: 'Forwards' })).getByText('Nobody')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Nobody' })).not.toBeInTheDocument();
@@ -103,7 +121,7 @@ describe('RoundPlanScreen', () => {
 
   it('puts the lineup on the field when the coach uses it', async () => {
     const onUseLineup = vi.fn().mockResolvedValue(undefined);
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={onUseLineup} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={onUseLineup} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Use Lineup' }));
 
@@ -112,7 +130,7 @@ describe('RoundPlanScreen', () => {
 
   it('says so when the round could not go onto the field', async () => {
     const onUseLineup = vi.fn().mockRejectedValue(new Error('no'));
-    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onUseLineup={onUseLineup} />);
+    render(<RoundPlanScreen game={gamePlanning(round)} onBack={vi.fn()} onSwap={vi.fn()} onReset={vi.fn()} onUseLineup={onUseLineup} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Use Lineup' }));
 

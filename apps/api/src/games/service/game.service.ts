@@ -10,6 +10,7 @@ import {
   payloadOf,
   planRound,
   projectGame,
+  resetPlan,
   startingSnapshot,
   swapPlayers,
   useLineup,
@@ -78,6 +79,17 @@ export class GameService {
     const game = await this.ownedGame(coachUsername, gameId);
     const state = projectGame(game, await this.actionsOf(game.id));
     const action = refusing(() => swapPlayers(state, playerIds));
+
+    await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
+
+    return this.viewOf(game);
+  }
+
+  /** The coach asking the engine again for the round being planned. */
+  async resetPlanForCoach(coachUsername: string, gameId: string): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const state = projectGame(game, await this.actionsOf(game.id));
+    const action = refusing(() => resetPlan(state));
 
     await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
 

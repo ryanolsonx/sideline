@@ -14,6 +14,7 @@ import { GameSetupScreen } from './screens/games/GameSetupScreen';
 import {
   BeginGameMutation,
   GameQuery,
+  ResetPlanMutation,
   StartGameMutation,
   SwapPlayersMutation,
   UseLineupMutation,
@@ -71,6 +72,7 @@ function CoachTeams({
   const [beginGame] = useMutation(BeginGameMutation);
   const [useLineup] = useMutation(UseLineupMutation);
   const [swapPlayers] = useMutation(SwapPlayersMutation);
+  const [resetPlan] = useMutation(ResetPlanMutation);
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -121,6 +123,9 @@ function CoachTeams({
       }}
       onSwap={async (gameId, playerIds) => {
         await swapPlayers({ variables: { input: { gameId, playerIds } } });
+      }}
+      onReset={async (gameId) => {
+        await resetPlan({ variables: { input: { gameId } } });
       }}
     />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
@@ -187,10 +192,12 @@ function OpenGame({
   onBegin,
   onUseLineup,
   onSwap,
+  onReset,
 }: {
   onBegin: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
   onUseLineup: (gameId: string) => Promise<void>;
   onSwap: (gameId: string, playerIds: [string, string]) => Promise<void>;
+  onReset: (gameId: string) => Promise<void>;
 }) {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -217,6 +224,7 @@ function OpenGame({
       game={game}
       onBack={backToTeam}
       onSwap={(playerIds) => onSwap(game.id, playerIds)}
+      onReset={() => onReset(game.id)}
       onUseLineup={() => onUseLineup(game.id)}
     />;
   }

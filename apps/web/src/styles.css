@@ -282,6 +282,24 @@ h1 {
   opacity: .45;
 }
 
+/* Quieter than the forward action, because asking the engine again is a second thought. */
+.secondary-button {
+  width: 100%;
+  min-height: 3rem;
+  margin-top: .75rem;
+  color: #8ceaf5;
+  background: transparent;
+  border: 1px solid #38606f;
+  border-radius: .7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
 .save-error {
   margin: 1rem 0 0;
   color: #fda29b;

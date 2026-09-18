@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   GameAction,
   MARK_ATTENDANCE,
+  RESET_PLAN,
   SWAP,
   USE_LINEUP,
   gameActionFrom,
@@ -10,6 +11,7 @@ import {
   projectGame,
   roundOf,
   planRound,
+  resetPlan,
   startingSnapshot,
   swapPlayers,
   useLineup,
@@ -264,5 +266,36 @@ describe('swapPlayers', () => {
   it('will not swap when no round is being planned', () => {
     expect(() => swapPlayers(projectGame(snapshot, []), ['player-1', 'player-2']))
       .toThrow('No round is being planned.');
+  });
+});
+
+describe('resetPlan', () => {
+  const confirmed = projectGame(snapshot, [attendance]);
+  const planned = planRound(snapshot, confirmed).startingLineup;
+
+  it('gives back the lineup the engine offered', () => {
+    const swap = swapPlayers(confirmed, [planned.goalie[0], planned.defenders[0]]);
+    const swapped = projectGame(snapshot, [attendance, swap]);
+    const state = projectGame(snapshot, [attendance, swap, resetPlan(swapped)]);
+
+    expect(planRound(snapshot, state).startingLineup).toEqual(planned);
+    expect(state.plannedSwaps).toEqual([]);
+  });
+
+  it('leaves a round the coach is no longer planning alone', () => {
+    const swap = swapPlayers(confirmed, [planned.goalie[0], planned.defenders[0]]);
+    const state = projectGame(snapshot, [attendance, swap, { kind: RESET_PLAN, round: 7 }]);
+
+    expect(state.plannedSwaps).toEqual([[planned.goalie[0], planned.defenders[0]]]);
+  });
+
+  it('survives a round trip through the stored row', () => {
+    const action = resetPlan(confirmed);
+
+    expect(gameActionFrom(action.kind, payloadOf(action))).toEqual(action);
+  });
+
+  it('will not reset when no round is being planned', () => {
+    expect(() => resetPlan(projectGame(snapshot, []))).toThrow('No round is being planned.');
   });
 });

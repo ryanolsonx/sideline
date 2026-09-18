@@ -104,3 +104,19 @@ Then('the swapped players have traded places', async function (this: SidelineWor
   await expect(positionList(this, 'Goalie').getByText(swap.fromOut, { exact: true })).toBeVisible();
   await expect(positionList(this, 'Out').getByText(swap.fromGoal, { exact: true })).toBeVisible();
 });
+
+When('I reset the lineup', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Reset' }).click();
+});
+
+Then('the lineup the app suggested is back', async function (this: SidelineWorld) {
+  const [inGoal] = this.roundOneLineup ?? [];
+  if (!inGoal) throw new Error('No suggested lineup was read in this scenario.');
+
+  await expect(positionList(this, 'Goalie').getByText(inGoal, { exact: true })).toBeVisible();
+  expect([
+    ...await playersAt(this, 'Goalie'),
+    ...await playersAt(this, 'Defenders'),
+    ...await playersAt(this, 'Forwards'),
+  ]).toEqual(this.roundOneLineup);
+});

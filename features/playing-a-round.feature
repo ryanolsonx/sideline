@@ -41,6 +41,15 @@ Feature: Play the first round
     And I return to the game
     Then the swapped players have traded places
 
+  Scenario: Taking back a swap before the round starts
+    Given I have started a game for "Salt Lake Strikers"
+    And I have begun the game
+    When I swap the player in goal with the player who is out
+    And I reset the lineup
+    Then the lineup the app suggested is back
+    When I return to the game
+    Then the lineup the app suggested is back
+
   Scenario: A short-handed side plays rather than being refused
     Given I have started a game for "Salt Lake Strikers"
     When I mark "Riley Chen" as absent
