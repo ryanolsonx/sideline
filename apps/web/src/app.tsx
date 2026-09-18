@@ -11,7 +11,13 @@ import { FirstTeamScreen } from './screens/teams/FirstTeamScreen';
 import { TeamDetailScreen, EditableTeam } from './screens/teams/TeamDetailScreen';
 import { TeamScreen } from './screens/teams/TeamScreen';
 import { GameSetupScreen } from './screens/games/GameSetupScreen';
-import { BeginGameMutation, GameQuery, StartGameMutation } from './screens/games/GameSetupScreen.graphql';
+import {
+  BeginGameMutation,
+  GameQuery,
+  StartGameMutation,
+  UseLineupMutation,
+} from './screens/games/GameSetupScreen.graphql';
+import { RoundPlanScreen } from './screens/games/RoundPlanScreen';
 import { RoundScreen } from './screens/games/RoundScreen';
 import { CreateTeamMutation, TeamsQuery, UpdateTeamMutation } from './screens/teams/FirstTeamScreen.graphql';
 
@@ -62,6 +68,7 @@ function CoachTeams({
   const [updateTeam] = useMutation(UpdateTeamMutation);
   const [startGame] = useMutation(StartGameMutation);
   const [beginGame] = useMutation(BeginGameMutation);
+  const [useLineup] = useMutation(UseLineupMutation);
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -106,6 +113,9 @@ function CoachTeams({
     <Route path="/teams/:teamId/games/:gameId" element={<OpenGame
       onBegin={async (gameId, presentPlayerIds) => {
         await beginGame({ variables: { input: { gameId, presentPlayerIds } } });
+      }}
+      onUseLineup={async (gameId) => {
+        await useLineup({ variables: { input: { gameId } } });
       }}
     />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
@@ -170,8 +180,10 @@ function whyThisGameWillNotOpen(error: ApolloError | undefined): string {
 /** A game is reached only through its own URL, so opening one is a query rather than a memory. */
 function OpenGame({
   onBegin,
+  onUseLineup,
 }: {
   onBegin: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
+  onUseLineup: (gameId: string) => Promise<void>;
 }) {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -185,11 +197,19 @@ function OpenGame({
   const game = data.game;
   const backToTeam = () => navigate(`/teams/${game.teamId}`);
 
-  if (game.lifecycle === 'SETUP') {
+  if (!game.attendanceConfirmed) {
     return <GameSetupScreen
       game={game}
       onBack={backToTeam}
       onBegin={(presentPlayerIds) => onBegin(game.id, presentPlayerIds)}
+    />;
+  }
+
+  if (game.plannedRound) {
+    return <RoundPlanScreen
+      game={game}
+      onBack={backToTeam}
+      onUseLineup={() => onUseLineup(game.id)}
     />;
   }
 

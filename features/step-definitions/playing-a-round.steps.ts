@@ -1,4 +1,4 @@
-import { Then } from '@cucumber/cucumber';
+import { Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { SidelineWorld } from '../support/world';
 
@@ -46,4 +46,44 @@ Then('round {int} has the lineup it began with', async function (this: SidelineW
   ];
 
   expect(onField).toEqual(this.roundOneLineup);
+});
+
+Then('I am shown the plan for round {int}', async function (this: SidelineWorld, round: number) {
+  await expect(this.page.getByRole('heading', { level: 1, name: `Round ${round}` })).toBeVisible();
+  await expect(this.page.getByText('Planned', { exact: true })).toBeVisible();
+});
+
+Then('round {int} is not on the field yet', async function (this: SidelineWorld, round: number) {
+  await expect(this.page.getByRole('heading', { level: 1, name: `Round ${round}` })).toBeVisible();
+  await expect(this.page.getByRole('button', { name: 'Use Lineup' })).toBeVisible();
+  await expect(this.page.getByText('On the field', { exact: true })).toHaveCount(0);
+});
+
+When('I use the lineup', async function (this: SidelineWorld) {
+  this.roundOneLineup = await Promise.all(
+    ['Goalie', 'Defenders', 'Forwards'].map((listName) =>
+      positionList(this, listName).getByRole('listitem').allInnerTexts()),
+  ).then((lists) => lists.flat().map((name) => name.trim()).filter((name) => name !== NOBODY));
+
+  await this.page.getByRole('button', { name: 'Use Lineup' }).click();
+  await expect(this.page.getByText('On the field', { exact: true })).toBeVisible();
+});
+
+Given('I have used the lineup', async function (this: SidelineWorld) {
+  await this.page.getByRole('button', { name: 'Use Lineup' }).click();
+  await expect(this.page.getByText('On the field', { exact: true })).toBeVisible();
+});
+
+Then('round {int} is on the field', async function (this: SidelineWorld, round: number) {
+  await expect(this.page.getByRole('heading', { level: 1, name: `Round ${round}` })).toBeVisible();
+  await expect(this.page.getByText('On the field', { exact: true })).toBeVisible();
+});
+
+Then('round {int} has the lineup I used', async function (this: SidelineWorld, round: number) {
+  await expect(this.page.getByRole('heading', { level: 1, name: `Round ${round}` })).toBeVisible();
+  expect([
+    ...await playersAt(this, 'Goalie'),
+    ...await playersAt(this, 'Defenders'),
+    ...await playersAt(this, 'Forwards'),
+  ]).toEqual(this.roundOneLineup);
 });

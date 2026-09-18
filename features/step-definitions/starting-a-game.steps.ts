@@ -76,17 +76,23 @@ Then('{string} is not part of the game', async function (this: SidelineWorld, pl
 
 When('I begin the game', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Begin' }).click();
-  await expect(this.page.getByRole('heading', { level: 1, name: 'Round 1' })).toBeVisible();
+  await expect(this.page.getByRole('button', { name: 'Use Lineup' })).toBeVisible();
 });
 
 Given('I have begun the game', async function (this: SidelineWorld) {
   await this.page.getByRole('button', { name: 'Begin' }).click();
-  await expect(this.page.getByRole('heading', { level: 1, name: 'Round 1' })).toBeVisible();
-  this.roundOneLineup = await Promise.all(
-    ['Goalie', 'Defenders', 'Forwards'].map((listName) =>
-      this.page.getByRole('list', { name: listName }).getByRole('listitem').allInnerTexts()),
-  ).then((lists) => lists.flat().map((name) => name.trim()).filter((name) => name !== 'Nobody'));
+  await expect(this.page.getByRole('button', { name: 'Use Lineup' })).toBeVisible();
+  this.roundOneLineup = await onFieldNames(this);
 });
+
+async function onFieldNames(world: SidelineWorld): Promise<string[]> {
+  const lists = await Promise.all(
+    ['Goalie', 'Defenders', 'Forwards'].map((listName) =>
+      world.page.getByRole('list', { name: listName }).getByRole('listitem').allInnerTexts()),
+  );
+
+  return lists.flat().map((name) => name.trim()).filter((name) => name !== 'Nobody');
+}
 
 Then('{string} is not part of round 1', async function (this: SidelineWorld, playerName: string) {
   await expect(this.page.getByText(playerName, { exact: true })).toHaveCount(0);
