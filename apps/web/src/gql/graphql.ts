@@ -47,6 +47,7 @@ export type Game = {
   formation: Formation;
   id: Scalars['ID']['output'];
   lifecycle: GameLifecycle;
+  plannedRound?: Maybe<Round>;
   players: Array<GamePlayer>;
   startedAt: Scalars['DateTime']['output'];
   teamId: Scalars['ID']['output'];
@@ -80,6 +81,7 @@ export type Mutation = {
   updateTeam: Team;
   updateTeamFormation: Team;
   updateTeamRoster: Team;
+  useLineup: Game;
 };
 
 
@@ -115,6 +117,11 @@ export type MutationUpdateTeamFormationArgs = {
 
 export type MutationUpdateTeamRosterArgs = {
   input: UpdateTeamRosterInput;
+};
+
+
+export type MutationUseLineupArgs = {
+  input: UseLineupInput;
 };
 
 export type Player = {
@@ -187,6 +194,10 @@ export type UpdateTeamInput = {
 export type UpdateTeamRosterInput = {
   id: Scalars['ID']['input'];
   players: Array<Scalars['String']['input']>;
+};
+
+export type UseLineupInput = {
+  gameId: Scalars['ID']['input'];
 };
 
 export type GameQueryVariables = Exact<{

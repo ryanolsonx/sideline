@@ -4,9 +4,10 @@ import { BeginGameInput } from './begin-game.input';
 import { GameDto, GamePlayerDto, RoundDto } from './game.dto';
 import { MarkAttendanceInput } from './mark-attendance.input';
 import { StartGameInput } from './start-game.input';
+import { UseLineupInput } from './use-lineup.input';
 import { GameService, GameView } from '../service/game.service';
 import { Position, StartingLineup, outPlayerIds } from '../domain/lineup';
-import { roundOf } from '../domain/game.model';
+import { Round, roundOf } from '../domain/game.model';
 import { coachUsernameFromCookieHeader } from '../../teams/api/coach-username';
 
 type Request = { headers: { cookie?: string } };
@@ -28,7 +29,7 @@ function slotsOf(lineup: StartingLineup, playerBy: (id: string) => GamePlayerDto
 }
 
 /** The API answers with the folded game, never with the log it was folded from. */
-function toGameDto({ game, state }: GameView): GameDto {
+function toGameDto({ game, state, plan }: GameView): GameDto {
   const players: GamePlayerDto[] = game.roster.map((player) => ({
     id: player.id,
     name: player.name,
@@ -36,14 +37,15 @@ function toGameDto({ game, state }: GameView): GameDto {
   }));
   const playerBy = (id: string) => players.find((player) => player.id === id);
 
-  const round = state.currentRound === undefined ? undefined : roundOf(state, state.currentRound);
-  const currentRound: RoundDto | undefined = round && {
+  const asRoundDto = (round: Round): RoundDto => ({
     number: round.round,
     out: outPlayerIds(round.startingLineup, state.presentPlayerIds)
       .map(playerBy)
       .filter((player): player is GamePlayerDto => player !== undefined),
     slots: slotsOf(round.startingLineup, playerBy, game.formation),
-  };
+  });
+
+  const round = state.currentRound === undefined ? undefined : roundOf(state, state.currentRound);
 
   return {
     id: game.id,
@@ -53,7 +55,8 @@ function toGameDto({ game, state }: GameView): GameDto {
     lifecycle: state.lifecycle,
     attendanceConfirmed: state.attendanceConfirmed,
     players,
-    currentRound,
+    currentRound: round && asRoundDto(round),
+    plannedRound: plan && asRoundDto(plan),
   };
 }
 
@@ -91,6 +94,19 @@ export class GameResolver {
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
         input.presentPlayerIds,
+      ),
+    ));
+  }
+
+  @Mutation(() => GameDto)
+  async useLineup(
+    @Context('req') request: Request,
+    @Args('input') input: UseLineupInput,
+  ): Promise<GameDto> {
+    return answering(async () => toGameDto(
+      await this.gameService.useLineupForCoach(
+        coachUsernameFromCookieHeader(request.headers.cookie),
+        input.gameId,
       ),
     ));
   }
