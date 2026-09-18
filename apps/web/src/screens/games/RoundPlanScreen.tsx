@@ -12,31 +12,53 @@ export const RoundPlanScreen_GameFragment = graphql(`
 `);
 
 /**
- * The round before it counts. The coach reads it standing on the touchline, so the screen
- * says plainly that nobody is on the field yet and leaves one thing to tap.
+ * The round before it counts. The coach reads it standing on the touchline, so the screen says
+ * plainly that nobody is on the field yet and leaves one thing to tap. Tapping a player then
+ * another trades their places, which is the whole of a coach adjustment; the trade is recorded
+ * as it is made, so the plan survives a locked phone.
  */
 export function RoundPlanScreen({
   game,
   onBack,
+  onSwap,
   onUseLineup,
 }: {
   game: FragmentType<typeof RoundPlanScreen_GameFragment>;
   onBack: () => void;
+  onSwap: (playerIds: [string, string]) => Promise<void>;
   onUseLineup: () => Promise<void>;
 }) {
   const { plannedRound } = getFragmentData(RoundPlanScreen_GameFragment, game);
-  const [using, setUsing] = useState(false);
-  const [useError, setUseError] = useState<string>();
+  const [activePlayerId, setActivePlayerId] = useState<string>();
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<string>();
   if (!plannedRound) return null;
 
+  async function tap(playerId: string) {
+    if (activePlayerId === undefined) return setActivePlayerId(playerId);
+
+    const swapWith = activePlayerId;
+    setActivePlayerId(undefined);
+    if (swapWith === playerId) return;
+
+    setBusy(true);
+    setProblem(undefined);
+    try {
+      await onSwap([swapWith, playerId]);
+    } catch {
+      setProblem('We could not swap those players. Try again.');
+    }
+    setBusy(false);
+  }
+
   async function useLineup() {
-    setUsing(true);
-    setUseError(undefined);
+    setBusy(true);
+    setProblem(undefined);
     try {
       await onUseLineup();
     } catch {
-      setUseError('We could not put this round on the field. Try again.');
-      setUsing(false);
+      setProblem('We could not put this round on the field. Try again.');
+      setBusy(false);
     }
   }
 
@@ -44,11 +66,16 @@ export function RoundPlanScreen({
     <button className="back-link" type="button" onClick={onBack}>‹ Back to team</button>
     <p className="editor-eyebrow">Planned</p>
     <h1 id="round-heading">Round {plannedRound.number}</h1>
-    <p className="onboarding-intro">Nobody is on the field yet. Use this lineup when you're ready.</p>
+    <p className="onboarding-intro">Nobody is on the field yet. Tap two players to swap them, then use the lineup.</p>
 
-    <RoundLineup round={plannedRound} />
+    <RoundLineup
+      round={plannedRound}
+      activePlayerId={activePlayerId}
+      disabled={busy}
+      onTapPlayer={tap}
+    />
 
-    {useError && <p className="save-error" role="alert">{useError}</p>}
-    <button className="finish-button" type="button" disabled={using} onClick={useLineup}>{using ? 'Going on…' : 'Use Lineup'}</button>
+    {problem && <p className="save-error" role="alert">{problem}</p>}
+    <button className="finish-button" type="button" disabled={busy} onClick={useLineup}>{busy ? 'Going on…' : 'Use Lineup'}</button>
   </section></main>;
 }
