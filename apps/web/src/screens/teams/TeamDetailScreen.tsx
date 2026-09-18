@@ -22,7 +22,6 @@ export function TeamDetailScreen({
   const [formation, setFormation] = useState(team.formation);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
-
   async function save() {
     setSaving(true);
     setSaveError(undefined);
@@ -35,7 +34,7 @@ export function TeamDetailScreen({
   }
 
   return <main className="onboarding-shell"><section className="onboarding-content team-editor" aria-labelledby="team-heading">
-    <button className="back-link" type="button" onClick={onBack}>‹ Back to teams</button>
+    <button className="back-link" type="button" onClick={onBack}>‹ Back to {team.name}</button>
     <p className="editor-eyebrow">Team settings</p>
     <h1 id="team-heading">Team settings</h1>
     <div className="editor-team-name"><label htmlFor="team-name">Team name</label><input id="team-name" value={name} onChange={(event) => setName(event.target.value)} /></div>

@@ -282,6 +282,24 @@ h1 {
   opacity: .45;
 }
 
+/* Quieter than the forward action, because asking the engine again is a second thought. */
+.secondary-button {
+  width: 100%;
+  min-height: 3rem;
+  margin-top: .75rem;
+  color: #8ceaf5;
+  background: transparent;
+  border: 1px solid #38606f;
+  border-radius: .7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
 .save-error {
   margin: 1rem 0 0;
   color: #fda29b;
@@ -410,6 +428,29 @@ h1 {
 .editor-option span { display: grid; gap: .1rem; }
 .editor-option b { color: #f3fbfc; }
 .editor-option small { color: #aebdc5; }
+
+.team-primary-action { margin: 1.25rem 0 2rem; }
+.start-game-button { width: 100%; min-height: 3.5rem; color: #082a34; background: #67e8f9; border: 0; border-radius: .7rem; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.start-game-button:disabled { cursor: not-allowed; opacity: .45; }
+.team-screen-summary { margin: .25rem 0 0; color: #aebdc5; }
+.team-settings-link { width: 100%; min-height: 3rem; color: #67e8f9; background: transparent; border: 1px solid #374f5e; border-radius: .7rem; font-weight: 700; cursor: pointer; }
+
+.attendance-count { margin: .25rem 0 1rem; color: #67e8f9; font-weight: 700; }
+.attendance-list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.attendance-option { display: flex; align-items: center; gap: .75rem; min-height: 3.5rem; padding: .65rem .85rem; background: #152430; border: 1px solid #374f5e; border-radius: .7rem; cursor: pointer; }
+.attendance-option--present { background: #153440; border-color: #67e8f9; }
+.attendance-option input { width: 1.35rem; height: 1.35rem; accent-color: #67e8f9; }
+.round-group { margin-top: 1.75rem; }
+.round-group h2 { margin: 0 0 .5rem; color: #aebdc5; font-size: .85rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.round-list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.round-list li { display: flex; align-items: center; min-height: 3.25rem; padding: .65rem .85rem; background: #152430; border: 1px solid #374f5e; border-radius: .7rem; }
+.round-slot-empty { color: #6f8391; font-style: italic; }
+/* A place on the plan is the whole row, so the thumb has the 44px the touchline needs. */
+.round-list li:has(button.player-name) { padding: 0; }
+.round-list li button.player-name { flex: 1; min-height: 3.25rem; padding: .65rem .85rem; color: inherit; font: inherit; text-align: left; background: none; border: 0; border-radius: .7rem; cursor: pointer; }
+.round-list li button.player-name--active { background: #1d3a4d; box-shadow: inset 0 0 0 2px #5bc0eb; }
+.round-empty-note { margin: 0; color: #6f8391; }
+.game-status { margin-top: 1.5rem; padding: .9rem; color: #082a34; background: #67e8f9; border-radius: .7rem; font-weight: 700; text-align: center; }
 
 @media (min-width: 700px) {
   .onboarding-content { padding-top: 6rem; }

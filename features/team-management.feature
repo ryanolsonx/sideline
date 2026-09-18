@@ -3,9 +3,10 @@ Feature: Manage a team
     Given I already manage "Salt Lake Strikers"
     When I open the home page
     And I open "Salt Lake Strikers"
+    And I open team settings
     And I replace "Avery" with "Morgan Park"
     And I save the team
-    And I open "Salt Lake Strikers"
+    And I open team settings
     Then "Morgan Park" appears in the roster
     And "Avery" does not appear
 
@@ -13,11 +14,15 @@ Feature: Manage a team
     Given I already manage "Salt Lake Strikers"
     When I open the home page
     And I open "Salt Lake Strikers"
+    And I open team settings
     And I change its name to "Salt Lake Comets"
     And I save changes
+    And I open the home page
     Then "Salt Lake Comets" appears under "Your teams"
 
   Scenario: Open a team from its URL
     Given I already manage "Salt Lake Strikers"
     When I open the team URL
+    Then I am on the "Salt Lake Strikers" team screen
+    When I open team settings
     Then I see the "Salt Lake Strikers" team settings

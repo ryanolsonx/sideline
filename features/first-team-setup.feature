@@ -28,6 +28,17 @@ Feature: Set up a first team
     Then "Salt Lake Strikers" appears under "Your teams"
     And the team has 6 players
 
+  Scenario: Open the team just set up
+    Given I am a coach with no teams
+    When I open the home page
+    And I name the team "Salt Lake Strikers"
+    And I continue to the roster
+    And I add "Avery Kim" to the roster
+    And I continue to formation
+    And I finish setup
+    And I open "Salt Lake Strikers"
+    Then I am on the "Salt Lake Strikers" team screen
+
   Scenario: A coach cannot finish without a player
     Given I am adding players to "Salt Lake Strikers"
     And the roster is empty
