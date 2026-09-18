@@ -166,22 +166,6 @@ describe('GameService', () => {
       .toEqual(['player-1', 'player-2']);
   });
 
-  it('records who is here and round one in one gesture', async () => {
-    const append = vi.fn().mockResolvedValue([]);
-    const service = serviceFor(
-      { findById: vi.fn().mockResolvedValue(team) },
-      { findById: vi.fn().mockResolvedValue(game), append },
-    );
-
-    await service.beginGameForCoach('river coach', 'game-1', ['player-1', 'player-2']);
-
-    expect(append).toHaveBeenCalledTimes(1);
-    const [, entries] = append.mock.calls[0];
-    expect(entries.map((entry: { kind: string }) => entry.kind))
-      .toEqual(['MARK_ATTENDANCE', 'USE_LINEUP']);
-    expect(entries[1].payload.round).toBe(1);
-  });
-
   it('records the planned lineup as what the round began with', async () => {
     const append = vi.fn().mockResolvedValue([]);
     const service = serviceFor(

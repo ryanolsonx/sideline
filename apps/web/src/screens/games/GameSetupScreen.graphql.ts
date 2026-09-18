@@ -6,7 +6,12 @@ export const GameQuery = graphql(`
       id
       teamId
       lifecycle
+      attendanceConfirmed
+      plannedRound {
+        number
+      }
       ...GameSetupScreen_Game
+      ...RoundPlanScreen_Game
       ...RoundScreen_Game
     }
   }
@@ -27,7 +32,26 @@ export const BeginGameMutation = graphql(`
     beginGame(input: $input) {
       id
       lifecycle
+      attendanceConfirmed
+      plannedRound {
+        number
+      }
       ...GameSetupScreen_Game
+      ...RoundPlanScreen_Game
+    }
+  }
+`);
+
+export const UseLineupMutation = graphql(`
+  mutation UseLineup($input: UseLineupInput!) {
+    useLineup(input: $input) {
+      id
+      lifecycle
+      attendanceConfirmed
+      plannedRound {
+        number
+      }
+      ...RoundPlanScreen_Game
       ...RoundScreen_Game
     }
   }

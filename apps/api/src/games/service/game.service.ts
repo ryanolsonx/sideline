@@ -50,6 +50,10 @@ export class GameService {
     return this.viewOf(await this.ownedGame(coachUsername, gameId));
   }
 
+  /**
+   * Who is here, the whole list at once. Beginning a game is this and nothing else, because
+   * the round that follows is a plan until the coach uses it.
+   */
   async markAttendanceForCoach(
     coachUsername: string,
     gameId: string,
@@ -60,28 +64,6 @@ export class GameService {
     const action = refusing(() => markAttendance(game, state, presentPlayerIds));
 
     await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
-
-    return this.viewOf(game);
-  }
-
-  /**
-   * One tap by the coach: who is here, and round one onto the field. Two entries in the log
-   * because they are two permanent shapes, but one transaction because it was one gesture.
-   */
-  async beginGameForCoach(
-    coachUsername: string,
-    gameId: string,
-    presentPlayerIds: string[],
-  ): Promise<GameView> {
-    const game = await this.ownedGame(coachUsername, gameId);
-    const actions = await this.actionsOf(game.id);
-    const attendance = refusing(() => markAttendance(game, projectGame(game, actions), presentPlayerIds));
-    const lineup = refusing(() => useLineup(game, projectGame(game, [...actions, attendance])));
-
-    await this.gameRepository.append(game.id, [attendance, lineup].map((action) => ({
-      kind: action.kind,
-      payload: payloadOf(action),
-    })));
 
     return this.viewOf(game);
   }
