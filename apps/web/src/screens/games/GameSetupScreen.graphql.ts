@@ -42,6 +42,15 @@ export const BeginGameMutation = graphql(`
   }
 `);
 
+export const ResetPlanMutation = graphql(`
+  mutation ResetPlan($input: ResetPlanInput!) {
+    resetPlan(input: $input) {
+      id
+      ...RoundPlanScreen_Game
+    }
+  }
+`);
+
 export const SwapPlayersMutation = graphql(`
   mutation SwapPlayers($input: SwapPlayersInput!) {
     swapPlayers(input: $input) {

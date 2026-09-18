@@ -17,6 +17,7 @@ type Documents = {
     "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": typeof types.GameDocument,
     "\n  mutation StartGame($input: StartGameInput!) {\n    startGame(input: $input) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": typeof types.StartGameDocument,
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.BeginGameDocument,
+    "\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.ResetPlanDocument,
     "\n  mutation SwapPlayers($input: SwapPlayersInput!) {\n    swapPlayers(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": typeof types.SwapPlayersDocument,
     "\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": typeof types.UseLineupDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": typeof types.GameSetupScreen_GameFragmentDoc,
@@ -33,6 +34,7 @@ const documents: Documents = {
     "\n  query Game($id: ID!) {\n    game(id: $id) {\n      id\n      teamId\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": types.GameDocument,
     "\n  mutation StartGame($input: StartGameInput!) {\n    startGame(input: $input) {\n      id\n      teamId\n      ...GameSetupScreen_Game\n    }\n  }\n": types.StartGameDocument,
     "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.BeginGameDocument,
+    "\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.ResetPlanDocument,
     "\n  mutation SwapPlayers($input: SwapPlayersInput!) {\n    swapPlayers(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n": types.SwapPlayersDocument,
     "\n  mutation UseLineup($input: UseLineupInput!) {\n    useLineup(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...RoundPlanScreen_Game\n      ...RoundScreen_Game\n    }\n  }\n": types.UseLineupDocument,
     "\n  fragment GameSetupScreen_Game on Game {\n    id\n    players {\n      id\n      name\n      present\n    }\n  }\n": types.GameSetupScreen_GameFragmentDoc,
@@ -72,6 +74,10 @@ export function graphql(source: "\n  mutation StartGame($input: StartGameInput!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n"): (typeof documents)["\n  mutation BeginGame($input: BeginGameInput!) {\n    beginGame(input: $input) {\n      id\n      lifecycle\n      attendanceConfirmed\n      plannedRound {\n        number\n      }\n      ...GameSetupScreen_Game\n      ...RoundPlanScreen_Game\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n"): (typeof documents)["\n  mutation ResetPlan($input: ResetPlanInput!) {\n    resetPlan(input: $input) {\n      id\n      ...RoundPlanScreen_Game\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

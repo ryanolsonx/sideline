@@ -3,6 +3,7 @@ import { answering } from './answering';
 import { BeginGameInput } from './begin-game.input';
 import { GameDto, GamePlayerDto, RoundDto } from './game.dto';
 import { MarkAttendanceInput } from './mark-attendance.input';
+import { ResetPlanInput } from './reset-plan.input';
 import { StartGameInput } from './start-game.input';
 import { SwapPlayersInput } from './swap-players.input';
 import { UseLineupInput } from './use-lineup.input';
@@ -122,6 +123,19 @@ export class GameResolver {
         coachUsernameFromCookieHeader(request.headers.cookie),
         input.gameId,
         input.playerIds,
+      ),
+    ));
+  }
+
+  @Mutation(() => GameDto)
+  async resetPlan(
+    @Context('req') request: Request,
+    @Args('input') input: ResetPlanInput,
+  ): Promise<GameDto> {
+    return answering(async () => toGameDto(
+      await this.gameService.resetPlanForCoach(
+        coachUsernameFromCookieHeader(request.headers.cookie),
+        input.gameId,
       ),
     ));
   }
