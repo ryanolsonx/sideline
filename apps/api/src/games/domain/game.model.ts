@@ -1,5 +1,7 @@
 import { Formation } from '../../teams/domain/team.model';
-import { StartingLineup, suggestFirstRound } from './lineup';
+import { StartingLineup, lineupPlayerIds } from './lineup';
+import { suggestRound } from './rotation-plan';
+import { standingsOf } from './standings';
 
 export interface RosterPlayer {
   id: string;
@@ -224,6 +226,17 @@ export function roundOf(state: GameState, round: number): Round | undefined {
  * What the engine offers for the round being planned. A suggestion is derived from the log
  * rather than stored, so reading a plan twice offers the same lineup both times.
  */
+function suggestedFor(snapshot: GameSnapshot, state: GameState): StartingLineup {
+  if (state.plannedRound === undefined) throw new Error('No round is being planned.');
+
+  return suggestRound(
+    snapshot,
+    state.presentPlayerIds,
+    standingsOf(state, state.presentPlayerIds),
+    state.plannedRound,
+  );
+}
+
 export function planRound(snapshot: GameSnapshot, state: GameState): Round {
   if (state.plannedRound === undefined) {
     throw new Error(state.attendanceConfirmed ? 'No round is being planned.' : 'Nobody has been marked present yet.');
@@ -231,7 +244,7 @@ export function planRound(snapshot: GameSnapshot, state: GameState): Round {
 
   return {
     round: state.plannedRound,
-    startingLineup: afterSwaps(suggestFirstRound(snapshot, state.presentPlayerIds), state.plannedSwaps),
+    startingLineup: afterSwaps(suggestedFor(snapshot, state), state.plannedSwaps),
   };
 }
 
@@ -273,7 +286,7 @@ export function useLineup(snapshot: GameSnapshot, state: GameState): UseLineupAc
   return {
     kind: USE_LINEUP,
     round: state.plannedRound,
-    lineup: suggestFirstRound(snapshot, state.presentPlayerIds),
+    lineup: suggestedFor(snapshot, state),
   };
 }
 
