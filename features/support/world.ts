@@ -61,6 +61,7 @@ export class SidelineWorld extends World {
   gameUrl?: string;
   roundOneLineup?: string[];
   swappedPlayerNames?: { fromGoal: string; fromOut: string };
+  playersOutLastRound?: string[];
 }
 
 setWorldConstructor(SidelineWorld);

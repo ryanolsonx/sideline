@@ -4,6 +4,8 @@ import {
   MARK_ATTENDANCE,
   RESET_PLAN,
   SWAP,
+  ROUNDS_IN_A_GAME,
+  SUBS,
   USE_LINEUP,
   gameActionFrom,
   markAttendance,
@@ -14,6 +16,7 @@ import {
   resetPlan,
   startingSnapshot,
   swapPlayers,
+  takeSubs,
   useLineup,
 } from './game.model';
 
@@ -297,5 +300,55 @@ describe('resetPlan', () => {
 
   it('will not reset when no round is being planned', () => {
     expect(() => resetPlan(projectGame(snapshot, []))).toThrow('No round is being planned.');
+  });
+});
+
+describe('takeSubs', () => {
+  function gameAfterRounds(roundCount: number) {
+    let actions: GameAction[] = [attendance];
+
+    for (let round = 1; round <= roundCount; round += 1) {
+      const state = projectGame(snapshot, actions);
+      actions = [...actions, useLineup(snapshot, state)];
+      if (round < roundCount) actions = [...actions, { kind: SUBS }];
+    }
+
+    return { actions, state: projectGame(snapshot, actions) };
+  }
+
+  it('plans the next round when the coach calls subs', () => {
+    const { actions, state } = gameAfterRounds(1);
+    const after = projectGame(snapshot, [...actions, takeSubs(state)]);
+
+    expect(after.plannedRound).toBe(2);
+    expect(after.currentRound).toBe(1);
+    expect(planRound(snapshot, after).round).toBe(2);
+  });
+
+  it('puts the next round on the field once its lineup is used', () => {
+    const { actions, state } = gameAfterRounds(1);
+    const planning = projectGame(snapshot, [...actions, takeSubs(state)]);
+    const after = projectGame(snapshot, [...actions, takeSubs(state), useLineup(snapshot, planning)]);
+
+    expect(after.currentRound).toBe(2);
+    expect(after.plannedRound).toBeUndefined();
+    expect(after.rounds).toHaveLength(2);
+  });
+
+  it('carries no payload, because which round it ends is in the log', () => {
+    expect(payloadOf({ kind: SUBS })).toEqual({});
+    expect(gameActionFrom(SUBS, {})).toEqual({ kind: SUBS });
+  });
+
+  it('will not call subs before a round is on the field', () => {
+    expect(() => takeSubs(projectGame(snapshot, [attendance])))
+      .toThrow('No round is on the field.');
+  });
+
+  it('has no subs to call in the last round of the game', () => {
+    const { state } = gameAfterRounds(ROUNDS_IN_A_GAME);
+
+    expect(state.currentRound).toBe(ROUNDS_IN_A_GAME);
+    expect(() => takeSubs(state)).toThrow('This is the last round of the game.');
   });
 });
