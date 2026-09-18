@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  GameAction,
   MARK_ATTENDANCE,
   USE_LINEUP,
   gameActionFrom,
@@ -7,8 +8,9 @@ import {
   payloadOf,
   projectGame,
   roundOf,
+  planRound,
   startingSnapshot,
-  useFirstLineup,
+  useLineup,
 } from './game.model';
 
 const team = {
@@ -111,58 +113,74 @@ describe('markAttendance', () => {
   });
 });
 
-describe('beginning a game', () => {
-  const confirmed = projectGame(snapshot, [
-    { kind: MARK_ATTENDANCE, fromRound: 1, presentPlayerIds: ['player-1', 'player-2', 'player-3'] },
-  ]);
+const attendance: GameAction = {
+  kind: MARK_ATTENDANCE,
+  fromRound: 1,
+  presentPlayerIds: ['player-1', 'player-2', 'player-3'],
+};
 
-  it('puts round one on the field', () => {
-    const action = useFirstLineup(snapshot, confirmed);
-    const state = projectGame(snapshot, [
-      { kind: MARK_ATTENDANCE, fromRound: 1, presentPlayerIds: ['player-1', 'player-2', 'player-3'] },
-      action,
-    ]);
+describe('planRound', () => {
+  const confirmed = projectGame(snapshot, [attendance]);
 
-    expect(state.lifecycle).toBe('LIVE');
-    expect(state.currentRound).toBe(1);
-    expect(roundOf(state, 1)?.startingLineup).toEqual(action.lineup);
+  it('plans round one once the coach has said who is here', () => {
+    expect(confirmed.plannedRound).toBe(1);
+    expect(planRound(snapshot, confirmed).round).toBe(1);
+  });
+
+  it('leaves the game off the field while a round is only planned', () => {
+    expect(confirmed.lifecycle).toBe('SETUP');
+    expect(confirmed.currentRound).toBeUndefined();
+    expect(confirmed.rounds).toEqual([]);
   });
 
   it('picks only players who turned up', () => {
-    const here = projectGame(snapshot, [
-      { kind: MARK_ATTENDANCE, fromRound: 1, presentPlayerIds: ['player-1', 'player-2'] },
-    ]);
+    const here = projectGame(snapshot, [{ ...attendance, presentPlayerIds: ['player-1', 'player-2'] }]);
 
-    const { lineup } = useFirstLineup(snapshot, here);
+    const { startingLineup } = planRound(snapshot, here);
 
-    expect([...lineup.goalie, ...lineup.defenders, ...lineup.forwards].sort())
+    expect([...startingLineup.goalie, ...startingLineup.defenders, ...startingLineup.forwards].sort())
       .toEqual(['player-1', 'player-2']);
   });
 
-  it('will not begin a game nobody has been marked present for', () => {
-    expect(() => useFirstLineup(snapshot, projectGame(snapshot, [])))
-      .toThrow('Nobody has been marked present yet.');
+  it('offers the same lineup every time the plan is read', () => {
+    expect(planRound(snapshot, confirmed)).toEqual(planRound(snapshot, confirmed));
   });
 
-  it('will not begin a game twice', () => {
-    const state = projectGame(snapshot, [
-      { kind: MARK_ATTENDANCE, fromRound: 1, presentPlayerIds: ['player-1'] },
-      useFirstLineup(snapshot, confirmed),
-    ]);
+  it('will not plan a round for a game nobody has been marked present for', () => {
+    expect(() => planRound(snapshot, projectGame(snapshot, [])))
+      .toThrow('Nobody has been marked present yet.');
+  });
+});
 
-    expect(() => useFirstLineup(snapshot, state)).toThrow('This game has already begun.');
+describe('useLineup', () => {
+  const confirmed = projectGame(snapshot, [attendance]);
+
+  it('puts the planned round on the field', () => {
+    const action = useLineup(snapshot, confirmed);
+    const state = projectGame(snapshot, [attendance, action]);
+
+    expect(state.lifecycle).toBe('LIVE');
+    expect(state.currentRound).toBe(1);
+    expect(roundOf(state, 1)?.startingLineup).toEqual(planRound(snapshot, confirmed).startingLineup);
+  });
+
+  it('leaves no round planned once the lineup is on the field', () => {
+    const state = projectGame(snapshot, [attendance, useLineup(snapshot, confirmed)]);
+
+    expect(state.plannedRound).toBeUndefined();
+    expect(() => useLineup(snapshot, state)).toThrow('No round is being planned.');
   });
 
   it('survives a round trip through the stored row', () => {
-    const action = useFirstLineup(snapshot, confirmed);
+    const action = useLineup(snapshot, confirmed);
 
     expect(gameActionFrom(action.kind, payloadOf(action))).toEqual(action);
   });
 
   it('keeps the round it began with rather than planning it again', () => {
-    const action = useFirstLineup(snapshot, confirmed);
+    const action = useLineup(snapshot, confirmed);
     const reread = projectGame(snapshot, [
-      { kind: MARK_ATTENDANCE, fromRound: 1, presentPlayerIds: ['player-1', 'player-2', 'player-3'] },
+      attendance,
       { kind: USE_LINEUP, round: 1, lineup: action.lineup },
     ]);
 

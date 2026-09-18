@@ -79,4 +79,8 @@ export class GameDto {
 
   @Field(() => RoundDto, { nullable: true })
   currentRound?: RoundDto;
+
+  /** The round the coach is looking at before it goes onto the field. */
+  @Field(() => RoundDto, { nullable: true })
+  plannedRound?: RoundDto;
 }

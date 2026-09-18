@@ -73,6 +73,8 @@ export interface GameState {
   presentPlayerIds: string[];
   rounds: Round[];
   currentRound?: number;
+  /** The round waiting for the coach to use a lineup. Nothing about it is stored. */
+  plannedRound?: number;
 }
 
 /** Reads an action off a stored row, ignoring kinds this version does not know. */
@@ -115,6 +117,7 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
         ...state,
         attendanceConfirmed: true,
         presentPlayerIds: everyone.filter((id) => action.presentPlayerIds.includes(id)),
+        plannedRound: state.currentRound === undefined ? 1 : state.plannedRound,
       };
     }
 
@@ -123,6 +126,7 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
         ...state,
         lifecycle: 'LIVE',
         currentRound: action.round,
+        plannedRound: undefined,
         rounds: [
           ...state.rounds.filter((round) => round.round !== action.round),
           { round: action.round, startingLineup: action.lineup },
@@ -139,18 +143,28 @@ export function roundOf(state: GameState, round: number): Round | undefined {
 }
 
 /**
- * The engine runs once per round, and what it suggested is recorded rather than recomputed,
- * so reading the game back gives the round that was actually played.
+ * What the engine offers for the round being planned. A suggestion is derived from the log
+ * rather than stored, so reading a plan twice offers the same lineup both times.
  */
-export function useFirstLineup(snapshot: GameSnapshot, state: GameState): UseLineupAction {
-  if (!state.attendanceConfirmed) throw new Error('Nobody has been marked present yet.');
-  if (state.rounds.length > 0) throw new Error('This game has already begun.');
+export function planRound(snapshot: GameSnapshot, state: GameState): Round {
+  if (state.plannedRound === undefined) {
+    throw new Error(state.attendanceConfirmed ? 'No round is being planned.' : 'Nobody has been marked present yet.');
+  }
 
   return {
-    kind: USE_LINEUP,
-    round: 1,
-    lineup: suggestFirstRound(snapshot, state.presentPlayerIds),
+    round: state.plannedRound,
+    startingLineup: suggestFirstRound(snapshot, state.presentPlayerIds),
   };
+}
+
+/**
+ * The coach taking the plan onto the field. What the round begins as is recorded here rather
+ * than recomputed later, so reading the game back gives the round that was actually played.
+ */
+export function useLineup(snapshot: GameSnapshot, state: GameState): UseLineupAction {
+  const planned = planRound(snapshot, state);
+
+  return { kind: USE_LINEUP, round: planned.round, lineup: planned.startingLineup };
 }
 
 /** The one action a coach's confirmation writes, whoever they ticked and unticked on the way. */
