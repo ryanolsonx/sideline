@@ -427,6 +427,10 @@ h1 {
 .round-list { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 .round-list li { display: flex; align-items: center; min-height: 3.25rem; padding: .65rem .85rem; background: #152430; border: 1px solid #374f5e; border-radius: .7rem; }
 .round-slot-empty { color: #6f8391; font-style: italic; }
+/* A place on the plan is the whole row, so the thumb has the 44px the touchline needs. */
+.round-list li:has(button.player-name) { padding: 0; }
+.round-list li button.player-name { flex: 1; min-height: 3.25rem; padding: .65rem .85rem; color: inherit; font: inherit; text-align: left; background: none; border: 0; border-radius: .7rem; cursor: pointer; }
+.round-list li button.player-name--active { background: #1d3a4d; box-shadow: inset 0 0 0 2px #5bc0eb; }
 .round-empty-note { margin: 0; color: #6f8391; }
 .game-status { margin-top: 1.5rem; padding: .9rem; color: #082a34; background: #67e8f9; border-radius: .7rem; font-weight: 700; text-align: center; }
 

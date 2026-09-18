@@ -15,6 +15,7 @@ import {
   BeginGameMutation,
   GameQuery,
   StartGameMutation,
+  SwapPlayersMutation,
   UseLineupMutation,
 } from './screens/games/GameSetupScreen.graphql';
 import { RoundPlanScreen } from './screens/games/RoundPlanScreen';
@@ -69,6 +70,7 @@ function CoachTeams({
   const [startGame] = useMutation(StartGameMutation);
   const [beginGame] = useMutation(BeginGameMutation);
   const [useLineup] = useMutation(UseLineupMutation);
+  const [swapPlayers] = useMutation(SwapPlayersMutation);
 
   if (loading) return <p className="app-status">Loading your teams…</p>;
   if (error) return <p className="app-status" role="alert">Could not load your teams.</p>;
@@ -116,6 +118,9 @@ function CoachTeams({
       }}
       onUseLineup={async (gameId) => {
         await useLineup({ variables: { input: { gameId } } });
+      }}
+      onSwap={async (gameId, playerIds) => {
+        await swapPlayers({ variables: { input: { gameId, playerIds } } });
       }}
     />} />
     <Route path="*" element={<Navigate to="/teams" replace />} />
@@ -181,9 +186,11 @@ function whyThisGameWillNotOpen(error: ApolloError | undefined): string {
 function OpenGame({
   onBegin,
   onUseLineup,
+  onSwap,
 }: {
   onBegin: (gameId: string, presentPlayerIds: string[]) => Promise<void>;
   onUseLineup: (gameId: string) => Promise<void>;
+  onSwap: (gameId: string, playerIds: [string, string]) => Promise<void>;
 }) {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -209,6 +216,7 @@ function OpenGame({
     return <RoundPlanScreen
       game={game}
       onBack={backToTeam}
+      onSwap={(playerIds) => onSwap(game.id, playerIds)}
       onUseLineup={() => onUseLineup(game.id)}
     />;
   }

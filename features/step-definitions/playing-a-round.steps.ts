@@ -87,3 +87,20 @@ Then('round {int} has the lineup I used', async function (this: SidelineWorld, r
     ...await playersAt(this, 'Forwards'),
   ]).toEqual(this.roundOneLineup);
 });
+
+When('I swap the player in goal with the player who is out', async function (this: SidelineWorld) {
+  const [inGoal] = await playersAt(this, 'Goalie');
+  const [wasOut] = await playersAt(this, 'Out');
+  this.swappedPlayerNames = { fromGoal: inGoal, fromOut: wasOut };
+
+  await positionList(this, 'Goalie').getByRole('button', { name: inGoal }).click();
+  await positionList(this, 'Out').getByRole('button', { name: wasOut }).click();
+});
+
+Then('the swapped players have traded places', async function (this: SidelineWorld) {
+  const swap = this.swappedPlayerNames;
+  if (!swap) throw new Error('No players have been swapped in this scenario.');
+
+  await expect(positionList(this, 'Goalie').getByText(swap.fromOut, { exact: true })).toBeVisible();
+  await expect(positionList(this, 'Out').getByText(swap.fromGoal, { exact: true })).toBeVisible();
+});
