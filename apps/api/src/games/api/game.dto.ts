@@ -83,4 +83,8 @@ export class GameDto {
   /** The round the coach is looking at before it goes onto the field. */
   @Field(() => RoundDto, { nullable: true })
   plannedRound?: RoundDto;
+
+  /** How many rounds this game has, so the last one can be told apart from the rest. */
+  @Field(() => Int)
+  rounds!: number;
 }

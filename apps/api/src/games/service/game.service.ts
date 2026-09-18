@@ -9,6 +9,7 @@ import {
   markAttendance,
   payloadOf,
   planRound,
+  takeSubs,
   projectGame,
   resetPlan,
   startingSnapshot,
@@ -101,6 +102,17 @@ export class GameService {
     const game = await this.ownedGame(coachUsername, gameId);
     const state = projectGame(game, await this.actionsOf(game.id));
     const action = refusing(() => useLineup(game, state));
+
+    await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
+
+    return this.viewOf(game);
+  }
+
+  /** The coach calling the players in, which ends the round on the field by planning the next. */
+  async takeSubsForCoach(coachUsername: string, gameId: string): Promise<GameView> {
+    const game = await this.ownedGame(coachUsername, gameId);
+    const state = projectGame(game, await this.actionsOf(game.id));
+    const action = refusing(() => takeSubs(state));
 
     await this.gameRepository.append(game.id, [{ kind: action.kind, payload: payloadOf(action) }]);
 

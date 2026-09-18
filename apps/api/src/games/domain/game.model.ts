@@ -46,6 +46,13 @@ export const MARK_ATTENDANCE = 'MARK_ATTENDANCE';
 export const USE_LINEUP = 'USE_LINEUP';
 export const SWAP = 'SWAP';
 export const RESET_PLAN = 'RESET_PLAN';
+export const SUBS = 'SUBS';
+
+/**
+ * A game is eight rounds. It is a constant rather than a column, so ending at seven and
+ * finishing eight leave identical records.
+ */
+export const ROUNDS_IN_A_GAME = 8;
 
 /**
  * The whole present-player list, stamped with the round it takes effect from. One coach
@@ -87,7 +94,17 @@ export interface ResetPlanAction {
   round: number;
 }
 
-export type GameAction = MarkAttendanceAction | UseLineupAction | SwapAction | ResetPlanAction;
+/** The coach calling the players in. It carries nothing: which round it ends is in the log. */
+export interface SubsAction {
+  kind: typeof SUBS;
+}
+
+export type GameAction =
+  | MarkAttendanceAction
+  | UseLineupAction
+  | SwapAction
+  | ResetPlanAction
+  | SubsAction;
 
 export interface Round {
   round: number;
@@ -151,6 +168,8 @@ export function gameActionFrom(kind: string, payload: Record<string, unknown>): 
     };
   }
 
+  if (kind === SUBS) return { kind: SUBS };
+
   return undefined;
 }
 
@@ -162,8 +181,9 @@ export function payloadOf(action: GameAction): Record<string, unknown> {
     return { round: action.round, screen: action.screen, playerIds: action.playerIds };
   }
   if (action.kind === RESET_PLAN) return { round: action.round };
+  if (action.kind === USE_LINEUP) return { round: action.round, lineup: action.lineup };
 
-  return { round: action.round, lineup: action.lineup };
+  return {};
 }
 
 /**
@@ -192,6 +212,12 @@ export function projectGame(snapshot: GameSnapshot, actions: readonly GameAction
       return action.round === state.plannedRound && action.screen === 'PLAN'
         ? { ...state, plannedSwaps: [...state.plannedSwaps, action.playerIds] }
         : state;
+    }
+
+    if (action.kind === SUBS) {
+      return state.currentRound === undefined || state.currentRound >= ROUNDS_IN_A_GAME
+        ? state
+        : { ...state, plannedRound: state.currentRound + 1, plannedSwaps: [] };
     }
 
     if (action.kind === USE_LINEUP) {
@@ -288,6 +314,17 @@ export function useLineup(snapshot: GameSnapshot, state: GameState): UseLineupAc
     round: state.plannedRound,
     lineup: suggestedFor(snapshot, state),
   };
+}
+
+/**
+ * The coach calling subs, which ends the round on the field by planning the next one. There is
+ * no clock and no separate end-of-round gesture; the last round has no subs to call.
+ */
+export function takeSubs(state: GameState): SubsAction {
+  if (state.currentRound === undefined) throw new Error('No round is on the field.');
+  if (state.currentRound >= ROUNDS_IN_A_GAME) throw new Error('This is the last round of the game.');
+
+  return { kind: SUBS };
 }
 
 /** The one action a coach's confirmation writes, whoever they ticked and unticked on the way. */
